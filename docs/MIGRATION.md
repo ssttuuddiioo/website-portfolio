@@ -93,6 +93,12 @@ async redirects() {
 }
 ```
 
+### A note on status codes (301 vs 308)
+
+This doc uses "301" throughout as shorthand for *permanent redirect*, but Next.js's `permanent: true` actually emits HTTP **308** (Permanent Redirect), the HTTP/1.1 successor to 301. Functionally identical for SEO: Google, Bing, and every modern crawler treat 308 and 301 the same for indexing and link-equity purposes. The practical difference is that 308 preserves the request method (GET stays GET, POST stays POST), whereas 301 technically permits clients to switch to GET — irrelevant for static marketing-site redirects but worth knowing.
+
+Do not override this — leave `permanent: true` as-is. Only reach for a temporary redirect (`permanent: false` → 307) if the destination is genuinely transient, which is not the case for any row in the redirect map above.
+
 ---
 
 ## Pages to preserve (per-page content brief)
@@ -293,6 +299,8 @@ Every project page needs: unique title, unique meta description (120–160 chars
 
 ### BreadcrumbList (every non-homepage route)
 
+Flat pages (`/about`, `/contact`, `/services`, `/experiments`) use a 2-item trail:
+
 ```json
 {
   "@context": "https://schema.org",
@@ -300,6 +308,20 @@ Every project page needs: unique title, unique meta description (120–160 chars
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studiostudio.nyc" },
     { "@type": "ListItem", "position": 2, "name": "{{page.title}}", "item": "{{page.url}}" }
+  ]
+}
+```
+
+Project pages use a 3-item trail with `Work` as the intermediate step, even though projects live at root. The extra node reflects the site's IA — projects are part of the work index — and matches how the global nav presents them.
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studiostudio.nyc" },
+    { "@type": "ListItem", "position": 2, "name": "Work", "item": "https://studiostudio.nyc/work" },
+    { "@type": "ListItem", "position": 3, "name": "{{project.title}}", "item": "{{project.url}}" }
   ]
 }
 ```

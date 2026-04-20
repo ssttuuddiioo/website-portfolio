@@ -3,13 +3,18 @@ import { client, isSanityConfigured } from '@/lib/sanity/client'
 import { PROJECT_INDEX_QUERY } from '@/lib/sanity/queries'
 import type { SanityProject } from '@/lib/sanity/types'
 import { WorkPageClient } from './work-client'
+import { buildPageMetadata } from '@/lib/seo/metadata'
+import { JsonLd } from '@/lib/seo/json-ld'
+import { breadcrumbSchema } from '@/lib/seo/jsonld'
 
 export const revalidate = 60
 
-export const metadata = {
+export const metadata = buildPageMetadata({
   title: 'Work',
-  description: 'Selected projects by Studio Studio — experiential installations, custom software, and lighting design.',
-}
+  description:
+    'Selected projects by Studio Studio — experiential installations, custom software, and lighting design.',
+  path: '/work',
+})
 
 export default async function WorkPage() {
   let projects: SanityProject[] = []
@@ -23,12 +28,21 @@ export default async function WorkPage() {
   }
 
   return (
-    <section
-      style={{
-        paddingTop: 'calc(80px + var(--spacing-3xl))',
-        paddingBottom: 'var(--spacing-section)',
-      }}
-    >
+    <>
+      <JsonLd
+        data={breadcrumbSchema({
+          items: [
+            { name: 'Home', url: 'https://studiostudio.nyc' },
+            { name: 'Work', url: 'https://studiostudio.nyc/work' },
+          ],
+        })}
+      />
+      <section
+        style={{
+          paddingTop: 'calc(80px + var(--spacing-3xl))',
+          paddingBottom: 'var(--spacing-section)',
+        }}
+      >
       <div
         style={{
           maxWidth: 'var(--max-width)',
@@ -52,6 +66,7 @@ export default async function WorkPage() {
           <WorkPageClient projects={projects} />
         </Suspense>
       </div>
-    </section>
+      </section>
+    </>
   )
 }
