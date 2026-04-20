@@ -1,6 +1,8 @@
-import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
 import { JetBrains_Mono } from 'next/font/google'
+import { buildRootMetadata } from '@/lib/seo/metadata'
+import { JsonLd } from '@/lib/seo/json-ld'
+import { organizationSchema, personSchema } from '@/lib/seo/jsonld'
 import './globals.css'
 
 const geistSans = Geist({
@@ -14,14 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 })
 
-export const metadata: Metadata = {
-  title: {
-    default: 'Studio Studio',
-    template: '%s — Studio Studio',
-  },
-  description: 'Creative Technology · Experiential Direction · Brooklyn, NY',
-  metadataBase: new URL('https://studiostudio.nyc'),
-}
+export const metadata = buildRootMetadata()
 
 export default function RootLayout({
   children,
@@ -34,7 +29,10 @@ export default function RootLayout({
       data-theme="dark"
       className={`${geistSans.variable} ${jetbrainsMono.variable} antialiased`}
     >
-      <body>{children}</body>
+      <body>
+        <JsonLd data={[organizationSchema(), personSchema()]} />
+        {children}
+      </body>
     </html>
   )
 }

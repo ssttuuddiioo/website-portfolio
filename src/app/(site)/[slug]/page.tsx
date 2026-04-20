@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { client, isSanityConfigured } from '@/lib/sanity/client'
 import { PROJECT_DETAIL_QUERY, PROJECT_SLUGS_QUERY } from '@/lib/sanity/queries'
@@ -10,6 +11,11 @@ import { ProjectMeta } from '@/components/project/project-meta'
 import { ProjectBody } from '@/components/project/project-body'
 import { Collaborators } from '@/components/project/collaborators'
 import { NextProject } from '@/components/project/next-project'
+import { buildProjectMetadata } from '@/lib/seo/metadata'
+import { JsonLd } from '@/lib/seo/json-ld'
+import { breadcrumbSchema, creativeWorkSchema, type JsonLdObject } from '@/lib/seo/jsonld'
+
+const SITE_URL = 'https://studiostudio.nyc'
 
 export const revalidate = 60
 
@@ -35,16 +41,17 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>
-}) {
+}): Promise<Metadata> {
   const { slug } = await params
 
-  // Check placeholder data
   const placeholder = PLACEHOLDER_PROJECTS[slug]
   if (placeholder) {
-    return {
-      title: `${placeholder.title} — ${placeholder.client} | Studio Studio`,
-      description: placeholder.about.slice(0, 160),
-    }
+    return buildProjectMetadata({
+      title: `${placeholder.title} — ${placeholder.client}`,
+      slug,
+      description: placeholder.about,
+      ogImageUrl: placeholder.heroImage,
+    })
   }
 
   if (!isSanityConfigured) return {}
@@ -52,18 +59,48 @@ export async function generateMetadata({
     const project = await client.fetch<SanityProjectDetail>(PROJECT_DETAIL_QUERY, { slug })
     if (!project) return {}
 
-    return {
+    const ogSource = project.ogImage || project.heroImage
+    return buildProjectMetadata({
       title: project.title,
-      description: project.seoDescription || project.subtitle,
-      openGraph: {
-        images: (project.ogImage || project.heroImage)
-          ? [urlFor(project.ogImage || project.heroImage).width(1200).url()]
-          : [],
-      },
-    }
+      slug,
+      seoDescription: project.seoDescription,
+      subtitle: project.subtitle,
+      ogImageUrl: ogSource ? urlFor(ogSource).width(1200).height(630).url() : undefined,
+    })
   } catch {
     return {}
   }
+}
+
+function buildProjectJsonLd(opts: {
+  slug: string
+  title: string
+  description?: string
+  client?: string
+  year?: number | string
+  category?: string
+  keywords?: string[]
+  heroImageUrl?: string
+}): JsonLdObject[] {
+  return [
+    creativeWorkSchema({
+      title: opts.title,
+      slug: opts.slug,
+      description: opts.description,
+      client: opts.client,
+      year: opts.year,
+      category: opts.category,
+      keywords: opts.keywords,
+      heroImageUrl: opts.heroImageUrl,
+    }),
+    breadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'Work', url: `${SITE_URL}/work` },
+        { name: opts.title, url: `${SITE_URL}/${opts.slug}` },
+      ],
+    }),
+  ]
 }
 
 export default async function ProjectPage({
@@ -88,13 +125,43 @@ export default async function ProjectPage({
   if (!project) {
     const placeholder = PLACEHOLDER_PROJECTS[slug]
     if (placeholder) {
-      return <PlaceholderProjectPage project={placeholder} />
+      const jsonLd = buildProjectJsonLd({
+        slug,
+        title: placeholder.title,
+        description: placeholder.about,
+        client: placeholder.client,
+        year: placeholder.year,
+        category: placeholder.category,
+        keywords: placeholder.role,
+        heroImageUrl: placeholder.heroImage,
+      })
+      return (
+        <>
+          <JsonLd data={jsonLd} />
+          <PlaceholderProjectPage project={placeholder} />
+        </>
+      )
     }
     notFound()
   }
 
+  const heroImageUrl = project.heroImage
+    ? urlFor(project.heroImage).width(1200).height(630).url()
+    : undefined
+  const projectJsonLd = buildProjectJsonLd({
+    slug,
+    title: project.title,
+    description: project.seoDescription || project.subtitle,
+    client: project.client,
+    year: project.year,
+    category: project.category?.title,
+    keywords: project.tags,
+    heroImageUrl,
+  })
+
   return (
     <article>
+      <JsonLd data={projectJsonLd} />
       <ProjectHero project={project} />
 
       <div
