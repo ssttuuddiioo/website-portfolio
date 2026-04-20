@@ -1,55 +1,141 @@
+import type {
+  SanityPerson,
+  SiteSettingsForOrg,
+} from '@/lib/sanity/types'
+
 const SITE_URL = 'https://studiostudio.nyc'
 
 export type JsonLdObject = Record<string, unknown>
 
-export function organizationSchema(): JsonLdObject {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Studio Studio',
-    alternateName: 'Studio Studio NYC',
-    url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
-    description:
-      "Studio Studio is an interactive installation company in New York City. Inaugural members of the New Museum's NEW INC, we create immersive experiences through collaboration with artists, engineers, and designers.",
-    founder: {
-      '@type': 'Person',
-      name: 'Pablo Gnecco',
-      jobTitle: 'Experiential Director & Creative Technologist',
-      url: 'https://yopablo.com',
-    },
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Brooklyn',
-      addressRegion: 'NY',
-      addressCountry: 'US',
-    },
-    memberOf: [
-      { '@type': 'Organization', name: 'NEW INC', url: 'https://www.newinc.org' },
-      {
-        '@type': 'Organization',
-        name: 'Mana Contemporary',
-        url: 'https://www.manacontemporary.com',
-      },
-    ],
-    knowsAbout: [
-      'Experiential design',
-      'Creative technology',
-      'Lighting design',
-      'Interactive installations',
-      'Immersive environments',
-    ],
-    sameAs: ['https://instagram.com/yopablo', 'https://yopablo.com'],
-  }
+/* ============================================================
+   Hardcoded fallbacks — used when Sanity is empty or unreachable.
+   Keep in sync with docs/MIGRATION.md Organization schema template.
+   ============================================================ */
+
+const FALLBACK_ORG_DESCRIPTION =
+  "Studio Studio is an interactive installation company in New York City. Inaugural members of the New Museum's NEW INC, we create immersive experiences through collaboration with artists, engineers, and designers."
+
+const FALLBACK_ORG = {
+  name: 'Studio Studio',
+  alternateName: 'Studio Studio NYC',
+  logo: `${SITE_URL}/logo.png`,
+  description: FALLBACK_ORG_DESCRIPTION,
+  address: {
+    locality: 'Brooklyn',
+    region: 'NY',
+    country: 'US',
+  },
+  memberOf: [
+    { name: 'NEW INC', url: 'https://www.newinc.org' },
+    { name: 'Mana Contemporary', url: 'https://www.manacontemporary.com' },
+  ],
+  knowsAbout: [
+    'Experiential design',
+    'Creative technology',
+    'Lighting design',
+    'Interactive installations',
+    'Immersive environments',
+  ],
+  sameAs: ['https://instagram.com/yopablo', 'https://yopablo.com'],
 }
 
-export function personSchema(): JsonLdObject {
-  return {
+const FALLBACK_PERSON = {
+  name: 'Pablo Gnecco',
+  jobTitle: 'Experiential Director & Creative Technologist',
+  url: 'https://yopablo.com',
+  socials: ['https://instagram.com/yopablo'],
+}
+
+function nonEmpty<T>(value: T | undefined | null): value is T {
+  if (value === undefined || value === null) return false
+  if (typeof value === 'string' && value.trim() === '') return false
+  if (Array.isArray(value) && value.length === 0) return false
+  return true
+}
+
+/* ============================================================
+   Organization schema
+   ============================================================ */
+
+export function organizationSchema(settings?: SiteSettingsForOrg | null): JsonLdObject {
+  const s = settings ?? {}
+  const founder = s.founder
+
+  const address = s.address ?? FALLBACK_ORG.address
+  const memberOf =
+    nonEmpty(s.memberOf) ? s.memberOf! : FALLBACK_ORG.memberOf
+  const knowsAbout =
+    nonEmpty(s.knowsAbout) ? s.knowsAbout! : FALLBACK_ORG.knowsAbout
+  const sameAs = nonEmpty(s.sameAs) ? s.sameAs! : FALLBACK_ORG.sameAs
+
+  const logoUrl = s.logo?.asset?.url ?? FALLBACK_ORG.logo
+
+  const schema: JsonLdObject = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: s.orgName ?? FALLBACK_ORG.name,
+    alternateName: s.orgAlternateName ?? FALLBACK_ORG.alternateName,
+    url: SITE_URL,
+    logo: logoUrl,
+    description: s.orgDescription ?? FALLBACK_ORG.description,
+  }
+
+  schema.founder = founder
+    ? buildFounderSubgraph(founder)
+    : {
+        '@type': 'Person',
+        name: FALLBACK_PERSON.name,
+        jobTitle: FALLBACK_PERSON.jobTitle,
+        url: FALLBACK_PERSON.url,
+      }
+
+  if (address.locality || address.region || address.country) {
+    schema.address = {
+      '@type': 'PostalAddress',
+      ...(address.locality ? { addressLocality: address.locality } : {}),
+      ...(address.region ? { addressRegion: address.region } : {}),
+      ...(address.country ? { addressCountry: address.country } : {}),
+    }
+  }
+
+  schema.memberOf = memberOf.map((m) => ({
+    '@type': 'Organization',
+    name: m.name,
+    ...(m.url ? { url: m.url } : {}),
+  }))
+
+  schema.knowsAbout = knowsAbout
+  schema.sameAs = sameAs
+
+  return schema
+}
+
+function buildFounderSubgraph(p: SanityPerson) {
+  const sub: JsonLdObject = {
+    '@type': 'Person',
+    name: p.name,
+  }
+  if (p.jobTitle) sub.jobTitle = p.jobTitle
+  if (p.url) sub.url = p.url
+  return sub
+}
+
+/* ============================================================
+   Person schema
+   ============================================================ */
+
+export function personSchema(p?: SanityPerson | null): JsonLdObject {
+  const name = p?.name ?? FALLBACK_PERSON.name
+  const jobTitle = p?.jobTitle ?? FALLBACK_PERSON.jobTitle
+  const url = p?.url ?? FALLBACK_PERSON.url
+  const socials = nonEmpty(p?.socials) ? p!.socials! : FALLBACK_PERSON.socials
+
+  const schema: JsonLdObject = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: 'Pablo Gnecco',
-    jobTitle: 'Experiential Director & Creative Technologist',
-    url: 'https://yopablo.com',
+    name,
+    jobTitle,
+    url,
     worksFor: {
       '@type': 'Organization',
       name: 'Studio Studio',
@@ -61,9 +147,14 @@ export function personSchema(): JsonLdObject {
       addressRegion: 'NY',
       addressCountry: 'US',
     },
-    sameAs: ['https://instagram.com/yopablo'],
+    sameAs: socials,
   }
+  return schema
 }
+
+/* ============================================================
+   CreativeWork schema
+   ============================================================ */
 
 export interface CreativeWorkInput {
   title: string
@@ -112,6 +203,10 @@ export function creativeWorkSchema(input: CreativeWorkInput): JsonLdObject {
 
   return schema
 }
+
+/* ============================================================
+   BreadcrumbList schema
+   ============================================================ */
 
 export interface BreadcrumbItem {
   name: string

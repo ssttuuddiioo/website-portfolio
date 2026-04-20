@@ -47,7 +47,9 @@ export interface SanityProject {
   slug: { current: string }
   subtitle?: string
   client?: string
+  clientUrl?: string
   year?: number
+  location?: string
   category?: SanityCategory
   tags?: string[]
   role?: string
@@ -61,18 +63,63 @@ export interface SanityProject {
   sortOrder?: number
 }
 
+export interface SanitySeo {
+  title?: string
+  description?: string
+  ogImage?: SanityImage
+}
+
 export interface SanityProjectDetail extends SanityProject {
   body?: unknown[]
   collaborators?: SanityCollaborator[]
   projectUrl?: string
   caseStudyUrl?: string
+  seo?: SanitySeo
   seoDescription?: string
   ogImage?: SanityImage
+  relatedProjects?: Array<{
+    _id: string
+    title: string
+    slug: { current: string }
+    thumbnail?: SanityImage
+  }>
   nextProject?: {
     title: string
     slug: { current: string }
     thumbnail?: SanityImage
   }
+}
+
+export interface SanityPerson {
+  _id: string
+  name: string
+  jobTitle?: string
+  url?: string
+  bio?: string
+  socials?: string[]
+}
+
+export interface SanityMembership {
+  name: string
+  url?: string
+}
+
+export interface SanityAddress {
+  locality?: string
+  region?: string
+  country?: string
+}
+
+export interface SiteSettingsForOrg {
+  orgName?: string
+  orgAlternateName?: string
+  orgDescription?: string
+  logo?: SanityImage
+  founder?: SanityPerson
+  address?: SanityAddress
+  memberOf?: SanityMembership[]
+  knowsAbout?: string[]
+  sameAs?: string[]
 }
 
 export interface SanityExperiment {

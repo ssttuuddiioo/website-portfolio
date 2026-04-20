@@ -59,11 +59,12 @@ export async function generateMetadata({
     const project = await client.fetch<SanityProjectDetail>(PROJECT_DETAIL_QUERY, { slug })
     if (!project) return {}
 
-    const ogSource = project.ogImage || project.heroImage
+    const ogSource = project.seo?.ogImage || project.ogImage || project.heroImage
     return buildProjectMetadata({
       title: project.title,
+      seoTitle: project.seo?.title,
       slug,
-      seoDescription: project.seoDescription,
+      seoDescription: project.seo?.description || project.seoDescription,
       subtitle: project.subtitle,
       ogImageUrl: ogSource ? urlFor(ogSource).width(1200).height(630).url() : undefined,
     })
@@ -77,10 +78,12 @@ function buildProjectJsonLd(opts: {
   title: string
   description?: string
   client?: string
+  clientUrl?: string
   year?: number | string
   category?: string
   keywords?: string[]
   heroImageUrl?: string
+  location?: string
 }): JsonLdObject[] {
   return [
     creativeWorkSchema({
@@ -88,10 +91,12 @@ function buildProjectJsonLd(opts: {
       slug: opts.slug,
       description: opts.description,
       client: opts.client,
+      clientUrl: opts.clientUrl,
       year: opts.year,
       category: opts.category,
       keywords: opts.keywords,
       heroImageUrl: opts.heroImageUrl,
+      location: opts.location,
     }),
     breadcrumbSchema({
       items: [
@@ -151,12 +156,14 @@ export default async function ProjectPage({
   const projectJsonLd = buildProjectJsonLd({
     slug,
     title: project.title,
-    description: project.seoDescription || project.subtitle,
+    description: project.seo?.description || project.seoDescription || project.subtitle,
     client: project.client,
+    clientUrl: project.clientUrl,
     year: project.year,
     category: project.category?.title,
     keywords: project.tags,
     heroImageUrl,
+    location: project.location,
   })
 
   return (

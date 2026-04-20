@@ -69,6 +69,13 @@ export const PROJECT_DETAIL_QUERY = `
   *[_type == "project" && slug.current == $slug][0] {
     ...,
     category->{title, slug},
+    seo{..., ogImage{..., asset->{url, metadata{lqip, dimensions}}}},
+    relatedProjects[]->{
+      _id,
+      title,
+      slug,
+      thumbnail{..., asset->{url, metadata{lqip}}}
+    },
     body[]{
       ...,
       _type == "imageBlock" => {
@@ -108,5 +115,26 @@ export const EXPERIMENTS_QUERY = `
 export const PROJECT_SLUGS_QUERY = `
   *[_type == "project" && !hidden]{
     "slug": slug.current
+  }
+`
+
+export const SITE_SETTINGS_ORG_QUERY = `
+  *[_type == "siteSettings"][0] {
+    orgName,
+    orgAlternateName,
+    orgDescription,
+    logo{..., asset->{url}},
+    address,
+    memberOf,
+    knowsAbout,
+    sameAs,
+    founder->{
+      _id,
+      name,
+      jobTitle,
+      url,
+      bio,
+      socials
+    }
   }
 `

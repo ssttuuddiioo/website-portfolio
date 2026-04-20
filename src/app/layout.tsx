@@ -3,6 +3,7 @@ import { JetBrains_Mono } from 'next/font/google'
 import { buildRootMetadata } from '@/lib/seo/metadata'
 import { JsonLd } from '@/lib/seo/json-ld'
 import { organizationSchema, personSchema } from '@/lib/seo/jsonld'
+import { getOrgSettings } from '@/lib/seo/fetch-org'
 import './globals.css'
 
 const geistSans = Geist({
@@ -18,11 +19,12 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata = buildRootMetadata()
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const settings = await getOrgSettings()
   return (
     <html
       lang="en"
@@ -30,7 +32,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${jetbrainsMono.variable} antialiased`}
     >
       <body>
-        <JsonLd data={[organizationSchema(), personSchema()]} />
+        <JsonLd data={[organizationSchema(settings), personSchema(settings?.founder)]} />
         {children}
       </body>
     </html>

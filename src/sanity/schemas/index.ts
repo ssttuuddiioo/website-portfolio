@@ -2,6 +2,7 @@ import { project } from './project'
 import { experiment } from './experiment'
 import { category } from './category'
 import { page } from './page'
+import { person } from './person'
 import { siteSettings } from './site-settings'
 import { imageBlock } from './blocks/image-block'
 import { imageGrid } from './blocks/image-grid'
@@ -17,6 +18,7 @@ export const schemaTypes = [
   experiment,
   category,
   page,
+  person,
   siteSettings,
   // Block types
   imageBlock,

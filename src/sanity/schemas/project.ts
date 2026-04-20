@@ -40,9 +40,22 @@ export const project = defineType({
       type: 'string',
     },
     {
+      name: 'clientUrl',
+      title: 'Client URL',
+      type: 'url',
+      description: "Optional — links the client in JSON-LD commissionedBy",
+    },
+    {
       name: 'year',
       title: 'Year',
       type: 'number',
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: 'location',
+      title: 'Location',
+      type: 'string',
+      description: 'City or venue — feeds JSON-LD locationCreated (e.g. "Brooklyn, NY", "Goat Farm Arts Center, Atlanta")',
     },
     {
       name: 'category',
@@ -169,17 +182,58 @@ export const project = defineType({
       initialValue: false,
     },
 
-    /* SEO */
+    /* SEO — new nested object. Generators prefer these when present;
+       the flat seoDescription / ogImage below remain for back-compat. */
+    {
+      name: 'seo',
+      title: 'SEO',
+      type: 'object',
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        {
+          name: 'title',
+          title: 'Title override',
+          type: 'string',
+          description: 'Leave blank to use the project title.',
+        },
+        {
+          name: 'description',
+          title: 'Description',
+          type: 'text',
+          rows: 3,
+          validation: (Rule) => Rule.max(160),
+        },
+        {
+          name: 'ogImage',
+          title: 'Social share image',
+          type: 'image',
+        },
+      ],
+    },
+
+    /* Editorial cross-linking */
+    {
+      name: 'relatedProjects',
+      title: 'Related projects',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'project' }] }],
+      validation: (Rule) => Rule.max(3),
+      description: 'Up to 3 editorial cross-links shown on the project page.',
+    },
+
+    /* SEO — legacy flat fields. Kept for back-compat. */
     {
       name: 'seoDescription',
-      title: 'SEO Description',
+      title: 'SEO Description (legacy)',
       type: 'text',
       rows: 3,
+      description: 'Use seo.description above instead. Retained for existing content.',
     },
     {
       name: 'ogImage',
-      title: 'OG Image',
+      title: 'OG Image (legacy)',
       type: 'image',
+      description: 'Use seo.ogImage above instead. Retained for existing content.',
     },
   ],
 
