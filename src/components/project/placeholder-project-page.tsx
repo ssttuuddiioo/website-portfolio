@@ -475,7 +475,7 @@ export function PlaceholderProjectPage({ project }: Props) {
               {project.similarProjects.map((sp) => (
                 <Link
                   key={sp.slug}
-                  href={`/work/${sp.slug}`}
+                  href={`/${sp.slug}`}
                   className="col-span-4 md:col-span-6 group block"
                 >
                   <div className="relative overflow-hidden" style={{ aspectRatio: '16 / 10' }}>

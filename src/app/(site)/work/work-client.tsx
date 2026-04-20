@@ -129,7 +129,7 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: i * 0.1 }}
             >
-              <Link href={`/work/${project.slug}`} className="block relative group" style={{ minHeight: '50vh' }}>
+              <Link href={`/${project.slug}`} className="block relative group" style={{ minHeight: '50vh' }}>
                 <Image
                   src={project.image}
                   alt={project.title}
@@ -168,7 +168,7 @@ export function WorkPageClient({ projects }: WorkPageClientProps) {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
-              <Link href={`/work/${project.slug}`} className="group block">
+              <Link href={`/${project.slug}`} className="group block">
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={project.image}

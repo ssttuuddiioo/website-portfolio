@@ -15,7 +15,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <Link
-      href={`/work/${project.slug.current}`}
+      href={`/${project.slug.current}`}
       className="group block"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-bg-surface">

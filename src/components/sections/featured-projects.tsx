@@ -99,7 +99,7 @@ export function FeaturedProjects() {
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           >
             <Link
-              href={`/work/${project.slug}`}
+              href={`/${project.slug}`}
               className="block group col-span-4"
               style={{
                 gridColumn: `${project.colStart} / span ${project.colSpan}`,

@@ -1,4 +1,4 @@
-import { defineType } from 'sanity'
+import { defineType, type SlugValue } from 'sanity'
 
 export const project = defineType({
   name: 'project',
@@ -17,7 +17,14 @@ export const project = defineType({
       title: 'Slug',
       type: 'slug',
       options: { source: 'title' },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().custom((slug: SlugValue | undefined) => {
+          const reserved = ['about', 'contact', 'services', 'experiments', 'work', 'studio', 'api']
+          if (slug?.current && reserved.includes(slug.current)) {
+            return `"${slug.current}" is a reserved route — choose a different slug`
+          }
+          return true
+        }),
     },
     {
       name: 'subtitle',

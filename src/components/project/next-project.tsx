@@ -36,7 +36,7 @@ export function NextProject({ project }: NextProjectProps) {
       </p>
 
       <Link
-        href={`/work/${project.slug.current}`}
+        href={`/${project.slug.current}`}
         className="group flex items-center gap-6"
       >
         {project.thumbnail?.asset?.url && (
