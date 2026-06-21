@@ -13,7 +13,11 @@ export default function HomeLayout({
         style={{
           background: '#F4F2EE',
           color: '#0A0A0A',
-          minHeight: '100vh',
+          minHeight: '100svh',
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'hidden',
+          position: 'relative',
         }}
       >
         {children}

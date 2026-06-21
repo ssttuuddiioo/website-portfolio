@@ -1,8 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useLenis } from '@/lib/lenis-provider'
-import { INK, BLUE } from './landing-theme'
+import { INK, BLUE, BG } from './landing-theme'
 
 type Item =
   | { id: string; label: string; kind: 'scroll' }
@@ -18,11 +19,97 @@ const ITEMS: Item[] = [
   { id: 'contact', label: 'contact', kind: 'scroll' },
 ]
 
+// Order = 2x2 grid reading order: Instagram, LinkedIn on top; Vimeo, GitHub below.
+const SOCIALS = [
+  { label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
+  { label: 'LinkedIn', href: 'https://linkedin.com', icon: 'linkedin' },
+  { label: 'Vimeo', href: 'https://vimeo.com', icon: 'vimeo' },
+  { label: 'GitHub', href: 'https://github.com', icon: 'github' },
+]
+
+function SocialIcon({ name, size = 18 }: { name: string; size?: number }) {
+  const c = {
+    width: size,
+    height: size,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.7,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  }
+  switch (name) {
+    case 'instagram':
+      return (
+        <svg {...c}>
+          <rect x="2" y="2" width="20" height="20" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none" />
+        </svg>
+      )
+    case 'vimeo':
+      return (
+        <svg {...c}>
+          <rect x="2" y="4" width="20" height="16" rx="4" />
+          <path d="M10 9l5 3-5 3z" />
+        </svg>
+      )
+    case 'github':
+      return (
+        <svg {...c}>
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+        </svg>
+      )
+    case 'linkedin':
+      return (
+        <svg {...c}>
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+          <rect x="2" y="9" width="4" height="12" />
+          <circle cx="4" cy="4" r="2" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
+
+function SocialRow({ size, gap }: { size: number; gap: string }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, max-content)',
+        gap,
+        width: 'max-content',
+      }}
+    >
+      {SOCIALS.map((s) => (
+        <a
+          key={s.label}
+          href={s.href}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={s.label}
+          style={{
+            color: INK,
+            opacity: 0.5,
+            display: 'flex',
+            transition: 'opacity 200ms',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+        >
+          <SocialIcon name={s.icon} size={size} />
+        </a>
+      ))}
+    </div>
+  )
+}
+
 /**
- * Persistent left-hand nav — the spine of the landing experience.
- * A blue dot marks the active section. On the main page `inPage` is true
- * and scroll items smooth-scroll via Lenis; on sub-pages they link back
- * to the matching anchor on /landing.
+ * Persistent left-hand nav on desktop; a hamburger (top-left) opening a
+ * full-screen menu on mobile. A blue dot marks the active section. Scroll
+ * items smooth-scroll via Lenis; route items navigate.
  */
 export function LandingSidebar({
   active,
@@ -32,6 +119,15 @@ export function LandingSidebar({
   inPage?: boolean
 }) {
   const lenis = useLenis()
+  const [open, setOpen] = useState(false)
+
+  // Lock background scroll while the mobile menu is open.
+  useEffect(() => {
+    if (!lenis) return
+    if (open) lenis.stop()
+    else lenis.start()
+    return () => lenis.start()
+  }, [open, lenis])
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)
@@ -40,80 +136,170 @@ export function LandingSidebar({
     else el.scrollIntoView({ behavior: 'smooth' })
   }
 
-  return (
-    <nav
-      className="fixed left-0 top-0 h-screen flex items-center z-[80]"
-      style={{ paddingLeft: 'var(--gutter, 1.5rem)' }}
-    >
-      <ul className="flex flex-col" style={{ gap: '0.55rem' }}>
-        {ITEMS.map((item) => {
-          const isActive = active === item.id
-          const labelStyle: React.CSSProperties = {
-            fontFamily: 'var(--font-mono), monospace',
-            fontSize: '0.8rem',
-            letterSpacing: '0.01em',
-            color: INK,
-            opacity: isActive ? 1 : 0.5,
-            transition: 'opacity 200ms',
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-          }
+  const renderRow = (item: Item, dotSize: number, fontSize: string) => {
+    const isActive = active === item.id
+    const labelStyle: React.CSSProperties = {
+      fontFamily: 'var(--font-mono), monospace',
+      fontSize,
+      letterSpacing: '0.01em',
+      color: INK,
+      opacity: isActive ? 1 : 0.5,
+      transition: 'opacity 200ms',
+      background: 'none',
+      border: 'none',
+      padding: 0,
+      cursor: 'pointer',
+      textAlign: 'left',
+    }
+    const onEnter = (e: React.MouseEvent<HTMLElement>) =>
+      (e.currentTarget.style.opacity = '1')
+    const onLeave = (e: React.MouseEvent<HTMLElement>) =>
+      (e.currentTarget.style.opacity = isActive ? '1' : '0.5')
 
-          return (
-            <li key={item.id} className="flex items-center" style={{ height: 18 }}>
-              <span
-                aria-hidden
-                style={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: '50%',
-                  background: isActive ? BLUE : 'transparent',
-                  marginRight: 9,
-                  flexShrink: 0,
-                  transition: 'background 200ms',
-                }}
-              />
-              {item.kind === 'route' ? (
-                <Link
-                  href={item.href}
-                  style={labelStyle}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.opacity = isActive ? '1' : '0.5')
-                  }
-                >
-                  {item.label}
-                </Link>
-              ) : inPage ? (
-                <button
-                  type="button"
-                  onClick={() => scrollTo(item.id)}
-                  style={labelStyle}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.opacity = isActive ? '1' : '0.5')
-                  }
-                >
-                  {item.label}
-                </button>
-              ) : (
-                <Link
-                  href={`/landing#${item.id}`}
-                  style={labelStyle}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.opacity = isActive ? '1' : '0.5')
-                  }
-                >
-                  {item.label}
-                </Link>
-              )}
-            </li>
-          )
-        })}
-      </ul>
-    </nav>
+    let label: React.ReactNode
+    if (item.kind === 'route') {
+      label = (
+        <Link
+          href={item.href}
+          style={labelStyle}
+          onMouseEnter={onEnter}
+          onMouseLeave={onLeave}
+          onClick={() => setOpen(false)}
+        >
+          {item.label}
+        </Link>
+      )
+    } else if (inPage) {
+      label = (
+        <button
+          type="button"
+          style={labelStyle}
+          onMouseEnter={onEnter}
+          onMouseLeave={onLeave}
+          onClick={() => {
+            scrollTo(item.id)
+            setOpen(false)
+          }}
+        >
+          {item.label}
+        </button>
+      )
+    } else {
+      label = (
+        <Link
+          href={`/#${item.id}`}
+          style={labelStyle}
+          onMouseEnter={onEnter}
+          onMouseLeave={onLeave}
+          onClick={() => setOpen(false)}
+        >
+          {item.label}
+        </Link>
+      )
+    }
+
+    return (
+      <li
+        key={item.id}
+        className="flex items-center"
+        style={{ height: dotSize + 11 }}
+      >
+        <span
+          aria-hidden
+          style={{
+            width: dotSize,
+            height: dotSize,
+            borderRadius: '50%',
+            background: isActive ? BLUE : 'transparent',
+            marginRight: 10,
+            flexShrink: 0,
+            transition: 'background 200ms',
+          }}
+        />
+        {label}
+      </li>
+    )
+  }
+
+  return (
+    <>
+      {/* Desktop — persistent vertical nav */}
+      <nav
+        className="fixed left-0 top-0 h-screen hidden md:flex items-center z-[80]"
+        style={{ paddingLeft: 'var(--gutter, 1.5rem)' }}
+      >
+        <div className="flex flex-col">
+          <ul className="flex flex-col" style={{ gap: '0.55rem' }}>
+            {ITEMS.map((item) => renderRow(item, 7, '0.8rem'))}
+          </ul>
+          <div style={{ marginTop: '1.75rem', marginLeft: 17 }}>
+            <SocialRow size={17} gap="0.9rem" />
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile — hamburger top-left (becomes an X when open) */}
+      <button
+        type="button"
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="md:hidden fixed top-0 left-0 z-[90] flex flex-col justify-center"
+        style={{
+          paddingTop: 'calc(var(--gutter, 1.5rem) + env(safe-area-inset-top))',
+          paddingLeft: 'calc(var(--gutter, 1.5rem) + env(safe-area-inset-left))',
+          paddingRight: 'var(--gutter, 1.5rem)',
+          paddingBottom: 'var(--gutter, 1.5rem)',
+          gap: 6,
+        }}
+      >
+        <span
+          style={{
+            display: 'block',
+            width: 26,
+            height: 2,
+            background: INK,
+            borderRadius: 2,
+            transformOrigin: 'center',
+            transform: open ? 'translateY(4px) rotate(45deg)' : 'none',
+            transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        />
+        <span
+          style={{
+            display: 'block',
+            width: 26,
+            height: 2,
+            background: INK,
+            borderRadius: 2,
+            transformOrigin: 'center',
+            transform: open ? 'translateY(-4px) rotate(-45deg)' : 'none',
+            transition: 'transform 250ms cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        />
+      </button>
+
+      {/* Mobile — full-screen menu */}
+      <div
+        className="md:hidden fixed inset-0 z-[85]"
+        style={{
+          background: BG,
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'auto' : 'none',
+          transition: 'opacity 300ms cubic-bezier(0.22, 1, 0.36, 1)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: 'calc(var(--gutter, 1.5rem) + 1rem)',
+        }}
+      >
+        <ul className="flex flex-col" style={{ gap: '0.5rem' }}>
+          {ITEMS.map((item) => renderRow(item, 9, '1.6rem'))}
+        </ul>
+        <div style={{ marginTop: '2.5rem', marginLeft: 19 }}>
+          <SocialRow size={22} gap="1.25rem" />
+        </div>
+      </div>
+    </>
   )
 }

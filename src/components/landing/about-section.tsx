@@ -15,15 +15,15 @@ export function AboutSection() {
     <section
       id="about"
       style={{
-        minHeight: '100vh',
+        minHeight: '100svh',
         maxWidth: '1440px',
         margin: '0 auto',
         padding: '30vh var(--gutter, 1.5rem) 0',
       }}
     >
       <div
+        className="landing-indent"
         style={{
-          marginLeft: 'clamp(7rem, 14%, 12rem)',
           maxWidth: '75ch',
           display: 'flex',
           flexDirection: 'column',

@@ -136,6 +136,30 @@ body {
   font-family: var(--font-display);
 }
 
+/* ---- Mobile-first: never allow horizontal scroll / overscroll gutters ---- */
+html {
+  overflow-x: hidden;
+  overscroll-behavior: none;
+}
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Content block: indented past the sidebar on desktop, centered on mobile. */
+.landing-indent {
+  margin-left: clamp(7rem, 14%, 12rem);
+}
+@media (max-width: 767px) {
+  .landing-indent {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+}
+
 ::selection {
   background-color: var(--color-accent-muted);
   color: var(--color-text-primary);

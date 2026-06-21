@@ -1,3 +1,4 @@
+import type { Viewport } from 'next'
 import { Geist } from 'next/font/google'
 import { JetBrains_Mono } from 'next/font/google'
 import { buildRootMetadata } from '@/lib/seo/metadata'
@@ -18,6 +19,12 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata = buildRootMetadata()
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
 
 export default async function RootLayout({
   children,

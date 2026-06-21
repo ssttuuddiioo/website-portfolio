@@ -6,7 +6,6 @@ import {
   useScroll,
   useTransform,
   useMotionTemplate,
-  useMotionValueEvent,
 } from 'framer-motion'
 
 const useIsoLayoutEffect =
@@ -16,7 +15,8 @@ import { LandingSidebar } from './landing-sidebar'
 import { AboutSection } from './about-section'
 import { ProjectIndex } from './project-index'
 import { StudioParticles } from './studio-particles'
-import { wordStyle, INK } from './landing-theme'
+import { ContactForm } from './contact-form'
+import { wordStyle } from './landing-theme'
 
 const SPY_IDS = [
   'home',
@@ -57,12 +57,13 @@ export function LandingExperience() {
   const wordBlur = useTransform(dissolve, [0, 1], [0, 54])
   const wordFilter = useMotionTemplate`blur(${wordBlur}px)`
 
-  // The bottom word desyncs at peak blur: it latches at max blur and fades
-  // to 0 permanently — it does NOT un-blur or come back (until refresh).
-  const [bottomGone, setBottomGone] = useState(false)
-  useMotionValueEvent(aboutProgress, 'change', (v) => {
-    if (v >= 0.55 && !bottomGone) setBottomGone(true)
-  })
+  // Bottom (mirrored) word: blurs in sync with the top going down, then
+  // desyncs — it stays blurred + faded out for the lower sections. Tied to
+  // the about scroll position (not latched), so it reappears as you scroll
+  // back to the top — the intro/outro of the page.
+  const bottomBlur = useTransform(aboutProgress, [0, 0.55], [0, 54])
+  const bottomFilter = useMotionTemplate`blur(${bottomBlur}px)`
+  const bottomOpacity = useTransform(aboutProgress, [0.45, 0.6], [1, 0])
 
   const [active, setActive] = useState('home')
 
@@ -94,10 +95,6 @@ export function LandingExperience() {
   const bottomVh = useTransform(scrollYProgress, [0, 0.5], [0, 32])
   const bottomTransform = useMotionTemplate`translateY(${bottomVh}vh) rotate(180deg)`
 
-  const hintOpacity = useTransform(scrollYProgress, [0, 0.06], [1, 0])
-
-  // The mirrored bottom word frames home + about, then steps aside for work.
-  const showBottom = active === 'home' || active === 'about'
   // Big bottom word naming the current section as you scroll.
   const sectionWord = SECTION_WORDS[active] ?? null
 
@@ -136,53 +133,18 @@ export function LandingExperience() {
       <footer
         id="contact"
         style={{
-          minHeight: '100vh',
+          minHeight: '100svh',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          padding: '10rem var(--gutter, 1.5rem) 16rem',
+          // Clear the pinned STUDIO (top) and CONTACT word (bottom) so the
+          // form sits centered in the band between them.
+          padding: '24vh var(--gutter, 1.5rem)',
         }}
       >
-        <div style={{ marginLeft: 'clamp(7rem, 14%, 12rem)' }}>
-          <a
-            href="mailto:pablo@studiostudio.nyc"
-            className="font-display"
-            style={{
-              fontWeight: 700,
-              fontSize: 'clamp(1.6rem, 5vw, 3.5rem)',
-              letterSpacing: '-0.03em',
-              color: INK,
-            }}
-          >
-            pablo@studiostudio.nyc
-          </a>
-          <div
-            className="flex font-mono"
-            style={{
-              gap: '1.75rem',
-              marginTop: '2rem',
-              fontSize: '0.8rem',
-              color: 'rgba(10,10,10,0.6)',
-            }}
-          >
-            <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-            <a href="https://vimeo.com" target="_blank" rel="noreferrer">Vimeo</a>
-            <a href="https://github.com" target="_blank" rel="noreferrer">GitHub</a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
-          </div>
-          <span
-            className="font-mono"
-            style={{
-              display: 'block',
-              marginTop: '3rem',
-              fontSize: '0.7rem',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: 'rgba(10,10,10,0.4)',
-            }}
-          >
-            © 2026 Studio Studio · Brooklyn, NY
-          </span>
+        <div className="landing-indent">
+          {/* Contact form (Formspree) */}
+          <ContactForm />
         </div>
       </footer>
       </div>
@@ -213,24 +175,16 @@ export function LandingExperience() {
             >
               STUDIO
             </motion.h1>
-            <motion.div
+            <motion.h1
               style={{
-                opacity: showBottom ? 1 : 0,
-                transition: 'opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)',
+                ...wordStyle,
+                transform: bottomTransform,
+                filter: bottomFilter,
+                opacity: bottomOpacity,
               }}
             >
-              <motion.h1
-                style={{
-                  ...wordStyle,
-                  transform: bottomTransform,
-                  filter: bottomGone ? 'blur(54px)' : wordFilter,
-                  opacity: bottomGone ? 0 : 1,
-                  transition: 'opacity 700ms cubic-bezier(0.22, 1, 0.36, 1)',
-                }}
-              >
-                STUDIO
-              </motion.h1>
-            </motion.div>
+              STUDIO
+            </motion.h1>
           </div>
         </motion.div>
       </div>
@@ -238,23 +192,27 @@ export function LandingExperience() {
       {/* Big bottom word — names the current section, matched to STUDIO width. */}
       <BottomWord word={sectionWord} targetRef={topWordRef} />
 
-      {/* Scroll hint (no blend) */}
-      <motion.div
-        style={{ opacity: hintOpacity }}
-        className="fixed bottom-8 left-0 right-0 text-center z-[55]"
+      {/* Pinned copyright, bottom-right — appears once the section words do. */}
+      <span
+        className="font-mono"
+        style={{
+          position: 'fixed',
+          right: 'max(10px, calc(var(--gutter, 1.5rem) + env(safe-area-inset-right) - 50px))',
+          bottom: 'max(10px, calc(var(--gutter, 1.5rem) + env(safe-area-inset-bottom) - 50px))',
+          zIndex: 70,
+          mixBlendMode: 'difference',
+          pointerEvents: 'none',
+          fontSize: '0.7rem',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          color: '#ffffff',
+          textAlign: 'right',
+          opacity: sectionWord ? 1 : 0,
+          transition: 'opacity 400ms cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
       >
-        <span
-          className="font-mono"
-          style={{
-            fontSize: '0.7rem',
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: 'rgba(10,10,10,0.5)',
-          }}
-        >
-          Scroll
-        </span>
-      </motion.div>
+        © 2026 Studio Studio · Brooklyn, NY
+      </span>
     </>
   )
 }
@@ -301,7 +259,7 @@ function BottomWord({
         position: 'fixed',
         left: 0,
         right: 0,
-        bottom: '4vh',
+        bottom: 'calc(4vh + env(safe-area-inset-bottom))',
         zIndex: 70,
         mixBlendMode: 'difference',
         pointerEvents: 'none',
