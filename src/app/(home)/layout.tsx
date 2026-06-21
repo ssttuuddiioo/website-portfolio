@@ -11,7 +11,7 @@ export default function HomeLayout({
     <LenisProvider>
       <div
         style={{
-          background: '#F4F2EE',
+          background: '#F2F0EC',
           color: '#0A0A0A',
           minHeight: '100svh',
           width: '100%',

@@ -15,15 +15,15 @@ const ITEMS: Item[] = [
   { id: 'work', label: 'work', kind: 'scroll' },
   { id: 'services', label: 'services', kind: 'scroll' },
   { id: 'ideas', label: 'ideas', kind: 'scroll' },
-  { id: 'stories', label: 'stories', kind: 'scroll' },
   { id: 'contact', label: 'contact', kind: 'scroll' },
 ]
 
-// Order = 2x2 grid reading order: Instagram, LinkedIn on top; Vimeo, GitHub below.
+// Order = 2x2 grid reading order: Instagram, LinkedIn on top; Email, GitHub below.
+// The Email item scrolls to the contact section rather than opening a new tab.
 const SOCIALS = [
   { label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
   { label: 'LinkedIn', href: 'https://linkedin.com', icon: 'linkedin' },
-  { label: 'Vimeo', href: 'https://vimeo.com', icon: 'vimeo' },
+  { label: 'Email', href: '#contact', icon: 'mail', contact: true },
   { label: 'GitHub', href: 'https://github.com', icon: 'github' },
 ]
 
@@ -47,11 +47,11 @@ function SocialIcon({ name, size = 18 }: { name: string; size?: number }) {
           <circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none" />
         </svg>
       )
-    case 'vimeo':
+    case 'mail':
       return (
         <svg {...c}>
-          <rect x="2" y="4" width="20" height="16" rx="4" />
-          <path d="M10 9l5 3-5 3z" />
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M2 7l10 6 10-6" />
         </svg>
       )
     case 'github':
@@ -73,35 +73,57 @@ function SocialIcon({ name, size = 18 }: { name: string; size?: number }) {
   }
 }
 
-function SocialRow({ size, gap }: { size: number; gap: string }) {
+function SocialRow({
+  size,
+  gap,
+  horizontal = false,
+  onContact,
+}: {
+  size: number
+  gap: string
+  horizontal?: boolean
+  onContact?: () => void
+}) {
   return (
     <div
       style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, max-content)',
+        display: horizontal ? 'flex' : 'grid',
+        gridTemplateColumns: horizontal ? undefined : 'repeat(2, max-content)',
+        alignItems: 'center',
         gap,
         width: 'max-content',
       }}
     >
-      {SOCIALS.map((s) => (
-        <a
-          key={s.label}
-          href={s.href}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={s.label}
-          style={{
-            color: INK,
-            opacity: 0.5,
-            display: 'flex',
-            transition: 'opacity 200ms',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
-        >
-          <SocialIcon name={s.icon} size={size} />
-        </a>
-      ))}
+      {SOCIALS.map((s) => {
+        const isContact = 'contact' in s && s.contact
+        return (
+          <a
+            key={s.label}
+            href={s.href}
+            target={isContact ? undefined : '_blank'}
+            rel={isContact ? undefined : 'noreferrer'}
+            aria-label={s.label}
+            style={{
+              color: INK,
+              opacity: 0.5,
+              display: 'flex',
+              transition: 'opacity 200ms',
+            }}
+            onClick={
+              isContact && onContact
+                ? (e) => {
+                    e.preventDefault()
+                    onContact()
+                  }
+                : undefined
+            }
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+          >
+            <SocialIcon name={s.icon} size={size} />
+          </a>
+        )
+      })}
     </div>
   )
 }
@@ -223,20 +245,36 @@ export function LandingSidebar({
 
   return (
     <>
-      {/* Desktop — persistent vertical nav */}
+      {/* Desktop — nav links on a solid background-colored bar pinned to the top */}
       <nav
-        className="fixed left-0 top-0 h-screen hidden md:flex items-center z-[80]"
-        style={{ paddingLeft: 'var(--gutter, 1.5rem)' }}
+        className="fixed left-0 right-0 top-0 hidden md:flex justify-center items-center z-[80]"
+        style={{
+          background: BG,
+          paddingTop: 'max(0.7rem, env(safe-area-inset-top))',
+          paddingBottom: '0.7rem',
+        }}
       >
-        <div className="flex flex-col">
-          <ul className="flex flex-col" style={{ gap: '0.55rem' }}>
-            {ITEMS.map((item) => renderRow(item, 7, '0.8rem'))}
-          </ul>
-          <div style={{ marginTop: '1.75rem', marginLeft: 17 }}>
-            <SocialRow size={17} gap="0.9rem" />
-          </div>
-        </div>
+        <ul className="flex flex-row items-center" style={{ gap: '1.5rem' }}>
+          {ITEMS.map((item) => renderRow(item, 7, '0.8rem'))}
+        </ul>
       </nav>
+
+      {/* Desktop — social icons on a solid background-colored bar, bottom center */}
+      <div
+        className="fixed left-0 right-0 bottom-0 hidden md:flex justify-center items-center z-[80]"
+        style={{
+          background: BG,
+          paddingTop: '0.7rem',
+          paddingBottom: 'max(0.7rem, env(safe-area-inset-bottom))',
+        }}
+      >
+        <SocialRow
+          size={17}
+          gap="0.9rem"
+          horizontal
+          onContact={() => scrollTo('contact')}
+        />
+      </div>
 
       {/* Mobile — hamburger top-left (becomes an X when open) */}
       <button
@@ -297,7 +335,14 @@ export function LandingSidebar({
           {ITEMS.map((item) => renderRow(item, 9, '1.6rem'))}
         </ul>
         <div style={{ marginTop: '2.5rem', marginLeft: 19 }}>
-          <SocialRow size={22} gap="1.25rem" />
+          <SocialRow
+            size={22}
+            gap="1.25rem"
+            onContact={() => {
+              scrollTo('contact')
+              setOpen(false)
+            }}
+          />
         </div>
       </div>
     </>

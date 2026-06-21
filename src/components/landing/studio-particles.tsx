@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import type { MotionValue } from 'framer-motion'
 
 interface Particle {
   x: number
@@ -20,8 +21,14 @@ const CELL = 40 // spatial-hash cell for light separation
  * drifts on a slow curl flow-field with light boid separation, and wraps
  * around the viewport so it never empties. Resets on refresh.
  */
-export function StudioParticles() {
+export function StudioParticles({
+  opacity,
+}: {
+  opacity?: MotionValue<number>
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const opacityRef = useRef(opacity)
+  opacityRef.current = opacity
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -137,11 +144,15 @@ export function StudioParticles() {
         else if (p.y > H + 4) p.y -= H + 8
       }
 
+      // tiny, uniform single color/opacity; fades out during the about scroll
+      const vis = opacityRef.current
+        ? Math.max(0, Math.min(1, opacityRef.current.get()))
+        : 1
+      c.fillStyle = '#0a0a0a'
+      c.globalAlpha = fade * vis * 0.45
       for (const p of particles) {
-        c.globalAlpha = fade * p.a * 0.5
-        c.fillStyle = '#0a0a0a'
         c.beginPath()
-        c.arc(p.x, p.y, 1.5, 0, 6.2832)
+        c.arc(p.x, p.y, 0.9, 0, 6.2832)
         c.fill()
       }
       c.globalAlpha = 1

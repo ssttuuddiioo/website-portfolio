@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 
 /* Shared tokens + the big wordmark style for the landing frame. */
 export const INK = '#0A0A0A'
-export const BG = '#F4F2EE'
+export const BG = '#F2F0EC'
 export const BLUE = '#1F44FF'
 
 /**

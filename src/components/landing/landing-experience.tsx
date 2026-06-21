@@ -16,23 +16,16 @@ import { AboutSection } from './about-section'
 import { ProjectIndex } from './project-index'
 import { StudioParticles } from './studio-particles'
 import { ContactForm } from './contact-form'
-import { wordStyle } from './landing-theme'
+import { ServicesAccordion } from './services-accordion'
+import { IdeasSection } from './ideas-section'
+import { wordStyle, INK } from './landing-theme'
 
-const SPY_IDS = [
-  'home',
-  'about',
-  'work',
-  'services',
-  'ideas',
-  'stories',
-  'contact',
-]
+const SPY_IDS = ['home', 'about', 'work', 'services', 'ideas', 'contact']
 
 const SECTION_WORDS: Record<string, string> = {
   work: 'WORK',
   services: 'SERVICES',
   ideas: 'IDEAS',
-  stories: 'STORIES',
   contact: 'CONTACT',
 }
 
@@ -65,6 +58,24 @@ export function LandingExperience() {
   const bottomFilter = useMotionTemplate`blur(${bottomBlur}px)`
   const bottomOpacity = useTransform(aboutProgress, [0.45, 0.6], [1, 0])
 
+  // Ambient particles fade out as the about section scrolls (reversible).
+  const particleOpacity = useTransform(aboutProgress, [0, 0.5], [1, 0])
+
+  // Hero background image fills behind the lockup, then fades to the warm-white
+  // page color as the about section scrolls (reversible, in sync with particles).
+  const heroImageOpacity = useTransform(aboutProgress, [0, 0.5], [1, 0])
+
+  // About copy: fades in + un-blurs as the wordmark separates and blurs,
+  // holds, then fades + drifts out while the work scrolls up over it.
+  const aboutTextOpacity = useTransform(
+    aboutProgress,
+    [0.15, 0.4, 0.6, 0.975],
+    [0, 1, 1, 0],
+  )
+  const aboutTextBlur = useTransform(aboutProgress, [0.15, 0.4], [14, 0])
+  const aboutTextFilter = useMotionTemplate`blur(${aboutTextBlur}px)`
+  const aboutTextY = useTransform(aboutProgress, [0.6, 0.975], [0, -30])
+
   const [active, setActive] = useState('home')
 
   // Scroll-spy: the section crossing the viewport center is active.
@@ -89,45 +100,85 @@ export function LandingExperience() {
   const wrapperScale = useTransform(scrollYProgress, [0, 0.55], [0.55, 1])
   const wrapperTransform = useMotionTemplate`scale(${wrapperScale})`
 
-  const topVh = useTransform(scrollYProgress, [0, 0.5], [0, -32])
-  const topTransform = useMotionTemplate`translateY(${topVh}vh)`
-
-  const bottomVh = useTransform(scrollYProgress, [0, 0.5], [0, 32])
-  const bottomTransform = useMotionTemplate`translateY(${bottomVh}vh) rotate(180deg)`
+  // Pin progress: 0 = centered lockup, 1 = pinned to the edges.
+  const pin = useTransform(scrollYProgress, [0, 0.5], [0, 1])
+  // Top word pins so its TOP edge sits 4vh from the top — matching the bottom
+  // word's 4vh bottom padding — regardless of viewport height. The offset
+  // accounts for the word's own height (0.82 line-height) and half the gap.
+  // Also nudged right; bottom nudged left.
+  const topTransform = useMotionTemplate`translateX(25px) translateY(calc((-46vh + 0.82 * min(19vw, 15rem) + min(0.65vw, 0.525rem)) * ${pin}))`
+  const bottomTransform = useMotionTemplate`translateX(-25px) translateY(calc((46vh - 0.82 * min(19vw, 15rem) - min(0.65vw, 0.525rem)) * ${pin})) rotate(180deg)`
 
   // Big bottom word naming the current section as you scroll.
   const sectionWord = SECTION_WORDS[active] ?? null
 
   return (
     <>
-      <CursorTrail rgb="10,10,10" />
+      <CursorTrail rgb="31,68,255" />
+      {/* Hero background image — backmost layer; fades to the page color over about. */}
+      <motion.div
+        aria-hidden
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 0,
+          backgroundImage: 'url(/landing/opt/space-labs.avif)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: heroImageOpacity,
+          pointerEvents: 'none',
+        }}
+      />
       {/* Ambient particle field — back layer; all content sits on top. */}
-      <StudioParticles />
+      <StudioParticles opacity={particleOpacity} />
+      {/* About copy — centered overlay below the page content (work scrolls over it). */}
+      <AboutSection
+        opacity={aboutTextOpacity}
+        filter={aboutTextFilter}
+        y={aboutTextY}
+      />
       <LandingSidebar active={active} inPage />
 
-      {/* Page content sits above the particle field. */}
-      <div style={{ position: 'relative', zIndex: 2 }}>
+      {/* Page content sits above the particle field + about overlay. */}
+      <div style={{ position: 'relative', zIndex: 3 }}>
         {/* Scroll track = the home section; drives the lockup opening. */}
         <div id="home" ref={trackRef} style={{ height: '260vh' }} />
 
-      {/* About — copy in the band between the wordmarks. */}
-      <div ref={aboutRef}>
-        <AboutSection />
-      </div>
+      {/* About — scroll spacer driving the wordmark blur + about overlay. */}
+      <div id="about" ref={aboutRef} style={{ height: '150vh' }} />
 
       {/* Work — the composed image scatter. */}
       <div id="work">
         <ProjectIndex />
       </div>
 
-      {/* Services — blank placeholder (1000px) for now. */}
-      <section id="services" style={{ height: '1000px' }} />
+      {/* Services — accordion */}
+      <section
+        id="services"
+        style={{
+          minHeight: '100svh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '24vh var(--gutter, 1.5rem)',
+        }}
+      >
+        <ServicesAccordion />
+      </section>
 
-      {/* Ideas — blank placeholder (1000px) for now. */}
-      <section id="ideas" style={{ height: '1000px' }} />
-
-      {/* Stories — blank placeholder (1000px) for now. */}
-      <section id="stories" style={{ height: '1000px' }} />
+      {/* Ideas — filterable Stories-style grid. */}
+      <section
+        id="ideas"
+        style={{
+          minHeight: '100svh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          padding: '26vh var(--gutter, 1.5rem) 24vh',
+        }}
+      >
+        <IdeasSection />
+      </section>
 
       {/* Contact — the footer. The big bottom word reads CONTACT here. */}
       <footer
@@ -142,9 +193,62 @@ export function LandingExperience() {
           padding: '24vh var(--gutter, 1.5rem)',
         }}
       >
-        <div className="landing-indent">
-          {/* Contact form (Formspree) */}
-          <ContactForm />
+        <div
+          className="grid grid-cols-1 md:grid-cols-2"
+          style={{
+            width: '100%',
+            maxWidth: '1100px',
+            margin: '0 auto',
+            gap: 'clamp(2.5rem, 5vw, 5rem)',
+            alignItems: 'start',
+          }}
+        >
+          {/* Left — location + favorites */}
+          <div
+            className="flex flex-col font-display"
+            style={{
+              gap: '1.5rem',
+              color: INK,
+              fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
+              lineHeight: 1.5,
+              maxWidth: '36ch',
+            }}
+          >
+            <p style={{ margin: 0 }}>You can find us in Brooklyn, NY.</p>
+            <p style={{ margin: 0 }}>
+              Also here&apos;s our latest favorites—from restaurants,
+              playlists, performances, to collaborators or artists we&apos;re
+              inspired by
+            </p>
+            <a
+              href="#ideas"
+              style={{
+                color: INK,
+                fontWeight: 500,
+                textDecoration: 'underline',
+                textUnderlineOffset: '3px',
+                width: 'fit-content',
+              }}
+            >
+              Check out our stories
+            </a>
+          </div>
+
+          {/* Right — heading + form */}
+          <div>
+            <p
+              className="font-display"
+              style={{
+                margin: '0 0 2rem',
+                color: INK,
+                fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
+                fontWeight: 500,
+              }}
+            >
+              Have a project in mind? Drop us a line
+            </p>
+            <ContactForm />
+          </div>
         </div>
       </footer>
       </div>
@@ -164,7 +268,11 @@ export function LandingExperience() {
           className="absolute inset-0 flex items-center justify-center"
           style={{ transform: wrapperTransform }}
         >
-          <div className="flex flex-col items-center">
+          {/* Mirror lockup: STUDIO over a flipped STUDIO, clear gap, centered */}
+          <div
+            className="flex flex-col items-center"
+            style={{ gap: 'min(1.3vw, 1.05rem)' }}
+          >
             <motion.h1
               ref={topWordRef}
               style={{

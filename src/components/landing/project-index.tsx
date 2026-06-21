@@ -7,11 +7,14 @@ import { useEffect, useState } from 'react'
 import { LANDING_PROJECTS, type LandingProject } from '@/lib/landing-projects'
 
 /** Vary shape a little so the two columns don't read as a rigid table. */
-function aspectFor(p: LandingProject): string {
-  if (p.rowSpan >= p.colSpan * 2.2) return '3 / 4'
-  if (p.colSpan >= p.rowSpan) return '4 / 3'
-  return '1 / 1'
+function aspectFor(p: LandingProject): number {
+  if (p.rowSpan >= p.colSpan * 2.2) return 3 / 4
+  if (p.colSpan >= p.rowSpan) return 4 / 3
+  return 1
 }
+
+// Frames scaled down 30% vertically (width fixed): height = 70% → wider ratio.
+const VERTICAL_SCALE = 0.7
 
 function ProjectCard({ project }: { project: LandingProject }) {
   const inner = (
@@ -23,7 +26,7 @@ function ProjectCard({ project }: { project: LandingProject }) {
         style={{
           position: 'relative',
           width: '100%',
-          aspectRatio: aspectFor(project),
+          aspectRatio: aspectFor(project) / VERTICAL_SCALE,
           overflow: 'hidden',
           background: 'rgba(10,10,10,0.04)',
         }}

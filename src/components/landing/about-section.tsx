@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, type MotionValue } from 'framer-motion'
 import { INK } from './landing-theme'
 
 const ABOUT_PARAGRAPHS = [
@@ -9,50 +9,63 @@ const ABOUT_PARAGRAPHS = [
   "We got our start in the inaugural cohort at NEW INC, the New Museum's art and technology incubator, in 2015, and have since taken part in several residencies and mentorship programs. We're always looking for projects that expand our horizons.",
 ]
 
-/** About copy that sits in the band beneath the pinned wordmark. */
-export function AboutSection() {
+/**
+ * About copy as a fixed, page-centered overlay. Its opacity / blur / drift
+ * are scroll-driven (see LandingExperience): it fades in and un-blurs as the
+ * wordmark separates and blurs, holds, then fades and drifts out while the
+ * work scrolls up over it. Sits below the page content (z-index) so the work
+ * images come in on top of it — a parallax hand-off.
+ */
+export function AboutSection({
+  opacity,
+  filter,
+  y,
+}: {
+  opacity: MotionValue<number>
+  filter: MotionValue<string>
+  y: MotionValue<number>
+}) {
   return (
-    <section
-      id="about"
+    <motion.div
       style={{
-        minHeight: '100svh',
-        maxWidth: '1440px',
-        margin: '0 auto',
-        padding: '30vh var(--gutter, 1.5rem) 0',
+        opacity,
+        filter,
+        y,
+        position: 'fixed',
+        inset: 0,
+        zIndex: 2,
+        pointerEvents: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 var(--gutter, 1.5rem)',
       }}
     >
       <div
-        className="landing-indent"
         style={{
-          maxWidth: '75ch',
+          maxWidth: 'min(52ch, 90vw)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.6rem',
+          gap: '2.5rem',
+          textAlign: 'left',
         }}
       >
         {ABOUT_PARAGRAPHS.map((text, i) => (
-          <motion.p
+          <p
             key={i}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{
-              duration: 0.7,
-              ease: [0.22, 1, 0.36, 1],
-              delay: i * 0.1,
-            }}
             className="font-display"
             style={{
               fontWeight: 600,
-              fontSize: 'clamp(1.05rem, 2vw, 1.55rem)',
-              lineHeight: 1.4,
+              fontSize: 'clamp(0.74rem, 1.4vw, 1.08rem)',
+              lineHeight: 1.5,
               color: INK,
+              margin: 0,
             }}
           >
             {text}
-          </motion.p>
+          </p>
         ))}
       </div>
-    </section>
+    </motion.div>
   )
 }
