@@ -43,3 +43,6 @@ next-env.d.ts
 # local env files
 .env.local
 .env*.local
+
+# Heavy raw design source assets (optimized copies live in public/landing/opt)
+/_design-sources/
