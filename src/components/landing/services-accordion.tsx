@@ -5,42 +5,65 @@ import { useState } from 'react'
 interface Service {
   title: string
   body: string
+  /** Fills "See ___ projects" on the bar's CTA. */
+  cta: string
 }
 
 const SERVICES: Service[] = [
   {
     title: 'Experiential production',
     body: 'We build large-scale installations and brand experiences from first concept through fabrication and on-site delivery. The full arc: design, build, install, run the thing live. Work for HBO, Google, Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central Station, and Cox.',
+    cta: 'experiential',
   },
   {
     title: 'Creative technology',
     body: 'Custom software and interactive systems. Real-time graphics, sensor-driven environments, livestreamed and networked pieces that let people anywhere shape what happens in a room. Built on Three.js and React Three Fiber when a moment needs to react.',
+    cta: 'creative technology',
   },
   {
     title: 'Lighting design',
     body: 'Light as its own discipline and as a layer inside a larger build. Architectural and experiential lighting that gives a space depth and direction.',
+    cta: 'lighting',
   },
   {
     title: 'Creative direction and consulting',
     body: 'We help brands, agencies, and institutions figure out what an experience should be before anyone starts building. Strategy, concept, and direction from the front of the process.',
+    cta: 'direction',
   },
   {
     title: 'Exhibitions and installations',
     body: 'Our own work, shown in galleries and public space. Light, sound, and interaction built into pieces a person steps inside. We Are Stars / Somos Estrellas at The Gallery by Wish. Storybooth on Dexter Avenue in Montgomery.',
+    cta: 'installation',
   },
   {
     title: 'Commissions and collaborations',
     body: 'We take on commissioned art from institutions and partners, and work alongside other artists and studios on pieces that cross disciplines. 9to5.tv at The Goat Farm, with custom robots and a public livestream, came out of exactly this.',
+    cta: 'commissioned',
   },
   {
     title: 'Teaching',
     body: 'We mentor at NYU ITP and the Steve Jobs Archive, working with people building at the edge of art and technology.',
+    cta: 'all',
   },
 ]
 
-// Slight, deterministic off-kilter scatter.
-const ROTATIONS = [-1.8, 1.3, -1.0, 1.6, -1.4, 0.9, -1.9]
-const OFFSETS = [-12, 16, -7, 11, -14, 9, -9]
+// Slight, deterministic off-kilter scatter — gentle, Albers-controlled.
+const ROTATIONS = [-0.9, 0.7, -0.5, 0.8, -0.7, 0.5, -0.9]
+const OFFSETS = [-7, 9, -4, 6, -8, 5, -5]
+// Asymmetric composition: each bar a different width + horizontal pull.
+// Widths are a fraction of the container; align decides which edge it hugs.
+const WIDTHS = ['78%', '92%', '64%', '88%', '72%', '96%', '58%']
+const ALIGN: Array<'left' | 'center' | 'right'> = [
+  'left',
+  'right',
+  'left',
+  'center',
+  'right',
+  'left',
+  'right',
+]
+// Subtle height variation via vertical padding.
+const PADS_Y = [1.0, 1.25, 0.9, 1.15, 1.05, 1.3, 0.95]
 // One blue for every bar — overlaps mix to black/darker/lighter, no green.
 const BLUE = '#081FF5'
 // Each bar's overlap behaves differently (exclusion / difference / etc.).
@@ -95,6 +118,7 @@ export function ServicesAccordion() {
     >
       {SERVICES.map((service, i) => {
         const isOpen = open === i
+        const align = ALIGN[i % ALIGN.length]
         return (
           <div
             key={service.title}
@@ -103,16 +127,24 @@ export function ServicesAccordion() {
               background: BLUE,
               color: '#ffffff',
               mixBlendMode: BLENDS[i % BLENDS.length],
-              // Overlap when collapsed; open bar (and the one after it) gets
-              // ~50px of breathing room above + below.
+              // Asymmetric width + which edge the bar hugs — kept on expand.
+              width: WIDTHS[i % WIDTHS.length],
+              alignSelf:
+                align === 'left'
+                  ? 'flex-start'
+                  : align === 'right'
+                    ? 'flex-end'
+                    : 'center',
+              transition: `margin-top 500ms ${EASE}, width 500ms ${EASE}`,
+              // Separated when collapsed (gentle gap, bars read as distinct);
+              // open bar (and the one after it) gets extra breathing room.
               marginTop:
                 i === 0
                   ? 0
                   : isOpen || open === i - 1
-                    ? '25px'
-                    : '-14px',
+                    ? '32px'
+                    : '10px',
               transform: `rotate(${ROTATIONS[i % ROTATIONS.length]}deg) translateX(${OFFSETS[i % OFFSETS.length]}px)`,
-              transition: `margin-top 500ms ${EASE}`,
             }}
           >
             <button
@@ -123,8 +155,8 @@ export function ServicesAccordion() {
                 width: '100%',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '2rem',
-                padding: '1.1rem 2rem',
+                gap: '1rem',
+                padding: `${PADS_Y[i % PADS_Y.length]}rem 1.25rem`,
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -132,7 +164,6 @@ export function ServicesAccordion() {
                 textAlign: 'left',
               }}
             >
-              <Chevron open={isOpen} />
               <span
                 className="font-display"
                 style={{
@@ -143,6 +174,9 @@ export function ServicesAccordion() {
               >
                 {service.title}
               </span>
+              <span style={{ marginLeft: 'auto', display: 'flex' }}>
+                <Chevron open={isOpen} />
+              </span>
             </button>
             {/* CSS grid-rows expand — smooth, no measure/snap jump. */}
             <div
@@ -152,22 +186,60 @@ export function ServicesAccordion() {
                 transition: `grid-template-rows 500ms ${EASE}`,
               }}
             >
-              <div style={{ overflow: 'hidden', minHeight: 0 }}>
+              <div
+                style={{
+                  overflow: 'hidden',
+                  minHeight: 0,
+                  // Taller breathing room as the bar expands.
+                  padding: '0.6rem 2rem 2.4rem 1.25rem',
+                  opacity: isOpen ? 1 : 0,
+                  transition: `opacity 400ms ${EASE}`,
+                }}
+              >
                 <p
                   className="font-display"
                   style={{
                     margin: 0,
-                    padding: '0.2rem 2rem 1.5rem calc(2rem + 22px + 2rem)',
                     color: 'rgba(255,255,255,0.78)',
                     fontSize: 'clamp(0.9rem, 1.3vw, 1.05rem)',
                     lineHeight: 1.6,
                     maxWidth: '70ch',
-                    opacity: isOpen ? 1 : 0,
-                    transition: `opacity 400ms ${EASE}`,
                   }}
                 >
                   {service.body}
                 </p>
+                <a
+                  href="#work"
+                  tabIndex={isOpen ? 0 : -1}
+                  className="font-mono"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                    marginTop: '1.6rem',
+                    padding: '0.65rem 1.2rem',
+                    border: '1px solid rgba(255,255,255,0.55)',
+                    borderRadius: '999px',
+                    color: '#ffffff',
+                    fontSize: '0.72rem',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none',
+                    whiteSpace: 'nowrap',
+                    transition: `background 200ms ${EASE}, border-color 200ms ${EASE}`,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.14)'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.9)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.55)'
+                  }}
+                >
+                  See {service.cta} projects
+                  <span aria-hidden>→</span>
+                </a>
               </div>
             </div>
           </div>

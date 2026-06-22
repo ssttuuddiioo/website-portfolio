@@ -14,11 +14,14 @@ import { CursorTrail } from './cursor-trail'
 import { LandingSidebar } from './landing-sidebar'
 import { AboutSection } from './about-section'
 import { ProjectIndex } from './project-index'
+import { SeeAllWork } from './see-all-work'
 import { StudioParticles } from './studio-particles'
+import { HeroBackdrop } from './hero-backdrop'
+import { ContactMap } from './contact-map'
 import { ContactForm } from './contact-form'
 import { ServicesAccordion } from './services-accordion'
 import { IdeasSection } from './ideas-section'
-import { wordStyle, INK } from './landing-theme'
+import { wordStyle, INK, BG, BLUE } from './landing-theme'
 
 const SPY_IDS = ['home', 'about', 'work', 'services', 'ideas', 'contact']
 
@@ -61,9 +64,15 @@ export function LandingExperience() {
   // Ambient particles fade out as the about section scrolls (reversible).
   const particleOpacity = useTransform(aboutProgress, [0, 0.5], [1, 0])
 
-  // Hero background image fills behind the lockup, then fades to the warm-white
-  // page color as the about section scrolls (reversible, in sync with particles).
-  const heroImageOpacity = useTransform(aboutProgress, [0, 0.5], [1, 0])
+  // Hero background image fills behind the lockup, then — in lockstep with the
+  // STUDIO separation/blur — scales up, blurs out, and fades to the warm-white
+  // page color as the about section scrolls (all reversible).
+  const heroImageOpacity = useTransform(aboutProgress, [0.05, 0.5], [1, 0])
+  // Scale begins the moment you start scrolling (tied to the home track, like
+  // the lockup), then holds while the about scroll blurs + fades it out.
+  const heroImageScale = useTransform(scrollYProgress, [0, 1], [1, 1.18])
+  const heroImageBlurPx = useTransform(aboutProgress, [0, 0.55], [0, 40])
+  const heroImageFilter = useMotionTemplate`blur(${heroImageBlurPx}px)`
 
   // About copy: fades in + un-blurs as the wordmark separates and blurs,
   // holds, then fades + drifts out while the work scrolls up over it.
@@ -115,20 +124,22 @@ export function LandingExperience() {
   return (
     <>
       <CursorTrail rgb="31,68,255" />
-      {/* Hero background image — backmost layer; fades to the page color over about. */}
+      {/* Hero background carousel — backmost layer; fades to the page color over about. */}
       <motion.div
         aria-hidden
         style={{
           position: 'fixed',
-          inset: 0,
           zIndex: 0,
-          backgroundImage: 'url(/landing/opt/space-labs.avif)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
           opacity: heroImageOpacity,
+          scale: heroImageScale,
+          filter: heroImageFilter,
+          // Bleed past the edges so the scale-up + blur never reveal a seam.
+          inset: '-4%',
           pointerEvents: 'none',
         }}
-      />
+      >
+        <HeroBackdrop />
+      </motion.div>
       {/* Ambient particle field — back layer; all content sits on top. */}
       <StudioParticles opacity={particleOpacity} />
       {/* About copy — centered overlay below the page content (work scrolls over it). */}
@@ -150,6 +161,8 @@ export function LandingExperience() {
       {/* Work — the composed image scatter. */}
       <div id="work">
         <ProjectIndex />
+        {/* See-all bouncer → full work index */}
+        <SeeAllWork />
       </div>
 
       {/* Services — accordion */}
@@ -211,27 +224,21 @@ export function LandingExperience() {
               color: INK,
               fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
               lineHeight: 1.5,
-              maxWidth: '36ch',
             }}
           >
-            <p style={{ margin: 0 }}>You can find us in Brooklyn, NY.</p>
-            <p style={{ margin: 0 }}>
-              Also here&apos;s our latest favorites—from restaurants,
-              playlists, performances, to collaborators or artists we&apos;re
-              inspired by
+            <p style={{ margin: 0, maxWidth: '36ch' }}>
+              You can find us at{' '}
+              <a
+                href="https://www.instagram.com/src__nyc/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: BLUE, textDecoration: 'underline' }}
+              >
+                SRC_NYC
+              </a>
+              , a shared studio and community space in Brooklyn, NY
             </p>
-            <a
-              href="#ideas"
-              style={{
-                color: INK,
-                fontWeight: 500,
-                textDecoration: 'underline',
-                textUnderlineOffset: '3px',
-                width: 'fit-content',
-              }}
-            >
-              Check out our stories
-            </a>
+            <ContactMap />
           </div>
 
           {/* Right — heading + form */}
@@ -296,6 +303,26 @@ export function LandingExperience() {
           </div>
         </motion.div>
       </div>
+
+      {/* Side frame — 30px white margins down the left and right edges. Sits
+          above the carousel + scrolling content, below the wordmark/nav. */}
+      <div
+        aria-hidden
+        className="side-frame"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 60,
+          pointerEvents: 'none',
+          borderLeft: `30px solid ${BG}`,
+          borderRight: `30px solid ${BG}`,
+        }}
+      />
+      <style>{`
+        @media (max-width: 640px) {
+          .side-frame { border-left: 0 !important; border-right: 0 !important; }
+        }
+      `}</style>
 
       {/* Big bottom word — names the current section, matched to STUDIO width. */}
       <BottomWord word={sectionWord} targetRef={topWordRef} />

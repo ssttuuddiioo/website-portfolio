@@ -15,10 +15,10 @@ const labelStyle: React.CSSProperties = {
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  background: 'transparent',
-  border: 'none',
-  borderBottom: '1px solid rgba(10,10,10,0.25)',
-  padding: '0.5rem 0',
+  background: 'rgba(255,255,255,0.7)',
+  border: '1px solid rgba(10,10,10,0.18)',
+  borderRadius: 4,
+  padding: '0.65rem 0.75rem',
   fontFamily: 'var(--font-display), sans-serif',
   fontSize: '1rem',
   color: INK,

@@ -37,12 +37,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   { title: 'HydroStation', client: 'Bould Design', category: 'Tech Experiment', year: 2024, image: '/landing/opt/gg.avif', colStart: 10, colSpan: 2, rowStart: 51, rowSpan: 5 },
   { title: 'StoryBooth', client: 'Michigan Central Station', category: 'Experiential', year: 2022, image: '/landing/opt/storybooth-1.avif', colStart: 2, colSpan: 4, rowStart: 61, rowSpan: 9 },
   { title: 'Cox Conserves', client: 'Cox Communications', category: 'Experiential', year: 2024, image: '/landing/opt/storybooth-3.avif', colStart: 8, colSpan: 4, rowStart: 65, rowSpan: 10 },
-  { title: 'Sound Journeys II', client: 'Personal', category: 'Public Art', year: 2017, image: '/landing/opt/group-5753.avif', colStart: 4, colSpan: 3, rowStart: 74, rowSpan: 6 },
   { title: 'Between The Two', client: 'Personal', category: 'Public Art', year: 2016, image: '/landing/opt/installation-33.avif', colStart: 10, colSpan: 2, rowStart: 76, rowSpan: 5 },
   { title: '9to5.tv', client: 'Festival', category: 'Event', year: 2019, image: '/landing/opt/storybooth-2.avif', colStart: 2, colSpan: 3, rowStart: 85, rowSpan: 7 },
   { title: 'Pour Perfect', client: 'Personal', category: 'Tool', year: 2023, image: '/landing/opt/img-2808.avif', colStart: 6, colSpan: 5, rowStart: 87, rowSpan: 11 },
-  { title: 'choosing.sucks', client: 'with Allister', category: 'Tool', year: 2022, image: '/landing/opt/render3.avif', colStart: 3, colSpan: 3, rowStart: 100, rowSpan: 6 },
-  { title: 'Stage Controller', client: 'ENTTEC', category: 'Software', year: 2021, image: '/landing/opt/gg.avif', colStart: 9, colSpan: 3, rowStart: 98, rowSpan: 8 },
-  { title: 'Orbitals II', client: 'Personal', category: 'Tech Experiment', year: 2019, image: '/landing/opt/orbitals.avif', colStart: 5, colSpan: 4, rowStart: 109, rowSpan: 9 },
-  { title: 'Snow Field', client: 'Personal', category: 'Installation', year: 2018, image: '/landing/opt/snow.avif', colStart: 2, colSpan: 3, rowStart: 120, rowSpan: 6 },
 ]
