@@ -78,30 +78,70 @@ export function LandingExperience() {
   // holds, then fades + drifts out while the work scrolls up over it.
   const aboutTextOpacity = useTransform(
     aboutProgress,
-    [0.15, 0.4, 0.6, 0.975],
+    [0.15, 0.38, 0.72, 0.97],
     [0, 1, 1, 0],
   )
-  const aboutTextBlur = useTransform(aboutProgress, [0.15, 0.4], [14, 0])
+  const aboutTextBlur = useTransform(aboutProgress, [0.15, 0.38], [14, 0])
   const aboutTextFilter = useMotionTemplate`blur(${aboutTextBlur}px)`
-  const aboutTextY = useTransform(aboutProgress, [0.6, 0.975], [0, -30])
+  const aboutTextY = useTransform(aboutProgress, [0.72, 0.97], [0, -30])
+
+  // Solid scrim that pops the about moment to a fully opaque page-color ground.
+  // It tracks the about copy's fade exactly but sits ABOVE the wordmark, so the
+  // blurred STUDIO (and everything behind) is fully hidden while about is held —
+  // the section "clicks in" on clean ground, then dissolves to reveal the work.
+  const aboutBgOpacity = useTransform(
+    aboutProgress,
+    [0.15, 0.38, 0.72, 0.97],
+    [0, 1, 1, 0],
+  )
 
   const [active, setActive] = useState('home')
 
-  // Scroll-spy: the section crossing the viewport center is active.
+  // Scroll-spy with a direction-aware lead: instead of flipping when a section
+  // boundary hits the exact viewport center, we probe a point LEAD px *ahead*
+  // of center in whatever direction we're scrolling. So the bottom word flips
+  // to the next section ~LEAD px early (while it's still in the whitespace),
+  // and flips back early when scrolling up too.
   useEffect(() => {
-    const els = SPY_IDS.map((id) => document.getElementById(id)).filter(
-      (el): el is HTMLElement => el !== null,
-    )
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id)
-        }
-      },
-      { rootMargin: '-49% 0px -49% 0px', threshold: 0 },
-    )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+    const LEAD = 500
+    let lastY = window.scrollY
+    let dir = 1
+    let ticking = false
+
+    const update = () => {
+      ticking = false
+      const y = window.scrollY
+      if (y > lastY) dir = 1
+      else if (y < lastY) dir = -1
+      lastY = y
+
+      // Probe point in document space: viewport center, pushed LEAD px ahead
+      // in the scroll direction.
+      const probe = y + window.innerHeight / 2 + dir * LEAD
+
+      let current = SPY_IDS[0]
+      for (const id of SPY_IDS) {
+        const el = document.getElementById(id)
+        if (!el) continue
+        const top = el.getBoundingClientRect().top + y
+        if (top <= probe) current = id
+      }
+      setActive(current)
+    }
+
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
 
   // Lockup opens from a tight centered mark: grows, top rises to pin,
@@ -114,9 +154,10 @@ export function LandingExperience() {
   // Top word pins so its TOP edge sits 4vh from the top — matching the bottom
   // word's 4vh bottom padding — regardless of viewport height. The offset
   // accounts for the word's own height (0.82 line-height) and half the gap.
-  // Also nudged right; bottom nudged left.
-  const topTransform = useMotionTemplate`translateX(25px) translateY(calc((-46vh + 0.82 * min(19vw, 15rem) + min(0.65vw, 0.525rem)) * ${pin}))`
-  const bottomTransform = useMotionTemplate`translateX(-25px) translateY(calc((46vh - 0.82 * min(19vw, 15rem) - min(0.65vw, 0.525rem)) * ${pin})) rotate(180deg)`
+  // Centered horizontally — no X nudge, so the lockup sits between both page
+  // edges rather than reading as offset toward one side.
+  const topTransform = useMotionTemplate`translateY(calc((-46vh + 0.82 * min(19vw, 15rem) + min(0.65vw, 0.525rem)) * ${pin}))`
+  const bottomTransform = useMotionTemplate`translateY(calc((46vh - 0.82 * min(19vw, 15rem) - min(0.65vw, 0.525rem)) * ${pin})) rotate(180deg)`
 
   // Big bottom word naming the current section as you scroll.
   const sectionWord = SECTION_WORDS[active] ?? null
@@ -142,7 +183,20 @@ export function LandingExperience() {
       </motion.div>
       {/* Ambient particle field — back layer; all content sits on top. */}
       <StudioParticles opacity={particleOpacity} />
-      {/* About copy — centered overlay below the page content (work scrolls over it). */}
+      {/* Opaque scrim for the about moment — above the wordmark (z70), below the
+          about copy (z72). Ramps to 100% so the about reads on clean ground. */}
+      <motion.div
+        aria-hidden
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 71,
+          background: BG,
+          opacity: aboutBgOpacity,
+          pointerEvents: 'none',
+        }}
+      />
+      {/* About copy — centered overlay above the scrim; both fade to reveal work. */}
       <AboutSection
         opacity={aboutTextOpacity}
         filter={aboutTextFilter}
@@ -155,8 +209,10 @@ export function LandingExperience() {
         {/* Scroll track = the home section; drives the lockup opening. */}
         <div id="home" ref={trackRef} style={{ height: '260vh' }} />
 
-      {/* About — scroll spacer driving the wordmark blur + about overlay. */}
-      <div id="about" ref={aboutRef} style={{ height: '150vh' }} />
+      {/* About — scroll spacer driving the wordmark blur + about overlay.
+          Taller than a single screen so the full-opacity hold reads as a
+          deliberate beat before the copy dissolves into the work. */}
+      <div id="about" ref={aboutRef} style={{ height: '310vh' }} />
 
       {/* Work — the composed image scatter. */}
       <div id="work">
@@ -328,8 +384,13 @@ export function LandingExperience() {
       <BottomWord word={sectionWord} targetRef={topWordRef} />
 
       {/* Pinned copyright, bottom-right — appears once the section words do. */}
+      <style>{`
+        @media (max-width: 640px) {
+          .landing-copyright { display: none; }
+        }
+      `}</style>
       <span
-        className="font-mono"
+        className="font-mono landing-copyright"
         style={{
           position: 'fixed',
           right: 'max(10px, calc(var(--gutter, 1.5rem) + env(safe-area-inset-right) - 50px))',
@@ -408,7 +469,7 @@ function BottomWord({
         className="font-display"
         style={{
           fontWeight: 700,
-          fontSize: 'min(19vw, 15rem)',
+          fontSize: 'min(14.25vw, 11.25rem)',
           letterSpacing: '-0.04em',
           lineHeight: 0.82,
           color: '#ffffff',

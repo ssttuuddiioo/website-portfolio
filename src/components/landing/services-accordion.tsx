@@ -116,6 +116,11 @@ export function ServicesAccordion() {
         isolation: 'isolate',
       }}
     >
+      <style>{`
+        @media (max-width: 640px) {
+          .services-cta-word { display: none; }
+        }
+      `}</style>
       {SERVICES.map((service, i) => {
         const isOpen = open === i
         const align = ALIGN[i % ALIGN.length]
@@ -237,7 +242,7 @@ export function ServicesAccordion() {
                     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.55)'
                   }}
                 >
-                  See {service.cta} projects
+                  See <span className="services-cta-word">{service.cta} </span>projects
                   <span aria-hidden>→</span>
                 </a>
               </div>

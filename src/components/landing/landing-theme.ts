@@ -13,7 +13,7 @@ export const BLUE = '#1F44FF'
 export const wordStyle: CSSProperties = {
   fontFamily: 'var(--font-display, system-ui), sans-serif',
   fontWeight: 700,
-  fontSize: 'min(19vw, 15rem)',
+  fontSize: 'min(14.25vw, 11.25rem)',
   lineHeight: 0.82,
   letterSpacing: '-0.04em',
   color: '#ffffff',

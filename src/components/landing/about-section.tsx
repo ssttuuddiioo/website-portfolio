@@ -9,19 +9,13 @@ const ABOUT_PARAGRAPHS = [
   "We got our start in the inaugural cohort at NEW INC, the New Museum's art and technology incubator, in 2015, and have since taken part in several residencies and mentorship programs. We're always looking for projects that expand our horizons.",
 ]
 
-// Condensed copy shown only on mobile + tablet breakpoints, at a larger size.
-const ABOUT_PARAGRAPHS_COMPACT = [
-  "Studio Studio is a creative practice working between art, tech, and design.",
-  "Clients come to us with a sense of what they want their guests to feel, and we build something around it, collaboratively. Most of this lives in activations and exhibitions, but the constant is the approach, not the canvas.",
-  "We got our start in the inaugural cohort at NEW INC, the New Museum's art and technology incubator, in 2015.",
-]
-
 /**
  * About copy as a fixed, page-centered overlay. Its opacity / blur / drift
  * are scroll-driven (see LandingExperience): it fades in and un-blurs as the
- * wordmark separates and blurs, holds, then fades and drifts out while the
- * work scrolls up over it. Sits below the page content (z-index) so the work
- * images come in on top of it — a parallax hand-off.
+ * wordmark separates and blurs, holds, then fades and drifts out as the
+ * opaque scrim beneath it dissolves to reveal the work. Sits at z-index 72 —
+ * above the scrim (z71) and wordmark (z70) — so it reads on a fully solid,
+ * page-color ground with no blurred wordmark bleeding through.
  */
 export function AboutSection({
   opacity,
@@ -40,7 +34,7 @@ export function AboutSection({
         y,
         position: 'fixed',
         inset: 0,
-        zIndex: 2,
+        zIndex: 72,
         pointerEvents: 'none',
         display: 'flex',
         alignItems: 'center',
@@ -50,12 +44,7 @@ export function AboutSection({
     >
       <style>{`
         @media (max-width: 1023px) {
-          .about-copy--full { display: none; }
-          .about-copy--compact { display: flex !important; }
-          .about-copy--compact p { font-size: clamp(1.48rem, 4.6vw, 2.16rem) !important; }
-        }
-        @media (max-width: 640px) {
-          .about-copy--compact .about-copy__extra { display: none; }
+          .about-copy--full p { font-size: clamp(1.1rem, 3.4vw, 1.6rem) !important; }
         }
       `}</style>
       <div
@@ -75,31 +64,6 @@ export function AboutSection({
             style={{
               fontWeight: 600,
               fontSize: 'clamp(0.74rem, 1.4vw, 1.08rem)',
-              lineHeight: 1.5,
-              color: INK,
-              margin: 0,
-            }}
-          >
-            {text}
-          </p>
-        ))}
-      </div>
-      <div
-        className="about-copy--compact"
-        style={{
-          display: 'none',
-          maxWidth: 'min(52ch, 90vw)',
-          flexDirection: 'column',
-          gap: '2.5rem',
-          textAlign: 'left',
-        }}
-      >
-        {ABOUT_PARAGRAPHS_COMPACT.map((text, i) => (
-          <p
-            key={i}
-            className={`font-display${i > 0 ? ' about-copy__extra' : ''}`}
-            style={{
-              fontWeight: 600,
               lineHeight: 1.5,
               color: INK,
               margin: 0,

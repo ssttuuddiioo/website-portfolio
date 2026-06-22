@@ -154,7 +154,10 @@ export function LandingSidebar({
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)
     if (!el) return
-    if (lenis) lenis.scrollTo(el, { offset: 0 })
+    // force: true so the scroll runs even though the open menu has called
+    // lenis.stop() — without it Lenis ignores scrollTo while stopped, which is
+    // why tapping a mobile menu item never navigated.
+    if (lenis) lenis.scrollTo(el, { offset: 0, force: true })
     else el.scrollIntoView({ behavior: 'smooth' })
   }
 
