@@ -11,17 +11,17 @@ import {
 const useIsoLayoutEffect =
   typeof window !== 'undefined' ? useLayoutEffect : useEffect
 import { CursorTrail } from './cursor-trail'
-import { LandingSidebar } from './landing-sidebar'
+import { LandingSidebar, SocialRow } from './landing-sidebar'
 import { AboutSection } from './about-section'
 import { ProjectIndex } from './project-index'
 import { SeeAllWork } from './see-all-work'
-import { StudioParticles } from './studio-particles'
 import { HeroBackdrop } from './hero-backdrop'
 import { ContactMap } from './contact-map'
 import { ContactForm } from './contact-form'
 import { ServicesAccordion } from './services-accordion'
 import { IdeasSection } from './ideas-section'
 import { wordStyle, INK, BG, BLUE } from './landing-theme'
+import { useLenis } from '@/lib/lenis-provider'
 
 const SPY_IDS = ['home', 'about', 'work', 'services', 'ideas', 'contact']
 
@@ -61,9 +61,6 @@ export function LandingExperience() {
   const bottomFilter = useMotionTemplate`blur(${bottomBlur}px)`
   const bottomOpacity = useTransform(aboutProgress, [0.45, 0.6], [1, 0])
 
-  // Ambient particles fade out as the about section scrolls (reversible).
-  const particleOpacity = useTransform(aboutProgress, [0, 0.5], [1, 0])
-
   // Hero background image fills behind the lockup, then — in lockstep with the
   // STUDIO separation/blur — scales up, blurs out, and fades to the warm-white
   // page color as the about section scrolls (all reversible).
@@ -96,28 +93,69 @@ export function LandingExperience() {
   )
 
   const [active, setActive] = useState('home')
+  const lenis = useLenis()
+  // While a nav-click scroll is in flight we lock the spy and drive the
+  // highlight optimistically, so the pill snaps to the clicked section instead
+  // of flickering through (or mis-reading) the sections flying past.
+  const suppressSpy = useRef(false)
+
+  // Nav click: highlight the target immediately and lock the spy, then
+  // smooth-scroll to it. The lock is held until the user's NEXT real scroll
+  // gesture (see effect below) — NOT until the scroll finishes — because the
+  // landing point sits at the very edge of the section's spy band, so releasing
+  // on completion lets a trailing settle re-read flip the pill back to the
+  // previous section. Pinning until real input means the click highlight sticks.
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id)
+    if (!el) return
+    setActive(id)
+    suppressSpy.current = true
+    if (lenis) lenis.scrollTo(el, { offset: 0, force: true })
+    else el.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // Release the spy lock on a genuine user scroll gesture. Lenis intercepts the
+  // wheel for smooth scrolling, but the native wheel/touch events still reach
+  // window listeners — so this fires on user intent, never during the
+  // programmatic Lenis scroll a click kicks off.
+  useEffect(() => {
+    const release = () => {
+      suppressSpy.current = false
+    }
+    window.addEventListener('wheel', release, { passive: true })
+    window.addEventListener('touchstart', release, { passive: true })
+    window.addEventListener('keydown', release)
+    return () => {
+      window.removeEventListener('wheel', release)
+      window.removeEventListener('touchstart', release)
+      window.removeEventListener('keydown', release)
+    }
+  }, [])
 
   // Scroll-spy with a direction-aware lead: instead of flipping when a section
-  // boundary hits the exact viewport center, we probe a point LEAD px *ahead*
-  // of center in whatever direction we're scrolling. So the bottom word flips
-  // to the next section ~LEAD px early (while it's still in the whitespace),
-  // and flips back early when scrolling up too.
+  // boundary hits the exact viewport center, we probe a point LEAD *ahead* of
+  // center in whatever direction we're scrolling, so the bottom word flips to
+  // the next section a touch early. The lead is a FRACTION of the viewport, not
+  // a fixed pixel count: a fixed ~500px lead while scrolling up cancelled the
+  // half-viewport offset below, zeroing the landing margin and mis-reading a
+  // section (e.g. "about") as the previous one ("home").
   useEffect(() => {
-    const LEAD = 500
     let lastY = window.scrollY
     let dir = 1
     let ticking = false
 
     const update = () => {
       ticking = false
+      if (suppressSpy.current) return
       const y = window.scrollY
       if (y > lastY) dir = 1
       else if (y < lastY) dir = -1
       lastY = y
 
-      // Probe point in document space: viewport center, pushed LEAD px ahead
-      // in the scroll direction.
-      const probe = y + window.innerHeight / 2 + dir * LEAD
+      // Probe point in document space: viewport center, pushed a fraction of a
+      // viewport ahead in the scroll direction.
+      const lead = window.innerHeight * 0.18
+      const probe = y + window.innerHeight / 2 + dir * lead
 
       let current = SPY_IDS[0]
       for (const id of SPY_IDS) {
@@ -159,6 +197,13 @@ export function LandingExperience() {
   const topTransform = useMotionTemplate`translateY(calc((-46vh + 0.82 * min(19vw, 15rem) + min(0.65vw, 0.525rem)) * ${pin}))`
   const bottomTransform = useMotionTemplate`translateY(calc((46vh - 0.82 * min(19vw, 15rem) - min(0.65vw, 0.525rem)) * ${pin})) rotate(180deg)`
 
+  // Nav dock reveal: only once the STUDIO words have come fully to rest in the
+  // corners (pin completes ~0.5) does the dock slide up and fade in — it stays
+  // hidden while the wordmark is still travelling.
+  const dockReveal = useTransform(scrollYProgress, [0.52, 0.66], [0, 1])
+  const dockOpacity = dockReveal
+  const dockY = useTransform(dockReveal, [0, 1], [72, 0])
+
   // Big bottom word naming the current section as you scroll.
   const sectionWord = SECTION_WORDS[active] ?? null
 
@@ -181,8 +226,6 @@ export function LandingExperience() {
       >
         <HeroBackdrop />
       </motion.div>
-      {/* Ambient particle field — back layer; all content sits on top. */}
-      <StudioParticles opacity={particleOpacity} />
       {/* Opaque scrim for the about moment — above the wordmark (z70), below the
           about copy (z72). Ramps to 100% so the about reads on clean ground. */}
       <motion.div
@@ -202,7 +245,13 @@ export function LandingExperience() {
         filter={aboutTextFilter}
         y={aboutTextY}
       />
-      <LandingSidebar active={active} inPage />
+      <LandingSidebar
+        active={active}
+        inPage
+        dockOpacity={dockOpacity}
+        dockY={dockY}
+        onNavigate={scrollToSection}
+      />
 
       {/* Page content sits above the particle field + about overlay. */}
       <div style={{ position: 'relative', zIndex: 3 }}>
@@ -212,7 +261,18 @@ export function LandingExperience() {
       {/* About — scroll spacer driving the wordmark blur + about overlay.
           Taller than a single screen so the full-opacity hold reads as a
           deliberate beat before the copy dissolves into the work. */}
-      <div id="about" ref={aboutRef} style={{ height: '310vh' }} />
+      <div ref={aboutRef} style={{ height: '310vh', position: 'relative' }}>
+        {/* Nav + scroll-spy anchor, placed at the spacer's hold center (~40%)
+            rather than its top. Clicking "about" lands on the fully-formed
+            about moment (copy centered, hero faded), and the spy reads "about"
+            only while the copy is actually on screen — not back when the hero
+            is still up. */}
+        <div
+          id="about"
+          aria-hidden
+          style={{ position: 'absolute', top: '40%', left: 0, width: 1, height: 1 }}
+        />
+      </div>
 
       {/* Work — the composed image scatter. */}
       <div id="work">
@@ -228,8 +288,10 @@ export function LandingExperience() {
           minHeight: '100svh',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '24vh var(--gutter, 1.5rem)',
+          justifyContent: 'flex-start',
+          // Tight lead-in from the See-All pill — was 24vh of centered top
+          // whitespace; now the accordion starts just below the pill.
+          padding: '6vh var(--gutter, 1.5rem) 24vh',
         }}
       >
         <ServicesAccordion />
@@ -313,6 +375,32 @@ export function LandingExperience() {
             <ContactForm />
           </div>
         </div>
+
+        {/* Footer band — social icons over the copyright, centered. */}
+        <div
+          className="flex flex-col items-center"
+          style={{
+            width: '100%',
+            maxWidth: '1100px',
+            margin: '0 auto',
+            marginTop: 'clamp(4rem, 10vw, 8rem)',
+            gap: '1.5rem',
+          }}
+        >
+          <SocialRow size={24} gap="1.75rem" horizontal />
+          <span
+            className="font-mono"
+            style={{
+              color: INK,
+              opacity: 0.55,
+              fontSize: '0.75rem',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+            }}
+          >
+            © 2026 Studio Studio · Brooklyn, NY
+          </span>
+        </div>
       </footer>
       </div>
 
@@ -382,33 +470,6 @@ export function LandingExperience() {
 
       {/* Big bottom word — names the current section, matched to STUDIO width. */}
       <BottomWord word={sectionWord} targetRef={topWordRef} />
-
-      {/* Pinned copyright, bottom-right — appears once the section words do. */}
-      <style>{`
-        @media (max-width: 640px) {
-          .landing-copyright { display: none; }
-        }
-      `}</style>
-      <span
-        className="font-mono landing-copyright"
-        style={{
-          position: 'fixed',
-          right: 'max(10px, calc(var(--gutter, 1.5rem) + env(safe-area-inset-right) - 50px))',
-          bottom: 'max(10px, calc(var(--gutter, 1.5rem) + env(safe-area-inset-bottom) - 50px))',
-          zIndex: 70,
-          mixBlendMode: 'difference',
-          pointerEvents: 'none',
-          fontSize: '0.7rem',
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
-          color: '#ffffff',
-          textAlign: 'right',
-          opacity: sectionWord ? 1 : 0,
-          transition: 'opacity 400ms cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
-      >
-        © 2026 Studio Studio · Brooklyn, NY
-      </span>
     </>
   )
 }

@@ -1,13 +1,16 @@
 'use client'
 
-import { motion, type MotionValue } from 'framer-motion'
-import { INK } from './landing-theme'
+import Image from 'next/image'
+import Link from 'next/link'
+import { motion, useTransform, type MotionValue } from 'framer-motion'
+import { INK, BLUE } from './landing-theme'
 
-const ABOUT_PARAGRAPHS = [
-  "Studio Studio is a creative practice working somewhere between art, tech, and design. Our favorite work comes from mixing things that don't usually meet, where the boundaries between fields start to blur.",
-  "Clients come to us with a sense of what they want their guests to feel, and we build something creative around it, collaboratively. Most of this lives in activations and exhibitions, using projection mapping, immersive theater, spatialized audio, or interactive installations. But it doesn't always stay in that lane: The constant is the approach, not the canvas.",
-  "We got our start in the inaugural cohort at NEW INC, the New Museum's art and technology incubator, in 2015, and have since taken part in several residencies and mentorship programs. We're always looking for projects that expand our horizons.",
-]
+export const ABOUT_TITLE = 'We build experiences people remember.'
+export const ABOUT_SUBTITLE =
+  'Studio Studio works across art, tech, and design, partnering with brands, agencies, and institutions on pop-ups, exhibitions, and installations that mix disciplines to create unique moments.'
+export const ABOUT_IMAGE = '/landing/opt/installation-33.avif'
+
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 /**
  * About copy as a fixed, page-centered overlay. Its opacity / blur / drift
@@ -26,6 +29,11 @@ export function AboutSection({
   filter: MotionValue<string>
   y: MotionValue<number>
 }) {
+  // The overlay is pointer-events:none so it never blocks the scroll/work
+  // beneath. Re-enable clicks on the CTA only while the copy is actually legible
+  // (near full opacity) — otherwise the faded button would be an invisible
+  // click-catcher over the work.
+  const ctaPointer = useTransform(opacity, (o) => (o > 0.6 ? 'auto' : 'none'))
   return (
     <motion.div
       style={{
@@ -44,34 +52,106 @@ export function AboutSection({
     >
       <style>{`
         @media (max-width: 1023px) {
-          .about-copy--full p { font-size: clamp(1.1rem, 3.4vw, 1.6rem) !important; }
+          .about-copy--full { grid-template-columns: 1fr !important; gap: 1.75rem !important; max-width: min(46ch, 90vw) !important; }
+          .about-copy--full .about-title { font-size: clamp(2rem, 7vw, 3rem) !important; }
+          .about-copy--full .about-subtitle { font-size: clamp(1rem, 3.4vw, 1.4rem) !important; }
         }
       `}</style>
       <div
         className="about-copy--full"
         style={{
-          maxWidth: 'min(52ch, 90vw)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '2.5rem',
+          maxWidth: 'min(960px, 92vw)',
+          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: '0.85fr 1fr',
+          alignItems: 'center',
+          gap: 'clamp(2rem, 4vw, 3.5rem)',
           textAlign: 'left',
         }}
       >
-        {ABOUT_PARAGRAPHS.map((text, i) => (
-          <p
-            key={i}
-            className="font-display"
+        {/* Image — left on desktop, top on mobile. */}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            aspectRatio: 4 / 5,
+            overflow: 'hidden',
+            borderRadius: '20px',
+            background: 'rgba(10,10,10,0.04)',
+          }}
+        >
+          <Image
+            src={ABOUT_IMAGE}
+            alt="Studio Studio installation work"
+            fill
+            sizes="(min-width: 1024px) 360px, 90vw"
+            className="object-cover"
+          />
+        </div>
+
+        {/* Copy. */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+          }}
+        >
+          <h2
+            className="font-display about-title"
             style={{
-              fontWeight: 600,
-              fontSize: 'clamp(0.74rem, 1.4vw, 1.08rem)',
-              lineHeight: 1.5,
+              fontWeight: 700,
+              fontSize: 'clamp(1.6rem, 3.4vw, 3rem)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.02em',
               color: INK,
               margin: 0,
             }}
           >
-            {text}
+            {ABOUT_TITLE}
+          </h2>
+          <p
+            className="font-display about-subtitle"
+            style={{
+              fontWeight: 500,
+              fontSize: 'clamp(0.85rem, 1.5vw, 1.2rem)',
+              lineHeight: 1.5,
+              color: INK,
+              opacity: 0.75,
+              margin: 0,
+            }}
+          >
+            {ABOUT_SUBTITLE}
           </p>
-        ))}
+
+          {/* Learn More → the full /about page. pointer-events is gated to the
+              copy's legible window so it's only clickable while on screen. */}
+          <motion.div style={{ pointerEvents: ctaPointer, marginTop: '0.4rem' }}>
+            <Link
+              href="/about"
+              className="font-mono"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.55rem',
+                padding: '0.85rem 1.9rem',
+                background: BLUE,
+                color: '#ffffff',
+                borderRadius: '999px',
+                fontSize: '0.74rem',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+                transition: `opacity 200ms ${EASE}`,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+            >
+              Learn More
+              <span aria-hidden>→</span>
+            </Link>
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   )

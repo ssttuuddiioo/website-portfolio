@@ -9,7 +9,7 @@ interface Service {
   cta: string
 }
 
-const SERVICES: Service[] = [
+export const SERVICES: Service[] = [
   {
     title: 'Experiential production',
     body: 'We build large-scale installations and brand experiences from first concept through fabrication and on-site delivery. The full arc: design, build, install, run the thing live. Work for HBO, Google, Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central Station, and Cox.',
@@ -131,6 +131,12 @@ export function ServicesAccordion() {
               position: 'relative',
               background: BLUE,
               color: '#ffffff',
+              // Constant radius: reads as a full pill when collapsed and
+              // morphs into a softly-rounded rectangle as the bar grows on
+              // expand — one fluid shape, in sync with the height (no separate
+              // radius animation to lag behind). Kept tighter so the expanded
+              // panel reads as a clean rectangle, not an oversized lozenge.
+              borderRadius: '22px',
               mixBlendMode: BLENDS[i % BLENDS.length],
               // Asymmetric width + which edge the bar hugs — kept on expand.
               width: WIDTHS[i % WIDTHS.length],
@@ -161,7 +167,7 @@ export function ServicesAccordion() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '1rem',
-                padding: `${PADS_Y[i % PADS_Y.length]}rem 1.25rem`,
+                padding: `${PADS_Y[i % PADS_Y.length]}rem 1.5rem`,
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -175,6 +181,11 @@ export function ServicesAccordion() {
                   fontWeight: 700,
                   fontSize: 'clamp(1.05rem, 2vw, 1.55rem)',
                   letterSpacing: '-0.01em',
+                  lineHeight: 1,
+                  // Optical nudge: with line-height 1 the descenders push the
+                  // ink mass upward, so flex-centering reads slightly high.
+                  // Drop it a hair to sit true-centered in the collapsed pill.
+                  transform: 'translateY(0.06em)',
                 }}
               >
                 {service.title}
@@ -195,8 +206,9 @@ export function ServicesAccordion() {
                 style={{
                   overflow: 'hidden',
                   minHeight: 0,
-                  // Taller breathing room as the bar expands.
-                  padding: '0.6rem 2rem 2.4rem 1.25rem',
+                  // Generous gap below the title, matched left padding to the
+                  // title, and roomy bottom — a clean, balanced panel.
+                  padding: '1.5rem 2rem 2.4rem 1.5rem',
                   opacity: isOpen ? 1 : 0,
                   transition: `opacity 400ms ${EASE}`,
                 }}

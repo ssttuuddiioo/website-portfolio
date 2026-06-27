@@ -25,7 +25,7 @@ export interface LandingProject {
 }
 
 export const LANDING_PROJECTS: LandingProject[] = [
-  { title: 'Moment', client: 'Dolby', category: 'Immersive Installation', year: 2016, slug: 'dolby-moment', image: '/landing/opt/render3.avif', colStart: 2, colSpan: 3, rowStart: 1, rowSpan: 7 },
+  { title: 'Moment', client: 'Dolby', category: 'Immersive Installation', year: 2016, slug: 'dolby-moment', image: '/landing/opt/sugar.avif', colStart: 2, colSpan: 3, rowStart: 1, rowSpan: 7 },
   { title: 'Scatter and Rise', client: 'Goat Farm Arts', category: 'Public Art', year: 2023, slug: 'scatter-and-rise', image: '/landing/opt/agent3.avif', colStart: 8, colSpan: 4, rowStart: 5, rowSpan: 9 },
   { title: 'Gestures', client: 'Personal', category: 'Tech Experiment', year: 2014, image: '/landing/opt/gestures.avif', colStart: 4, colSpan: 4, rowStart: 14, rowSpan: 10 },
   { title: 'Cox Pillars', client: 'Cox Communications', category: 'Experiential', year: 2024, image: '/landing/opt/storybooth-4.avif', colStart: 9, colSpan: 3, rowStart: 19, rowSpan: 7 },

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 // A few strong frames from /public/landing/opt to cycle behind the lockup.
 const SLIDES = [
@@ -38,13 +39,22 @@ export function HeroBackdrop() {
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundImage: `url(${src})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            // Cross-fade only — rendered clean via next/image (no filter), so
+            // the frames match the agency card's crisp, color-faithful look.
             opacity: i === index ? 1 : 0,
             transition: 'opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1)',
           }}
-        />
+        >
+          <Image
+            src={src}
+            alt=""
+            fill
+            sizes="100vw"
+            priority={i === 0}
+            className="object-cover"
+            style={{ objectPosition: 'center' }}
+          />
+        </div>
       ))}
     </>
   )

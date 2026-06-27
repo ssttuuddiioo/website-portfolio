@@ -1,7 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import Link from 'next/link'
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion'
 import { useLenis } from '@/lib/lenis-provider'
 import { INK, BLUE, BG } from './landing-theme'
 
@@ -26,6 +32,28 @@ const SOCIALS = [
   { label: 'Email', href: '#contact', icon: 'mail', contact: true },
   { label: 'GitHub', href: 'https://github.com', icon: 'github' },
 ]
+
+// Simple line-style house, matching the social icons' stroke treatment. Used in
+// place of the "home" word in the nav dock.
+function HomeIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      style={{ display: 'block' }}
+    >
+      <path d="M3 11l9-7 9 7" />
+      <path d="M5 9.5V20h5v-6h4v6h5V9.5" />
+    </svg>
+  )
+}
 
 function SocialIcon({ name, size = 18 }: { name: string; size?: number }) {
   const c = {
@@ -73,7 +101,7 @@ function SocialIcon({ name, size = 18 }: { name: string; size?: number }) {
   }
 }
 
-function SocialRow({
+export function SocialRow({
   size,
   gap,
   horizontal = false,
@@ -136,12 +164,34 @@ function SocialRow({
 export function LandingSidebar({
   active,
   inPage = true,
+  dockOpacity,
+  dockY,
+  onNavigate,
 }: {
   active: string
   inPage?: boolean
+  // Reveal animation for the desktop dock, driven by the hero scroll. When
+  // omitted (e.g. on inner pages) the dock is simply always visible.
+  dockOpacity?: MotionValue<number>
+  dockY?: MotionValue<number>
+  // Section navigation owned by the landing page: sets the highlight and locks
+  // the scroll-spy for the duration of the programmatic scroll. When omitted
+  // we fall back to a plain Lenis scroll.
+  onNavigate?: (id: string) => void
 }) {
   const lenis = useLenis()
   const [open, setOpen] = useState(false)
+
+  // Fallback so the hooks run unconditionally even when no reveal is passed
+  // (inner pages): the dock just sits fully visible at rest.
+  const restOpacity = useMotionValue(1)
+  const restY = useMotionValue(0)
+  const navOpacity = dockOpacity ?? restOpacity
+  const navY = dockY ?? restY
+  // Don't let the dock capture clicks while it's still tucked away/fading in.
+  const dockPointer = useTransform(navOpacity, (o) =>
+    o > 0.05 ? 'auto' : 'none',
+  )
 
   // Lock background scroll while the mobile menu is open.
   useEffect(() => {
@@ -151,14 +201,125 @@ export function LandingSidebar({
     return () => lenis.start()
   }, [open, lenis])
 
-  const scrollTo = (id: string) => {
+  // Prefer the page-owned navigation (highlight + spy lock); otherwise fall
+  // back to a plain Lenis scroll. force: true so it runs even while the open
+  // mobile menu has called lenis.stop().
+  const go = (id: string) => {
+    if (onNavigate) return onNavigate(id)
     const el = document.getElementById(id)
     if (!el) return
-    // force: true so the scroll runs even though the open menu has called
-    // lenis.stop() — without it Lenis ignores scrollTo while stopped, which is
-    // why tapping a mobile menu item never navigated.
     if (lenis) lenis.scrollTo(el, { offset: 0, force: true })
     else el.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // Sliding highlight pill (desktop dock): we measure the active item's box and
+  // animate a blue pill to it, so it snaps between items as the active section
+  // changes — including continuously while a click-scroll is in flight.
+  const itemRefs = useRef<Record<string, HTMLLIElement | null>>({})
+  const [pill, setPill] = useState<{ x: number; width: number } | null>(null)
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = itemRefs.current[active]
+      if (!el) return
+      setPill({ x: el.offsetLeft, width: el.offsetWidth })
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    // Re-measure once the mono font has loaded so the metrics are final.
+    document.fonts?.ready?.then(measure).catch(() => {})
+    return () => window.removeEventListener('resize', measure)
+  }, [active])
+
+  // Horizontal dock item: padded mono label. The active item reads white over
+  // the sliding blue pill (rendered separately behind the row); inactive items
+  // are dimmed ink and lift on hover.
+  const renderDockItem = (item: Item) => {
+    const isActive = active === item.id
+    const labelStyle: React.CSSProperties = {
+      fontFamily: 'var(--font-mono), monospace',
+      fontSize: '0.95rem',
+      letterSpacing: '0.01em',
+      color: isActive ? '#fff' : INK,
+      opacity: isActive ? 1 : 0.4,
+      fontWeight: isActive ? 700 : 400,
+      transition: 'color 200ms, opacity 200ms',
+      background: 'none',
+      border: 'none',
+      padding: 0,
+      cursor: 'pointer',
+      whiteSpace: 'nowrap',
+    }
+    // Don't fight the white-on-blue active label with hover dimming.
+    const onEnter = (e: React.MouseEvent<HTMLElement>) => {
+      if (!isActive) e.currentTarget.style.opacity = '0.7'
+    }
+    const onLeave = (e: React.MouseEvent<HTMLElement>) => {
+      if (!isActive) e.currentTarget.style.opacity = '0.4'
+    }
+
+    // Home reads as a line-style house icon rather than the word.
+    const isHome = item.id === 'home'
+    const content = isHome ? <HomeIcon size={18} /> : item.label
+    const a11yLabel = isHome ? 'home' : undefined
+
+    let label: React.ReactNode
+    if (item.kind === 'route') {
+      label = (
+        <Link
+          href={item.href}
+          style={labelStyle}
+          aria-label={a11yLabel}
+          onMouseEnter={onEnter}
+          onMouseLeave={onLeave}
+        >
+          {content}
+        </Link>
+      )
+    } else if (inPage) {
+      label = (
+        <button
+          type="button"
+          style={labelStyle}
+          aria-label={a11yLabel}
+          onMouseEnter={onEnter}
+          onMouseLeave={onLeave}
+          onClick={() => go(item.id)}
+        >
+          {content}
+        </button>
+      )
+    } else {
+      label = (
+        <Link
+          href={`/#${item.id}`}
+          style={labelStyle}
+          aria-label={a11yLabel}
+          onMouseEnter={onEnter}
+          onMouseLeave={onLeave}
+        >
+          {content}
+        </Link>
+      )
+    }
+
+    return (
+      <li
+        key={item.id}
+        ref={(el) => {
+          itemRefs.current[item.id] = el
+        }}
+        className="flex items-center justify-center"
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          padding: '0.5rem 1.1rem',
+          borderRadius: 999,
+        }}
+      >
+        {label}
+      </li>
+    )
   }
 
   const renderRow = (item: Item, dotSize: number, fontSize: string) => {
@@ -202,7 +363,7 @@ export function LandingSidebar({
           onMouseEnter={onEnter}
           onMouseLeave={onLeave}
           onClick={() => {
-            scrollTo(item.id)
+            go(item.id)
             setOpen(false)
           }}
         >
@@ -248,44 +409,62 @@ export function LandingSidebar({
 
   return (
     <>
-      {/* Desktop — nav links on a solid background-colored bar pinned to the top */}
-      <nav
-        className="fixed left-0 right-0 top-0 hidden md:flex justify-center items-center z-[80]"
+      {/* Floating nav dock — pinned bottom-left on desktop, centered along the
+          bottom on mobile. A single cream pill of nav links with the sliding
+          blue highlight; runs full-bleed over the hero. Replaces the hamburger
+          on mobile (see the .nav-dock mobile overrides in the <style> below). */}
+      <motion.nav
+        className="flex nav-dock"
         style={{
+          position: 'fixed',
+          left: 'max(1.25rem, calc(var(--gutter, 1.5rem) + env(safe-area-inset-left)))',
+          // Bottom edge sits on the same 4vh line as the mirrored STUDIO wordmark.
+          bottom: 'calc(4vh + env(safe-area-inset-bottom))',
+          zIndex: 90,
           background: BG,
-          paddingTop: 'max(0.7rem, env(safe-area-inset-top))',
-          paddingBottom: '0.7rem',
+          borderRadius: 999,
+          padding: '0.35rem 0.5rem',
+          boxShadow: '0 12px 40px rgba(10,10,10,0.18)',
+          opacity: navOpacity,
+          y: navY,
+          pointerEvents: dockPointer,
         }}
       >
-        <ul className="flex flex-row items-center" style={{ gap: '1.5rem' }}>
-          {ITEMS.map((item) => renderRow(item, 7, '0.8rem'))}
+        <ul
+          className="flex flex-row items-center"
+          style={{ position: 'relative', gap: '0.25rem' }}
+        >
+          {/* Sliding blue highlight — snaps to the active item; springs along
+              continuously while a click-scroll updates the active section. */}
+          {pill && (
+            <motion.div
+              aria-hidden
+              initial={false}
+              animate={{ x: pill.x, width: pill.width }}
+              transition={{ type: 'spring', stiffness: 420, damping: 38 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                background: BLUE,
+                borderRadius: 999,
+                zIndex: 0,
+              }}
+            />
+          )}
+          {ITEMS.map((item) => renderDockItem(item))}
         </ul>
-      </nav>
+      </motion.nav>
 
-      {/* Desktop — social icons on a solid background-colored bar, bottom center */}
-      <div
-        className="fixed left-0 right-0 bottom-0 hidden md:flex justify-center items-center z-[80]"
-        style={{
-          background: BG,
-          paddingTop: '0.7rem',
-          paddingBottom: 'max(0.7rem, env(safe-area-inset-bottom))',
-        }}
-      >
-        <SocialRow
-          size={17}
-          gap="0.9rem"
-          horizontal
-          onContact={() => scrollTo('contact')}
-        />
-      </div>
-
-      {/* Mobile — hamburger top-left (becomes an X when open) */}
+      {/* Hamburger — retired now that the bottom dock serves mobile too. Kept in
+          the tree but force-hidden via .ss-hide; restore by removing that class. */}
       <button
         type="button"
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="md:hidden fixed top-0 left-0 z-[90] flex flex-col justify-center"
+        className="ss-hide md:hidden fixed top-0 left-0 z-[90] flex flex-col justify-center"
         style={{
           paddingTop: 'calc(var(--gutter, 1.5rem) + env(safe-area-inset-top))',
           paddingLeft: 'calc(var(--gutter, 1.5rem) + env(safe-area-inset-left))',
@@ -320,9 +499,9 @@ export function LandingSidebar({
         />
       </button>
 
-      {/* Mobile — full-screen menu */}
+      {/* Full-screen menu — also retired with the hamburger (force-hidden). */}
       <div
-        className="md:hidden fixed inset-0 z-[85]"
+        className="ss-hide md:hidden fixed inset-0 z-[85]"
         style={{
           background: BG,
           opacity: open ? 1 : 0,
@@ -342,12 +521,34 @@ export function LandingSidebar({
             size={22}
             gap="1.25rem"
             onContact={() => {
-              scrollTo('contact')
+              go('contact')
               setOpen(false)
             }}
           />
         </div>
       </div>
+
+      {/* Force-hide the retired hamburger + full-screen menu at every width, and
+          recenter/shrink the bottom dock so all the nav links fit on a phone.
+          Centering uses left/right + margin:auto (not transform) so Framer's
+          reveal y-animation on the dock survives. */}
+      <style>{`
+        .ss-hide { display: none !important; }
+        @media (max-width: 767px) {
+          .nav-dock {
+            left: 0 !important;
+            right: 0 !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            width: max-content !important;
+            max-width: calc(100vw - 0.75rem) !important;
+            padding: 0.3rem 0.4rem !important;
+          }
+          .nav-dock ul { gap: 0.05rem !important; }
+          .nav-dock li { padding: 0.5rem 0.45rem !important; }
+          .nav-dock a, .nav-dock button { font-size: 0.72rem !important; }
+        }
+      `}</style>
     </>
   )
 }
