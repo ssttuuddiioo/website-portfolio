@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect, useLayoutEffect } from 'react'
+import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 
 const useIsoLayoutEffect =
@@ -11,7 +12,7 @@ import { AgencyAbout } from './agency-about'
 import { AgencyFeaturedProjects } from './agency-featured-projects'
 import { HeroBackdrop } from './hero-backdrop'
 import { ContactForm } from './contact-form'
-import { ServicesAccordion, SERVICES } from './services-accordion'
+import { ServicesAccordion } from './services-accordion'
 import { IdeasSection } from './ideas-section'
 import { wordStyle, INK, BG, BLUE } from './landing-theme'
 import { useLenis } from '@/lib/lenis-provider'
@@ -324,17 +325,18 @@ export function AgencyExperience() {
         <section
           id="ideas"
           style={{
-            minHeight: '100svh',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-start',
-            padding: 'clamp(2rem, 5vh, 4rem) var(--gutter, 1.5rem) 12vh',
+            padding: 'clamp(2rem, 5vh, 4rem) var(--gutter, 1.5rem)',
           }}
         >
           <IdeasSection />
         </section>
 
-        {/* Contact — services list (left) + form (right). */}
+        <SectionDivider />
+
+        {/* Contact — header (image + title) over the pitch + form, mirroring /contact. */}
         <footer
           id="contact"
           style={{
@@ -342,9 +344,81 @@ export function AgencyExperience() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            padding: '12vh var(--gutter, 1.5rem)',
+            padding: 'clamp(2rem, 5vh, 4rem) var(--gutter, 1.5rem) 12vh',
           }}
         >
+          {/* Header — eyebrow + title + lede + image. */}
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '1100px',
+              margin: '0 auto',
+              marginBottom: 'clamp(2.5rem, 6vw, 4.5rem)',
+            }}
+          >
+            <span
+              className="font-mono"
+              style={{
+                display: 'block',
+                fontSize: '0.7rem',
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: 'rgba(10,10,10,0.5)',
+              }}
+            >
+              Contact
+            </span>
+            <h2
+              className="font-display"
+              style={{
+                fontWeight: 700,
+                fontSize: 'clamp(2.2rem, 6.5vw, 4.5rem)',
+                lineHeight: 1.02,
+                letterSpacing: '-0.03em',
+                color: INK,
+                margin: '1.25rem 0 0',
+                maxWidth: '15ch',
+              }}
+            >
+              Let&apos;s make something together.
+            </h2>
+            <p
+              className="font-display"
+              style={{
+                fontWeight: 500,
+                fontSize: 'clamp(1.05rem, 1.9vw, 1.45rem)',
+                lineHeight: 1.5,
+                color: 'rgba(10,10,10,0.7)',
+                margin: '1.75rem 0 0',
+                maxWidth: '52ch',
+              }}
+            >
+              An installation, an activation, a tool, a stage — tell us what you
+              have in mind. We partner with brands, agencies, and institutions to
+              turn ambitious ideas into rooms, screens, and stages people
+              remember.
+            </p>
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                aspectRatio: 16 / 9,
+                overflow: 'hidden',
+                borderRadius: '20px',
+                background: 'rgba(10,10,10,0.04)',
+                marginTop: 'clamp(2.5rem, 6vw, 4.5rem)',
+              }}
+            >
+              <Image
+                src="/landing/opt/space-labs.avif"
+                alt="Studio Studio installation work"
+                fill
+                sizes="(min-width: 1100px) 1100px, 92vw"
+                className="object-cover"
+              />
+            </div>
+          </div>
+
           <div
             className="grid grid-cols-1 md:grid-cols-2"
             style={{
@@ -355,57 +429,69 @@ export function AgencyExperience() {
               alignItems: 'start',
             }}
           >
-            {/* Left — what we do + location */}
+            {/* Left — pitch + details. */}
             <div
               className="flex flex-col font-display"
-              style={{ gap: '1.5rem', color: INK }}
+              style={{ gap: '1.25rem', color: INK }}
             >
-              <p
+              <span
                 className="font-mono"
                 style={{
-                  margin: 0,
+                  display: 'block',
                   fontSize: '0.7rem',
-                  letterSpacing: '0.1em',
+                  letterSpacing: '0.18em',
                   textTransform: 'uppercase',
                   color: 'rgba(10,10,10,0.5)',
                 }}
               >
-                What we do
-              </p>
-              <ul
+                Get in touch
+              </span>
+              <h2
                 style={{
-                  listStyle: 'none',
+                  fontWeight: 700,
+                  fontSize: 'clamp(1.8rem, 3.4vw, 2.8rem)',
+                  lineHeight: 1.05,
+                  letterSpacing: '-0.03em',
                   margin: 0,
-                  padding: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.55rem',
                 }}
               >
-                {SERVICES.map((s) => (
-                  <li
-                    key={s.title}
-                    style={{
-                      fontWeight: 600,
-                      fontSize: 'clamp(1rem, 1.6vw, 1.25rem)',
-                      lineHeight: 1.3,
-                      color: INK,
-                    }}
-                  >
-                    {s.title}
-                  </li>
-                ))}
-              </ul>
+                Have a project in mind?
+              </h2>
               <p
                 style={{
-                  margin: '0.5rem 0 0',
-                  maxWidth: '36ch',
+                  margin: 0,
+                  maxWidth: '38ch',
                   fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-                  lineHeight: 1.5,
+                  lineHeight: 1.6,
                   color: 'rgba(10,10,10,0.7)',
                 }}
               >
-                Based at{' '}
+                Tell us a little about it and we&apos;ll set up a call. Prefer
+                email? Reach us directly —
+              </p>
+              <a
+                href="mailto:pablo@studiostudio.nyc"
+                className="font-display"
+                style={{
+                  fontWeight: 600,
+                  fontSize: 'clamp(1.15rem, 2.2vw, 1.6rem)',
+                  letterSpacing: '-0.01em',
+                  color: BLUE,
+                  textDecoration: 'none',
+                }}
+              >
+                pablo@studiostudio.nyc
+              </a>
+              <p
+                style={{
+                  margin: '0.25rem 0 0',
+                  maxWidth: '36ch',
+                  fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
+                  lineHeight: 1.6,
+                  color: 'rgba(10,10,10,0.7)',
+                }}
+              >
+                You can find us at{' '}
                 <a
                   href="https://www.instagram.com/src__nyc/"
                   target="_blank"
@@ -418,19 +504,8 @@ export function AgencyExperience() {
               </p>
             </div>
 
-            {/* Right — heading + form */}
+            {/* Right — the form. */}
             <div>
-              <p
-                className="font-display"
-                style={{
-                  margin: '0 0 2rem',
-                  color: INK,
-                  fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-                  fontWeight: 500,
-                }}
-              >
-                Have a project in mind? Let&apos;s talk.
-              </p>
               <ContactForm />
             </div>
           </div>

@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // The agency experience is now the homepage; keep the old /agency URL working.
+      { source: '/agency', destination: '/', permanent: true },
       { source: '/the-light-around-us-1', destination: '/the-light-around-us', permanent: true },
       { source: '/orbitalsv1', destination: '/orbitals', permanent: true },
       { source: '/light-around-us', destination: '/the-light-around-us', permanent: true },

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { LandingExperience } from '@/components/landing/landing-experience'
+import { AgencyExperience } from '@/components/landing/agency-experience'
 import { HOMEPAGE_DESCRIPTION } from '@/lib/seo/metadata'
 
 const HOMEPAGE_TITLE =
@@ -21,5 +21,5 @@ export const metadata: Metadata = {
 }
 
 export default function HomePage() {
-  return <LandingExperience />
+  return <AgencyExperience />
 }
