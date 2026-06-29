@@ -12,6 +12,7 @@ import { AgencyAbout } from './agency-about'
 import { AgencyFeaturedProjects } from './agency-featured-projects'
 import { HeroBackdrop } from './hero-backdrop'
 import { ContactForm } from './contact-form'
+import { SubscribeStrip } from './subscribe-form'
 import { ServicesAccordion } from './services-accordion'
 import { IdeasSection } from './ideas-section'
 import { wordStyle, INK, BG, BLUE } from './landing-theme'
@@ -510,6 +511,9 @@ export function AgencyExperience() {
             </div>
           </div>
 
+          {/* Stay in the loop — compact newsletter strip. */}
+          <SubscribeStrip style={{ marginTop: 'clamp(3.5rem, 8vw, 6rem)' }} />
+
           {/* Footer band — social icons over the copyright, centered. */}
           <div
             className="flex flex-col items-center"
@@ -517,7 +521,7 @@ export function AgencyExperience() {
               width: '100%',
               maxWidth: '1100px',
               margin: '0 auto',
-              marginTop: 'clamp(4rem, 10vw, 8rem)',
+              marginTop: 'clamp(3rem, 7vw, 5rem)',
               gap: '1.5rem',
             }}
           >

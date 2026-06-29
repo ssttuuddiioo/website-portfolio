@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { LandingSidebar, SocialRow } from './landing-sidebar'
 import { ContactForm } from './contact-form'
+import { SubscribeStrip } from './subscribe-form'
 import { INK, BG, BLUE } from './landing-theme'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -287,6 +288,9 @@ export function ContactExperience() {
             padding: `0 ${GUTTER} clamp(8rem, 14vh, 11rem)`,
           }}
         >
+          {/* Stay in the loop — compact newsletter strip. */}
+          <SubscribeStrip style={{ marginBottom: 'clamp(3rem, 7vw, 5rem)' }} />
+
           <div
             className="flex flex-col items-center"
             style={{

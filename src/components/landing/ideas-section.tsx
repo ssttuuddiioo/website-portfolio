@@ -5,71 +5,10 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { INK, BLUE } from './landing-theme'
+import { SeeAllWork } from './see-all-work'
+import { IDEAS, IDEA_CATEGORIES, readMinutes, type Idea } from '@/lib/ideas'
 
-interface Idea {
-  title: string
-  category: string
-  excerpt: string
-  href: string
-  image: string
-  dark?: boolean
-}
-
-const CATEGORIES = ['All', 'Experiments', 'Stories', 'Random']
-
-const IDEAS: Idea[] = [
-  {
-    title: 'What do you want to let go of?',
-    category: 'Experiments',
-    excerpt:
-      'An interactive installation that invites people to name — and release — what they are carrying.',
-    href: '/ideas/let-go',
-    image: '/landing/opt/orbitals.avif',
-    dark: true,
-  },
-  {
-    title: 'Choosing Sucks',
-    category: 'Random',
-    excerpt:
-      'A decision tool for the chronically indecisive. Fewer options, better choices.',
-    href: '/ideas/choosing-sucks',
-    image: '/landing/opt/render3.avif',
-  },
-  {
-    title: 'Stage Controller',
-    category: 'Experiments',
-    excerpt:
-      'Run lighting cues live from an iPad, built on ENTTEC ELM.',
-    href: '/ideas/stage-controller',
-    image: '/landing/opt/installation-33.avif',
-    dark: true,
-  },
-  {
-    title: 'Pour Perfect',
-    category: 'Random',
-    excerpt:
-      'A guided pour-over timer that teaches ratio and rhythm as you brew.',
-    href: '/ideas/pour-perfect',
-    image: '/landing/opt/gg.avif',
-  },
-  {
-    title: 'Gestures',
-    category: 'Stories',
-    excerpt:
-      'A camera-driven piece that turns hand movement into living typography.',
-    href: '/ideas/gestures',
-    image: '/landing/opt/gestures.avif',
-    dark: true,
-  },
-  {
-    title: '9to5.tv',
-    category: 'Stories',
-    excerpt:
-      'A festival and public livestream out of The Goat Farm, with custom robots.',
-    href: '/ideas/9to5-tv',
-    image: '/landing/opt/agent3.avif',
-  },
-]
+const CATEGORIES = IDEA_CATEGORIES
 
 function IdeaCard({ idea }: { idea: Idea }) {
   return (
@@ -81,7 +20,7 @@ function IdeaCard({ idea }: { idea: Idea }) {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
       <Link
-        href={idea.href}
+        href={`/ideas/${idea.slug}`}
         className="group"
         style={{
           display: 'flex',
@@ -96,6 +35,7 @@ function IdeaCard({ idea }: { idea: Idea }) {
             width: '100%',
             aspectRatio: '3 / 2',
             overflow: 'hidden',
+            borderRadius: '10px',
             background: idea.dark ? '#0a0a0a' : 'rgba(10,10,10,0.04)',
           }}
         >
@@ -104,63 +44,58 @@ function IdeaCard({ idea }: { idea: Idea }) {
             alt={idea.title}
             fill
             sizes="(min-width: 768px) 33vw, 90vw"
-            className="object-cover"
-            style={{ transition: 'transform 800ms cubic-bezier(0.22, 1, 0.36, 1)' }}
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+            style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
           />
+        </div>
+
+        {/* Kicker — category tag + read time, the editorial metadata row. */}
+        <div
+          className="font-mono"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            margin: '1.15rem 0 0.55rem',
+            fontSize: '0.7rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+          }}
+        >
+          <span style={{ color: BLUE, fontWeight: 600 }}>{idea.category}</span>
+          <span aria-hidden style={{ color: 'rgba(10,10,10,0.25)' }}>
+            ·
+          </span>
+          <span style={{ color: 'rgba(10,10,10,0.45)' }}>
+            {readMinutes(idea.body)} min read
+          </span>
         </div>
 
         <h3
           className="font-display"
           style={{
-            margin: '1rem 0 0.5rem',
+            margin: 0,
             fontWeight: 700,
-            fontSize: '1.15rem',
-            letterSpacing: '-0.01em',
-            lineHeight: 1.2,
+            fontSize: '1.3rem',
+            letterSpacing: '-0.015em',
+            lineHeight: 1.18,
           }}
         >
           {idea.title}
         </h3>
-
-        <p
-          className="font-display"
-          style={{
-            margin: 0,
-            color: 'rgba(10,10,10,0.6)',
-            fontSize: '0.92rem',
-            lineHeight: 1.45,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
-          {idea.excerpt}
-        </p>
-
-        <span
-          className="font-mono group-hover:opacity-70"
-          style={{
-            marginTop: '0.9rem',
-            color: BLUE,
-            fontWeight: 500,
-            fontSize: '0.78rem',
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-            transition: 'opacity 200ms',
-          }}
-        >
-          Read more
-        </span>
       </Link>
     </motion.div>
   )
 }
 
+/** Homepage teaser caps the grid; the full archive lives at /ideas. */
+const HOME_LIMIT = 6
+
 export function IdeasSection() {
   const [active, setActive] = useState('All')
   const filtered =
     active === 'All' ? IDEAS : IDEAS.filter((i) => i.category === active)
+  const visible = filtered.slice(0, HOME_LIMIT)
 
   return (
     <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
@@ -203,10 +138,19 @@ export function IdeasSection() {
         className="grid grid-cols-1 md:grid-cols-3"
         style={{ gap: 'clamp(2rem, 3vw, 3rem) clamp(1.5rem, 2.5vw, 2.5rem)' }}
       >
-        {filtered.map((idea) => (
+        {visible.map((idea) => (
           <IdeaCard key={idea.title} idea={idea} />
         ))}
       </motion.div>
+
+      {/* See all posts → full archive. Same bouncing DVD-pill as "View All
+          Projects" on the work teaser — bounded to this section, not roaming. */}
+      <SeeAllWork
+        href="/ideas"
+        label="See All Posts"
+        ballSize="clamp(300px, 36vw, 480px)"
+        height="clamp(260px, 32vh, 420px)"
+      />
     </div>
   )
 }

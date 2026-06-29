@@ -82,7 +82,7 @@ export function AgencyFeaturedProjects() {
   return (
     <section
       style={{
-        maxWidth: '1440px',
+        maxWidth: '1800px',
         margin: '0 auto',
         padding: '3rem var(--gutter, 1.5rem) 2rem',
       }}
@@ -91,7 +91,7 @@ export function AgencyFeaturedProjects() {
         .featured-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: clamp(1.5rem, 3vw, 2.5rem);
+          gap: clamp(0.75rem, 1.5vw, 1.25rem);
         }
         @media (min-width: 768px) {
           .featured-grid { grid-template-columns: repeat(2, 1fr); }
@@ -110,8 +110,7 @@ export function AgencyFeaturedProjects() {
         href="/agency/work"
         label="View All Projects"
         ballSize="clamp(300px, 36vw, 480px)"
-        height="clamp(120px, 14vh, 180px)"
-        roam
+        height="clamp(260px, 32vh, 420px)"
       />
     </section>
   )
