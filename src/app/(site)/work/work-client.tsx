@@ -30,9 +30,6 @@ const PLACEHOLDER_PROJECTS = [
   { title: 'Orbitals', slug: 'orbitals', client: 'Personal', year: 2018, category: 'Art', image: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&q=75', featured: false },
   { title: 'Sound Journeys', slug: 'sound-journeys', client: 'Personal', year: 2017, category: 'Art', image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=75', featured: false },
   { title: 'Snowblind', slug: 'snowblind', client: 'Personal', year: 2016, category: 'Art', image: 'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=800&q=75', featured: false },
-  { title: 'Cox Conserves', slug: 'cox-conserves', client: 'Cox Communications', year: 2024, category: 'Commercial', image: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&q=75', featured: false },
-  { title: 'HydroStation', slug: 'hydrostation', client: 'Hope Hydration', year: 2024, category: 'Software', image: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=800&q=75', featured: false },
-  { title: 'Between The Two', slug: 'between-the-two', client: 'Personal', year: 2016, category: 'Art', image: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800&q=75', featured: false },
   { title: 'Stage Controller', slug: 'stage-controller', client: 'ENTTEC', year: 2023, category: 'Software', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&q=75', featured: false },
 ]
 

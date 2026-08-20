@@ -137,9 +137,9 @@ function IdeaRow({ idea, index }: { idea: Idea; index: number }) {
  * category/read-time kicker, headline, and dek. Shared footer below.
  */
 export function IdeasIndex() {
-  const [active, setActive] = useState('All')
+  const [active, setActive] = useState('All notes')
   const filtered =
-    active === 'All' ? IDEAS : IDEAS.filter((i) => i.category === active)
+    active === 'All notes' ? IDEAS : IDEAS.filter((i) => i.category === active)
 
   return (
     <>
@@ -218,7 +218,7 @@ export function IdeasIndex() {
                 color: INK,
               }}
             >
-              Ideas
+              Notes
             </h1>
             <p
               className="font-display"

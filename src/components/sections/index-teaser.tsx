@@ -15,8 +15,6 @@ const PLACEHOLDER_PROJECTS = [
   { title: 'Sound Journeys', client: 'Personal', year: 2017, tag: 'public art', image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600&q=75' },
   { title: 'Snowblind', client: 'Personal', year: 2016, tag: 'creative', image: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=600&q=75' },
   { title: 'Living Walls', client: 'Mercedes-Benz Stadium', year: 2024, tag: 'experiential', image: 'https://images.unsplash.com/photo-1545987796-200677ee1011?w=600&q=75' },
-  { title: 'Cox Conserves', client: 'Cox Communications', year: 2024, tag: 'experiential', image: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&q=75' },
-  { title: 'Between The Two', client: 'Personal', year: 2016, tag: 'public art', image: 'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=600&q=75' },
   { title: 'HydroStation', client: 'Bould Design', year: 2024, tag: 'tech experiment', image: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=600&q=75' },
 ]
 

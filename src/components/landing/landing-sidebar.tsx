@@ -9,6 +9,7 @@ import {
   type MotionValue,
 } from 'framer-motion'
 import { useLenis } from '@/lib/lenis-provider'
+import { centerOffset } from './use-scroll-to-section'
 import { INK, BLUE, BG } from './landing-theme'
 
 type Item =
@@ -20,7 +21,7 @@ const ITEMS: Item[] = [
   { id: 'about', label: 'about', kind: 'scroll' },
   { id: 'work', label: 'work', kind: 'scroll' },
   { id: 'services', label: 'services', kind: 'scroll' },
-  { id: 'ideas', label: 'ideas', kind: 'scroll' },
+  // { id: 'ideas', label: 'notes', kind: 'scroll' }, // hidden for now
   { id: 'contact', label: 'contact', kind: 'scroll' },
 ]
 
@@ -208,8 +209,9 @@ export function LandingSidebar({
     if (onNavigate) return onNavigate(id)
     const el = document.getElementById(id)
     if (!el) return
-    if (lenis) lenis.scrollTo(el, { offset: 0, force: true })
-    else el.scrollIntoView({ behavior: 'smooth' })
+    const offset = centerOffset(el)
+    if (lenis) lenis.scrollTo(el, { offset, force: true })
+    else el.scrollIntoView({ behavior: 'smooth', block: offset < 0 ? 'center' : 'start' })
   }
 
   // Sliding highlight pill (desktop dock): we measure the active item's box and

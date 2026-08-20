@@ -92,9 +92,9 @@ function IdeaCard({ idea }: { idea: Idea }) {
 const HOME_LIMIT = 6
 
 export function IdeasSection() {
-  const [active, setActive] = useState('All')
+  const [active, setActive] = useState('All notes')
   const filtered =
-    active === 'All' ? IDEAS : IDEAS.filter((i) => i.category === active)
+    active === 'All notes' ? IDEAS : IDEAS.filter((i) => i.category === active)
   const visible = filtered.slice(0, HOME_LIMIT)
 
   return (
@@ -147,7 +147,7 @@ export function IdeasSection() {
           Projects" on the work teaser — bounded to this section, not roaming. */}
       <SeeAllWork
         href="/ideas"
-        label="See All Posts"
+        label="See All Notes"
         ballSize="clamp(300px, 36vw, 480px)"
         height="clamp(260px, 32vh, 420px)"
       />

@@ -10,7 +10,7 @@ export interface Idea {
   title: string
   /** One-line subtitle shown under the title on both card and detail. */
   subtitle: string
-  category: 'Experiments' | 'Stories' | 'Random' | 'Resources' | 'Newsletters'
+  category: 'Experiments' | 'Stories' | 'Resources' | 'Newsletters'
   /** Short clamp-to-two-lines blurb for the listing card. */
   excerpt: string
   /** Long-form body for the detail page (~1,000 chars). Split on blank lines. */
@@ -21,10 +21,9 @@ export interface Idea {
 }
 
 export const IDEA_CATEGORIES = [
-  'All',
+  'All notes',
   'Experiments',
   'Stories',
-  'Random',
   'Resources',
   'Newsletters',
 ] as const
@@ -51,7 +50,7 @@ What surprised me was how honest people were when they believed the words would 
     slug: 'choosing-sucks',
     title: 'Choosing Sucks',
     subtitle: 'A decision tool for the chronically indecisive.',
-    category: 'Random',
+    category: 'Experiments',
     excerpt:
       'A decision tool for the chronically indecisive. Fewer options, better choices.',
     body: `My friend Allister and I lose real time to the same conversation: where should we eat? Neither of us wants to decide, both of us have opinions, and the group chat goes quiet until someone gives up. So we built the thing that ends it.
@@ -83,7 +82,7 @@ It started as a tool for my own gigs and quietly became the way I run live light
     slug: 'pour-perfect',
     title: 'Pour Perfect',
     subtitle: 'A guided pour-over timer that teaches as you brew.',
-    category: 'Random',
+    category: 'Experiments',
     excerpt:
       'A guided pour-over timer that teaches ratio and rhythm as you brew.',
     body: `Good coffee is mostly rhythm — how much water, how fast, when to wait. I knew the numbers but my hands never quite trusted them, so I built a timer that walks me through a pour the way a metronome walks a musician through a phrase.
@@ -108,7 +107,7 @@ A camera tracks your hands and a type system answers in real time — letters th
 The build is computer vision feeding a custom renderer, but the engineering was never the story. The story was watching strangers get shy, then bold, then performative in front of it — discovering that they were writing with their whole arm. VICE picked it up, and the footage that traveled was always the same: someone laughing at what their own gesture turned into.
 
 It taught me that interaction is choreography. Give people a clear cause and a surprising effect and they will compose something you never could have scripted. I still pull pieces of its renderer into new work.`,
-    image: '/landing/opt/gestures.avif',
+    image: '/landing/opt/gestures.webp',
     dark: true,
   },
   {
@@ -141,7 +140,7 @@ The Field Kit is the stuff I actually use, not a textbook. Pinout diagrams for t
 None of it is proprietary and none of it is precious. It is the kind of knowledge that gets passed around backstage in a hurry, written down so it stops living only in my head and the heads of a few generous people who taught me.
 
 If you light shows, take what is useful and ignore the rest. If you find a mistake — and there will be mistakes — tell me, and I will fix it for the next person who is standing in an empty room at 7am trying to get a rig to talk.`,
-    image: '/landing/opt/space-labs.avif',
+    image: '/landing/opt/light-around-us2.avif',
     dark: true,
   },
   {
@@ -190,7 +189,7 @@ They span the things I care about — light and space, creative technology, the 
 I keep this list short on purpose, because a recommendation only means something if it is rare. When I add one it is because it has proven itself over months, and when one starts coasting I drop it. Each entry gets a line on who it is for and why it stuck.
 
 Think of it as the inverse of an algorithm: a small, human, slow-moving set of pointers from someone whose taste you can choose to trust or ignore. Steal the ones that fit, and tell me what I am missing.`,
-    image: '/landing/opt/img-7745.avif',
+    image: '/landing/opt/light-around-us.avif',
   },
 ]
 

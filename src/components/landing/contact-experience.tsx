@@ -179,18 +179,6 @@ export function ContactExperience() {
               </p>
             </Reveal>
           </div>
-
-          <Reveal delay={0.15} style={{ marginTop: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
-            <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-              <FramedImage
-                src="/landing/opt/space-labs.avif"
-                alt="Studio Studio installation work"
-                ratio={16 / 9}
-                sizes="(min-width: 1100px) 1100px, 92vw"
-                priority
-              />
-            </div>
-          </Reveal>
         </section>
 
         {/* ---- Contact block ----------------------------------------------- */}
@@ -240,7 +228,7 @@ export function ContactExperience() {
                   email? Reach us directly —
                 </p>
                 <a
-                  href="mailto:pablo@studiostudio.nyc"
+                  href="mailto:hello@studiostudio.nyc"
                   className="font-display"
                   style={{
                     fontWeight: 600,
@@ -250,34 +238,32 @@ export function ContactExperience() {
                     textDecoration: 'none',
                   }}
                 >
-                  pablo@studiostudio.nyc
+                  hello@studiostudio.nyc
                 </a>
-                <p
-                  style={{
-                    margin: '0.25rem 0 0',
-                    maxWidth: '36ch',
-                    fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-                    lineHeight: 1.6,
-                    color: 'rgba(10,10,10,0.7)',
-                  }}
-                >
-                  You can find us at{' '}
-                  <a
-                    href="https://www.instagram.com/src__nyc/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: BLUE, textDecoration: 'underline' }}
-                  >
-                    SRC_NYC
-                  </a>
-                  , a shared studio in Brooklyn, NY.
-                </p>
               </div>
 
               {/* Right — the form. */}
               <div>
                 <ContactForm />
               </div>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ---- Image ------------------------------------------------------- */}
+        <section
+          style={{
+            padding: `0 ${GUTTER} clamp(3rem, 7vw, 6rem)`,
+          }}
+        >
+          <Reveal>
+            <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
+              <FramedImage
+                src="/landing/opt/light-around-us2.avif"
+                alt="Studio Studio installation work"
+                ratio={16 / 9}
+                sizes="(min-width: 1100px) 1100px, 92vw"
+              />
             </div>
           </Reveal>
         </section>

@@ -17,9 +17,9 @@ interface Service {
 
 export const SERVICES: Service[] = [
   {
-    title: 'Experiential production',
-    body: 'We build large-scale installations and brand experiences from first concept through fabrication and on-site delivery. The full arc: design, build, install, run the thing live. Work for HBO, Google, Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central Station, and Cox.',
-    cta: 'experiential',
+    title: 'Consulting',
+    body: 'We help brands, agencies, and institutions figure out what an experience should be before anyone starts building. Strategy, concept, and direction from the front of the process.',
+    cta: 'direction',
   },
   {
     title: 'Creative technology',
@@ -32,9 +32,9 @@ export const SERVICES: Service[] = [
     cta: 'lighting',
   },
   {
-    title: 'Creative direction and consulting',
-    body: 'We help brands, agencies, and institutions figure out what an experience should be before anyone starts building. Strategy, concept, and direction from the front of the process.',
-    cta: 'direction',
+    title: 'Experiential production',
+    body: 'We build large-scale installations and brand experiences from first concept through fabrication and on-site delivery. The full arc: design, build, install, run the thing live. Work for HBO, Google, Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central Station, and Cox.',
+    cta: 'experiential',
   },
   {
     title: 'Exhibitions and installations',
@@ -47,8 +47,8 @@ export const SERVICES: Service[] = [
     cta: 'commissioned',
   },
   {
-    title: 'Teaching',
-    body: 'We mentor at NYU ITP and the Steve Jobs Archive, working with people building at the edge of art and technology.',
+    title: 'Mentorship',
+    body: 'We mentor at NYU ITP and the Steve Jobs Archive, and take on people one on one. Sitting with artists, designers, and technologists working out what they are making, how to build it, and how to get it into the world.',
     cta: 'all',
   },
 ]

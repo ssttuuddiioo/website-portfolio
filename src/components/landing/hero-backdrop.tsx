@@ -5,9 +5,9 @@ import Image from 'next/image'
 
 // A few strong frames from /public/landing/opt to cycle behind the lockup.
 const SLIDES = [
-  '/landing/opt/space-labs.avif',
+  '/landing/opt/light-around-us2.avif',
   '/landing/opt/orbitals.avif',
-  '/landing/opt/gestures.avif',
+  '/landing/opt/superbowl.avif',
   '/landing/opt/installation-33.avif',
   '/landing/opt/snow.avif',
 ]

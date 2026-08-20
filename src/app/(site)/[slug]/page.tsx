@@ -49,6 +49,7 @@ export async function generateMetadata({
     return buildProjectMetadata({
       title: `${placeholder.title} — ${placeholder.client}`,
       slug,
+      path: `/${slug}`,
       description: placeholder.about,
       ogImageUrl: placeholder.heroImage,
     })
@@ -64,6 +65,7 @@ export async function generateMetadata({
       title: project.title,
       seoTitle: project.seo?.title,
       slug,
+      path: `/${slug}`,
       seoDescription: project.seo?.description || project.seoDescription,
       subtitle: project.subtitle,
       ogImageUrl: ogSource ? urlFor(ogSource).width(1200).height(630).url() : undefined,

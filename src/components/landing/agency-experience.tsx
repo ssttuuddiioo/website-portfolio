@@ -6,7 +6,6 @@ import { motion, useReducedMotion } from 'framer-motion'
 
 const useIsoLayoutEffect =
   typeof window !== 'undefined' ? useLayoutEffect : useEffect
-import { CursorTrail } from './cursor-trail'
 import { LandingSidebar, SocialRow } from './landing-sidebar'
 import { AgencyAbout } from './agency-about'
 import { AgencyFeaturedProjects } from './agency-featured-projects'
@@ -14,18 +13,18 @@ import { HeroBackdrop } from './hero-backdrop'
 import { ContactForm } from './contact-form'
 import { SubscribeStrip } from './subscribe-form'
 import { ServicesAccordion } from './services-accordion'
-import { IdeasSection } from './ideas-section'
+// import { IdeasSection } from './ideas-section' // notes section hidden for now
 import { wordStyle, INK, BG, BLUE } from './landing-theme'
 import { useLenis } from '@/lib/lenis-provider'
+import { centerOffset } from './use-scroll-to-section'
 
-const SPY_IDS = ['home', 'work', 'services', 'ideas', 'contact']
+const SPY_IDS = ['home', 'work', 'services', 'contact']
 
 // The bottom corner wordmark swaps to the active section's name (staying
 // rotated 180°); home/about fall back to STUDIO.
 const SECTION_WORDS: Record<string, string> = {
   work: 'WORK',
   services: 'SERVICES',
-  ideas: 'IDEAS',
   contact: 'CONTACT',
 }
 
@@ -33,13 +32,18 @@ const SECTION_WORDS: Record<string, string> = {
 const WORD_SCALE_DESKTOP = 0.425
 const WORD_SCALE_MOBILE = 0.51
 // Clearance from the page edges (px). Desktop: the top word tucks into the
-// header band (tight top, looser bottom). Mobile: roomier, symmetric padding —
-// double the old bottom clearance, matched top and bottom.
+// header band (tight top, looser bottom). Mobile: both words ride together at
+// the top of the page, so the pair hugs the top edge and MARGIN_BOT_MOBILE
+// only matters if the corner layout ever comes back.
 const MARGIN_X = 40
 const MARGIN_TOP_DESKTOP = 10
 const MARGIN_BOT_DESKTOP = 56
-const MARGIN_TOP_MOBILE = 112
+const MARGIN_TOP_MOBILE = 28
 const MARGIN_BOT_MOBILE = 112
+// Mobile stacks both marks at the top of the page instead of pinning one to
+// each corner: the second word sits directly under the first (still mirrored,
+// so it reads as a reflection) with this much air between them.
+const MOBILE_STACK_GAP = 6
 // Smooth ease-in-out (gentle acceleration + deceleration).
 const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const
 
@@ -65,11 +69,12 @@ function SectionDivider() {
 
 /**
  * Agency variant of the landing experience. The hero plays as an ON-LOAD
- * reveal (no scroll-jacking): the centered STUDIO / STUDIO lockup holds a beat,
- * then separates — top word to the top-left corner, bottom word to the
- * bottom-right — while the centered title + subtitle + CTAs rise in. The corner
- * marks stay posted as a persistent signature; the rest of the page (work,
- * services, ideas, contact) scrolls normally beneath them.
+ * reveal (no scroll-jacking): the two STUDIO marks start off-canvas at final
+ * size and glide in horizontally from their own edge — the top word in from the
+ * left to the top-left corner, the bottom word in from the right to the
+ * bottom-right. The corner marks stay posted as a persistent signature; the
+ * rest of the page (work, services, ideas, contact) scrolls normally beneath
+ * them.
  */
 export function AgencyExperience() {
   const reduce = useReducedMotion()
@@ -91,8 +96,18 @@ export function AgencyExperience() {
   const MARGIN_BOT = isMobile ? MARGIN_BOT_MOBILE : MARGIN_BOT_DESKTOP
 
   // Measured pixel offsets from each word's resting (centered) position to its
-  // corner. Recomputed on resize / font load so the corners always land right.
-  const [geo, setGeo] = useState({ topX: 0, topY: 0, botX: 0, botY: 0 })
+  // corner, plus the off-canvas start each word glides in from (top word from
+  // the left edge, bottom word from the right). Recomputed on resize / font
+  // load so the corners always land right.
+  const [geo, setGeo] = useState({
+    topX: 0,
+    topY: 0,
+    botX: 0,
+    botY: 0,
+    topXOff: 0,
+    botXOff: 0,
+    measured: false,
+  })
   useIsoLayoutEffect(() => {
     function measure() {
       const el = topWordRef.current
@@ -109,11 +124,21 @@ export function AgencyExperience() {
       const topCy = H / 2 - (wH + gap) / 2
       const botCx = W / 2
       const botCy = H / 2 + (wH + gap) / 2
+      // Fully clear of the viewport edge, plus a little slack, so nothing
+      // peeks in before the glide starts.
+      const OFF_PAD = 24
+      // Mobile: both words stacked top-left. Desktop: top-left + bottom-right.
+      const botLeft = MARGIN_X + halfW - botCx
+      const botStackedY =
+        MARGIN_TOP + wH * WORD_SCALE + MOBILE_STACK_GAP + halfH - botCy
       setGeo({
         topX: MARGIN_X + halfW - topCx,
         topY: MARGIN_TOP + halfH - topCy,
-        botX: W - MARGIN_X - halfW - botCx,
-        botY: H - MARGIN_BOT - halfH - botCy,
+        botX: isMobile ? botLeft : W - MARGIN_X - halfW - botCx,
+        botY: isMobile ? botStackedY : H - MARGIN_BOT - halfH - botCy,
+        topXOff: -halfW - OFF_PAD - topCx,
+        botXOff: W + halfW + OFF_PAD - botCx,
+        measured: true,
       })
     }
     measure()
@@ -126,12 +151,12 @@ export function AgencyExperience() {
     }
   }, [isMobile, WORD_SCALE, MARGIN_TOP, MARGIN_BOT])
 
-  // Once the corners are measured, hold the centered lockup a beat, then reveal.
+  // Once the corners are measured, hold a beat off-canvas, then glide in.
   const [revealed, setRevealed] = useState(false)
   useEffect(() => {
     if (revealed) return
-    if (geo.topX === 0 && geo.topY === 0) return
-    const t = window.setTimeout(() => setRevealed(true), reduce ? 0 : 500)
+    if (!geo.measured) return
+    const t = window.setTimeout(() => setRevealed(true), reduce ? 0 : 300)
     return () => window.clearTimeout(t)
   }, [geo, revealed, reduce])
 
@@ -151,8 +176,9 @@ export function AgencyExperience() {
     if (!el) return
     setActive(id)
     suppressSpy.current = true
-    if (lenis) lenis.scrollTo(el, { offset: 0, force: true })
-    else el.scrollIntoView({ behavior: 'smooth' })
+    const offset = centerOffset(el)
+    if (lenis) lenis.scrollTo(el, { offset, force: true })
+    else el.scrollIntoView({ behavior: 'smooth', block: offset < 0 ? 'center' : 'start' })
   }
 
   // Release the spy lock on a genuine user scroll gesture. Lenis intercepts the
@@ -243,19 +269,29 @@ export function AgencyExperience() {
     }
   }, [bottomText])
 
-  const wordTransition = reduce
-    ? { duration: 0 }
-    : { duration: 1.3, ease: EASE_IN_OUT }
-  const topTarget = revealed
-    ? { x: geo.topX, y: geo.topY, scale: WORD_SCALE }
-    : { x: 0, y: 0, scale: 1 }
-  const botTarget = revealed
-    ? { x: geo.botX, y: geo.botY, scale: WORD_SCALE, rotate: 180 }
-    : { x: 0, y: 0, scale: 1, rotate: 180 }
+  // Pre-reveal the words are parked off-canvas at their final size and corner
+  // height — snapped there (duration 0) so measurement never reads as motion.
+  // The reveal is then a pure horizontal glide into the corner.
+  const wordTransition =
+    reduce || !revealed
+      ? { duration: 0 }
+      : { duration: 1.3, ease: EASE_IN_OUT }
+  const topTarget = {
+    x: revealed ? geo.topX : geo.topXOff,
+    y: geo.topY,
+    scale: WORD_SCALE,
+    opacity: geo.measured ? 1 : 0,
+  }
+  const botTarget = {
+    x: revealed ? geo.botX : geo.botXOff,
+    y: geo.botY,
+    scale: WORD_SCALE,
+    rotate: 180,
+    opacity: geo.measured ? 1 : 0,
+  }
 
   return (
     <>
-      <CursorTrail rgb="31,68,255" />
       <LandingSidebar active={active} inPage onNavigate={scrollToSection} />
 
       {/* Page content. */}
@@ -274,6 +310,15 @@ export function AgencyExperience() {
             padding: '0 var(--gutter, 1.5rem)',
           }}
         >
+          {/* The page's <h1>. The hero is deliberately image-only, so the
+              heading is visually hidden — it exists for screen readers and for
+              anything parsing the page (search, LLM crawlers), which otherwise
+              find no statement of what this site is outside the <title> tag. */}
+          <h1 className="sr-only">
+            Studio Studio — experiential design and creative technology in
+            Brooklyn, New York
+          </h1>
+
           {/* Background photo + legibility scrim. The animating corner
               wordmarks (pinned, below) are the only foreground now. */}
           <div aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
@@ -282,17 +327,19 @@ export function AgencyExperience() {
               style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'rgba(242,240,236,0.3)',
+                background: 'rgba(240,240,249,0.3)',
               }}
             />
           </div>
         </section>
 
-        {/* About — project image + value prop, under the hero fold. */}
+        {/* About — three-column value prop, under the hero fold. The block owns
+            its own max-width + gutter so its columns sit on the same grid as the
+            selected-work rows below. */}
         <section
           id="about"
           style={{
-            padding: 'clamp(3rem, 7vw, 6rem) var(--gutter, 1.5rem)',
+            padding: 'clamp(3rem, 7vw, 6rem) 0',
           }}
         >
           <AgencyAbout />
@@ -320,9 +367,12 @@ export function AgencyExperience() {
           <ServicesAccordion />
         </section>
 
+        {/* Notes — hidden for now. Restore by uncommenting this block, the
+            IdeasSection import, and the 'ideas' entries in SPY_IDS /
+            SECTION_WORDS / the sidebar ITEMS list.
+
         <SectionDivider />
 
-        {/* Ideas — filterable grid. */}
         <section
           id="ideas"
           style={{
@@ -334,6 +384,7 @@ export function AgencyExperience() {
         >
           <IdeasSection />
         </section>
+        */}
 
         <SectionDivider />
 
@@ -399,25 +450,6 @@ export function AgencyExperience() {
               turn ambitious ideas into rooms, screens, and stages people
               remember.
             </p>
-            <div
-              style={{
-                position: 'relative',
-                width: '100%',
-                aspectRatio: 16 / 9,
-                overflow: 'hidden',
-                borderRadius: '20px',
-                background: 'rgba(10,10,10,0.04)',
-                marginTop: 'clamp(2.5rem, 6vw, 4.5rem)',
-              }}
-            >
-              <Image
-                src="/landing/opt/space-labs.avif"
-                alt="Studio Studio installation work"
-                fill
-                sizes="(min-width: 1100px) 1100px, 92vw"
-                className="object-cover"
-              />
-            </div>
           </div>
 
           <div
@@ -471,7 +503,7 @@ export function AgencyExperience() {
                 email? Reach us directly —
               </p>
               <a
-                href="mailto:pablo@studiostudio.nyc"
+                href="mailto:hello@studiostudio.nyc"
                 className="font-display"
                 style={{
                   fontWeight: 600,
@@ -481,34 +513,36 @@ export function AgencyExperience() {
                   textDecoration: 'none',
                 }}
               >
-                pablo@studiostudio.nyc
+                hello@studiostudio.nyc
               </a>
-              <p
-                style={{
-                  margin: '0.25rem 0 0',
-                  maxWidth: '36ch',
-                  fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-                  lineHeight: 1.6,
-                  color: 'rgba(10,10,10,0.7)',
-                }}
-              >
-                You can find us at{' '}
-                <a
-                  href="https://www.instagram.com/src__nyc/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: BLUE, textDecoration: 'underline' }}
-                >
-                  SRC_NYC
-                </a>
-                , a shared studio in Brooklyn, NY.
-              </p>
             </div>
 
             {/* Right — the form. */}
             <div>
               <ContactForm />
             </div>
+          </div>
+
+          {/* Image — sits under the pitch + form, mirroring /contact. */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '1100px',
+              margin: 'clamp(2.5rem, 6vw, 4.5rem) auto 0',
+              aspectRatio: 16 / 9,
+              overflow: 'hidden',
+              borderRadius: '20px',
+              background: 'rgba(10,10,10,0.04)',
+            }}
+          >
+            <Image
+              src="/landing/opt/light-around-us2.avif"
+              alt="Studio Studio installation work"
+              fill
+              sizes="(min-width: 1100px) 1100px, 92vw"
+              className="object-cover"
+            />
           </div>
 
           {/* Stay in the loop — compact newsletter strip. */}
@@ -543,7 +577,8 @@ export function AgencyExperience() {
       </div>
 
       {/* Pinned wordmark — difference blend inverts imagery beneath. The two
-          words separate to opposite corners on load and stay posted there.
+          words glide in from opposite side edges on load and stay posted in
+          their corners.
           Above the nav/social bars (z80) so the top-left mark reads in the
           header band; pointer-events:none keeps the nav clickable. */}
       <div
@@ -561,17 +596,22 @@ export function AgencyExperience() {
             className="flex flex-col items-center"
             style={{ gap: 'min(1.3vw, 1.05rem)' }}
           >
-            <motion.h1
+            {/* Decorative pinned type, not document structure — the wrapper is
+                aria-hidden and the bottom word's text swaps as you scroll, so
+                these must not be headings. The page's real <h1> is in the hero.
+                wordStyle sets every type property explicitly (margin included),
+                so the tag is purely a semantics change. */}
+            <motion.div
               ref={topWordRef}
-              initial={{ x: 0, y: 0, scale: 1 }}
+              initial={false}
               animate={topTarget}
               transition={wordTransition}
               style={wordStyle}
             >
               STUDIO
-            </motion.h1>
-            <motion.h1
-              initial={{ x: 0, y: 0, scale: 1, rotate: 180 }}
+            </motion.div>
+            <motion.div
+              initial={false}
               animate={botTarget}
               transition={wordTransition}
               style={wordStyle}
@@ -586,7 +626,7 @@ export function AgencyExperience() {
               >
                 {bottomText}
               </span>
-            </motion.h1>
+            </motion.div>
           </div>
         </div>
       </div>

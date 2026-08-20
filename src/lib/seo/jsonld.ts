@@ -159,6 +159,8 @@ export function personSchema(p?: SanityPerson | null): JsonLdObject {
 export interface CreativeWorkInput {
   title: string
   slug: string
+  /** Route the work is published at. Defaults to the legacy `/[slug]`. */
+  path?: string
   description?: string
   client?: string
   clientUrl?: string
@@ -174,7 +176,7 @@ export function creativeWorkSchema(input: CreativeWorkInput): JsonLdObject {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: input.title,
-    url: `${SITE_URL}/${input.slug}`,
+    url: `${SITE_URL}${input.path ?? `/${input.slug}`}`,
     creator: {
       '@type': 'Organization',
       name: 'Studio Studio',
@@ -222,6 +224,113 @@ export function breadcrumbSchema({ items }: { items: BreadcrumbItem[] }): JsonLd
       position: i + 1,
       name: item.name,
       item: item.url,
+    })),
+  }
+}
+
+/* ============================================================
+   Article schema — /ideas/[slug]
+   ============================================================ */
+
+export interface ArticleInput {
+  title: string
+  path: string
+  description?: string
+  imageUrl?: string
+  /** Maps to schema.org articleSection (our "Experiments"/"Stories"/etc). */
+  section?: string
+  /** ISO date. Omitted entirely when the source data has no date. */
+  datePublished?: string
+}
+
+export function articleSchema(input: ArticleInput): JsonLdObject {
+  const schema: JsonLdObject = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: input.title,
+    url: `${SITE_URL}${input.path}`,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}${input.path}`,
+    },
+    author: {
+      '@type': 'Person',
+      name: FALLBACK_PERSON.name,
+      url: FALLBACK_PERSON.url,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: FALLBACK_ORG.name,
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: FALLBACK_ORG.logo,
+      },
+    },
+  }
+
+  if (input.description) schema.description = input.description
+  if (input.section) schema.articleSection = input.section
+  if (input.datePublished) schema.datePublished = input.datePublished
+  if (input.imageUrl) {
+    schema.image = input.imageUrl.startsWith('http')
+      ? input.imageUrl
+      : `${SITE_URL}${input.imageUrl}`
+  }
+
+  return schema
+}
+
+/* ============================================================
+   FAQPage schema
+   ============================================================ */
+
+export interface FaqItem {
+  q: string
+  a: string
+}
+
+export function faqSchema(items: FaqItem[]): JsonLdObject {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.a,
+      },
+    })),
+  }
+}
+
+/* ============================================================
+   ItemList schema — index pages (/ideas)
+   ============================================================ */
+
+export interface ItemListEntry {
+  name: string
+  path: string
+}
+
+export function itemListSchema({
+  name,
+  items,
+}: {
+  name: string
+  items: ItemListEntry[]
+}): JsonLdObject {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name,
+    numberOfItems: items.length,
+    itemListElement: items.map((item, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: item.name,
+      url: `${SITE_URL}${item.path}`,
     })),
   }
 }

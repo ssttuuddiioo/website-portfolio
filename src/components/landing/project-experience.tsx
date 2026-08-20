@@ -14,12 +14,29 @@ const MAXW = '1100px'
 
 /* ---- small shared pieces (mirrors about/contact experiences) ------------ */
 
-function Eyebrow({ children }: { children: ReactNode }) {
+/**
+ * Section label. Defaults to a <span>, but section labels pass `as="h2"` so the
+ * page has a real heading outline — the styles below are fully explicit
+ * (including `margin: 0`) so swapping the tag changes nothing visually.
+ */
+function Eyebrow({
+  children,
+  as: Tag = 'span',
+}: {
+  children: ReactNode
+  as?: 'span' | 'h2'
+}) {
   return (
-    <span
+    <Tag
       className="font-mono"
       style={{
         display: 'block',
+        // margin/weight/line-height are neutralised against the <h2> UA
+        // defaults. `inherit` (not a literal) so this matches exactly what the
+        // original <span> resolved to from its ancestors.
+        margin: 0,
+        fontWeight: 'inherit',
+        lineHeight: 'inherit',
         fontSize: '0.7rem',
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
@@ -27,7 +44,7 @@ function Eyebrow({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </span>
+    </Tag>
   )
 }
 
@@ -94,8 +111,23 @@ function FramedImage({
   )
 }
 
-/** A single Client/Project/Role/Collaborators cell in the hero meta bar. */
-function MetaCell({ label, value }: { label: string; value: string }) {
+/**
+ * A single Client/Project/Role/Collaborators cell in the hero meta bar.
+ *
+ * The "Project" cell passes `as="h1"` — the project title is the only text on
+ * the page that names its subject, so it needs to be the page's heading. The
+ * value styles are fully explicit (including `margin: 0`) so the tag swap is
+ * visually inert.
+ */
+function MetaCell({
+  label,
+  value,
+  as: Tag = 'span',
+}: {
+  label: string
+  value: string
+  as?: 'span' | 'h1'
+}) {
   return (
     <div>
       <span
@@ -111,10 +143,11 @@ function MetaCell({ label, value }: { label: string; value: string }) {
       >
         {label}
       </span>
-      <span
+      <Tag
         className="font-display"
         style={{
           display: 'block',
+          margin: 0,
           fontSize: 'clamp(0.82rem, 1.3vw, 0.98rem)',
           fontWeight: 600,
           lineHeight: 1.3,
@@ -122,7 +155,7 @@ function MetaCell({ label, value }: { label: string; value: string }) {
         }}
       >
         {value}
-      </span>
+      </Tag>
     </div>
   )
 }
@@ -234,7 +267,7 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
                   }}
                 >
                   <MetaCell label="Client" value={project.client} />
-                  <MetaCell label="Project" value={project.title} />
+                  <MetaCell label="Project" value={project.title} as="h1" />
                   <MetaCell label="Role" value={role} />
                   <MetaCell label="Collaborators" value={collabs} />
                 </div>
@@ -251,7 +284,7 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
         >
           <div style={{ width: '100%', maxWidth: MAXW, margin: '0 auto' }}>
             <Reveal>
-              <Eyebrow>About</Eyebrow>
+              <Eyebrow as="h2">About</Eyebrow>
             </Reveal>
             <Reveal delay={0.05}>
               <p
@@ -292,7 +325,7 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
               >
                 {leftText && (
                   <div className="flex flex-col" style={{ gap: '1rem' }}>
-                    <Eyebrow>{leftLabel}</Eyebrow>
+                    <Eyebrow as="h2">{leftLabel}</Eyebrow>
                     <p
                       className="font-display"
                       style={{
@@ -308,7 +341,7 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
                 )}
                 {rightText && (
                   <div className="flex flex-col" style={{ gap: '1rem' }}>
-                    <Eyebrow>{rightLabel}</Eyebrow>
+                    <Eyebrow as="h2">{rightLabel}</Eyebrow>
                     <p
                       className="font-display"
                       style={{
@@ -385,7 +418,7 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
           >
             <div style={{ width: '100%', maxWidth: MAXW, margin: '0 auto' }}>
               <Reveal>
-                <Eyebrow>Similar projects</Eyebrow>
+                <Eyebrow as="h2">Similar projects</Eyebrow>
               </Reveal>
               <Reveal delay={0.05} style={{ marginTop: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
                 <div

@@ -191,3 +191,19 @@ body {
 .skip-to-content:focus {
   top: 0;
 }
+
+/* ---- Visually Hidden ----
+   Content that must exist in the document (and for screen readers) but is not
+   part of the visual composition — e.g. the homepage <h1>, whose hero is an
+   image-only design. Standard clip-rect technique; stays focusable. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

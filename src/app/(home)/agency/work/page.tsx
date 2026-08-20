@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: { absolute: 'Work — Studio Studio' },
   description: 'Selected work from Studio Studio.',
   alternates: { canonical: '/agency/work' },
+  // Placeholder page. Crawlable (so the link from the homepage still passes
+  // through) but kept out of the index until it holds real content — a
+  // "Coming soon." page in the index is a thin result against our own name.
+  // Remove this block when the page ships.
+  robots: { index: false, follow: true },
 }
 
 export default function AgencyWorkPage() {

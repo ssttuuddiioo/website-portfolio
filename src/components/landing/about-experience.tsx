@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
@@ -97,6 +97,75 @@ function FramedImage({
   )
 }
 
+const TEAM = [
+  {
+    name: 'Pablo',
+    role: 'Creative and Software',
+    src: '/landing/team/pablo.avif',
+  },
+  {
+    name: 'Mario',
+    role: 'Strategy and Growth',
+    src: '/landing/team/mario.avif',
+  },
+  {
+    name: 'Mary',
+    role: 'Communications',
+    src: '/landing/team/mary.avif',
+  },
+] as const
+
+/**
+ * Square team portrait, matching the 1:1 source headshots. Falls back to the
+ * person's initials on a tinted
+ * plate if the photo is missing, so the section never renders a broken image.
+ */
+function Portrait({ src, name, role }: { src: string; name: string; role: string }) {
+  const [failed, setFailed] = useState(false)
+  const initials = name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        aspectRatio: 1,
+        overflow: 'hidden',
+        borderRadius: '20px',
+        background: 'rgba(10,10,10,0.06)',
+        display: 'grid',
+        placeItems: 'center',
+      }}
+    >
+      {failed ? (
+        <span
+          className="font-display"
+          style={{
+            fontWeight: 700,
+            fontSize: 'clamp(2rem, 5vw, 3.25rem)',
+            letterSpacing: '-0.02em',
+            color: 'rgba(10,10,10,0.25)',
+          }}
+        >
+          {initials}
+        </span>
+      ) : (
+        <Image
+          src={src}
+          alt={`${name}, ${role}`}
+          fill
+          sizes="(min-width: 768px) 340px, 92vw"
+          className="object-cover"
+          onError={() => setFailed(true)}
+        />
+      )}
+    </div>
+  )
+}
+
 /* ---- page --------------------------------------------------------------- */
 
 /**
@@ -144,9 +213,6 @@ export function AboutExperience() {
           }}
         >
           <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-            <Reveal>
-              <Eyebrow>About the studio</Eyebrow>
-            </Reveal>
             <Reveal delay={0.05}>
               <h1
                 className="font-display"
@@ -175,11 +241,12 @@ export function AboutExperience() {
                   maxWidth: '52ch',
                 }}
               >
-                Studio Studio is the creative practice of Pablo Gnecco — a
-                Brooklyn studio working across experiential direction, creative
-                technology, and lighting design. We partner with brands,
-                agencies, and institutions to turn ambitious ideas into rooms,
-                screens, and stages people remember.
+                Studio Studio is a Brooklyn studio and a network of
+                multidisciplinary collaborators. Experiential directors,
+                creative technologists, lighting designers, fabricators, and
+                producers who assemble around each project. We partner with
+                brands, agencies, and institutions to turn ambitious ideas into
+                rooms, screens, and stages people remember.
               </p>
             </Reveal>
           </div>
@@ -187,7 +254,7 @@ export function AboutExperience() {
           <Reveal delay={0.15} style={{ marginTop: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
             <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
               <FramedImage
-                src="/landing/opt/space-labs.avif"
+                src="/landing/opt/light-around-us2.avif"
                 alt="Studio Studio installation work"
                 ratio={16 / 9}
                 sizes="(min-width: 1100px) 1100px, 92vw"
@@ -197,115 +264,74 @@ export function AboutExperience() {
           </Reveal>
         </section>
 
-        {/* ---- The practice ------------------------------------------------- */}
+        {/* ---- Team --------------------------------------------------------- */}
         <section
           style={{
             padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
           }}
         >
-          <div
-            className="about-practice"
-            style={{
-              width: '100%',
-              maxWidth: '1100px',
-              margin: '0 auto',
-              display: 'grid',
-              gridTemplateColumns: '0.85fr 1fr',
-              gap: 'clamp(2rem, 5vw, 4.5rem)',
-              alignItems: 'center',
-            }}
-          >
-            <Reveal>
-              <FramedImage
-                src="/landing/opt/installation-33.avif"
-                alt="Studio Studio interactive installation"
-                ratio={4 / 5}
-                sizes="(min-width: 768px) 45vw, 92vw"
-              />
-            </Reveal>
-            <Reveal delay={0.08}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
-                <Eyebrow>The practice</Eyebrow>
+          <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
+            <Reveal style={{ marginBottom: 'clamp(2rem, 5vw, 3.5rem)' }}>
+              <div style={{ textAlign: 'center' }}>
                 <h2
                   className="font-display"
                   style={{
                     fontWeight: 700,
-                    fontSize: 'clamp(1.6rem, 3vw, 2.6rem)',
-                    lineHeight: 1.08,
-                    letterSpacing: '-0.025em',
+                    fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+                    lineHeight: 1.05,
+                    letterSpacing: '-0.03em',
                     color: INK,
-                    margin: 0,
+                    margin: '1rem 0 0',
                   }}
                 >
-                  One studio, three audiences.
+                  Our Team
                 </h2>
-                <p
-                  className="font-display"
-                  style={{
-                    fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
-                    lineHeight: 1.6,
-                    color: 'rgba(10,10,10,0.7)',
-                    margin: 0,
-                    maxWidth: '46ch',
-                  }}
-                >
-                  We work commercially with brands and agencies, make and exhibit
-                  our own artwork with galleries and festivals, and build open
-                  tools for the design and technology community. The throughline
-                  is craft — the same care goes into a client activation as into
-                  a gallery piece.
-                </p>
-                <p
-                  className="font-display"
-                  style={{
-                    fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
-                    lineHeight: 1.6,
-                    color: 'rgba(10,10,10,0.7)',
-                    margin: 0,
-                    maxWidth: '46ch',
-                  }}
-                >
-                  Work has shown with The New Museum&apos;s NEW INC and Mana
-                  Contemporary, and reached audiences through HBO, Google, Intel,
-                  Sony, Dolby, Michigan Central Station, and Mercedes-Benz Stadium.
-                </p>
               </div>
             </Reveal>
-          </div>
 
-          {/* Three-up image strip. */}
-          <Reveal delay={0.1} style={{ marginTop: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
             <div
-              className="about-strip"
+              className="about-team"
               style={{
-                width: '100%',
-                maxWidth: '1100px',
-                margin: '0 auto',
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: 'clamp(0.75rem, 2vw, 1.25rem)',
+                gap: 'clamp(1.5rem, 4vw, 3rem)',
+                margin: '0 auto',
               }}
             >
-              <FramedImage
-                src="/landing/opt/storybooth-1.avif"
-                alt="StoryBooth interactive kiosk"
-                ratio={3 / 4}
-                sizes="(min-width: 768px) 30vw, 92vw"
-              />
-              <FramedImage
-                src="/landing/opt/orbitals.avif"
-                alt="Orbitals generative installation"
-                ratio={3 / 4}
-                sizes="(min-width: 768px) 30vw, 92vw"
-              />
-              <FramedImage
-                src="/landing/opt/gestures.avif"
-                alt="Gestures interactive piece"
-                ratio={3 / 4}
-                sizes="(min-width: 768px) 30vw, 92vw"
-              />
+              {TEAM.map((person, i) => (
+                <Reveal key={person.name} delay={i * 0.08}>
+                  <Portrait src={person.src} name={person.name} role={person.role} />
+                  <div style={{ marginTop: '1.1rem' }}>
+                    <h3
+                      className="font-display"
+                      style={{
+                        fontWeight: 700,
+                        fontSize: 'clamp(1.05rem, 1.8vw, 1.35rem)',
+                        letterSpacing: '-0.02em',
+                        lineHeight: 1.15,
+                        color: INK,
+                        margin: 0,
+                      }}
+                    >
+                      {person.name}
+                    </h3>
+                    <p
+                      className="font-mono"
+                      style={{
+                        margin: '0.5rem 0 0',
+                        fontSize: '0.7rem',
+                        letterSpacing: '0.14em',
+                        textTransform: 'uppercase',
+                        color: 'rgba(10,10,10,0.5)',
+                      }}
+                    >
+                      {person.role}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
             </div>
-          </Reveal>
+          </div>
         </section>
 
         {/* ---- Trusted by (logo marquee) ----------------------------------- */}
@@ -421,17 +447,7 @@ export function AboutExperience() {
                     color: 'rgba(10,10,10,0.7)',
                   }}
                 >
-                  Tell us a little about it and we&apos;ll set up a call. You can
-                  find us at{' '}
-                  <a
-                    href="https://www.instagram.com/src__nyc/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: BLUE, textDecoration: 'underline' }}
-                  >
-                    SRC_NYC
-                  </a>
-                  , a shared studio in Brooklyn, NY.
+                  Tell us a little about it and we&apos;ll set up a call.
                 </p>
               </div>
 
@@ -470,11 +486,10 @@ export function AboutExperience() {
         </footer>
       </main>
 
-      {/* Stack the two-column blocks on small screens. */}
+      {/* Stack the team row on small screens. */}
       <style>{`
         @media (max-width: 767px) {
-          .about-practice { grid-template-columns: 1fr !important; }
-          .about-strip { grid-template-columns: 1fr 1fr !important; }
+          .about-team { grid-template-columns: 1fr !important; }
         }
       `}</style>
 

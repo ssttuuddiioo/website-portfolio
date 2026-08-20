@@ -3,6 +3,14 @@ import { notFound } from 'next/navigation'
 import { PLACEHOLDER_PROJECTS } from '@/lib/placeholder-projects'
 import { ProjectExperience } from '@/components/landing/project-experience'
 import { buildProjectMetadata } from '@/lib/seo/metadata'
+import { JsonLd } from '@/lib/seo/json-ld'
+import {
+  breadcrumbSchema,
+  creativeWorkSchema,
+  type JsonLdObject,
+} from '@/lib/seo/jsonld'
+
+const SITE_URL = 'https://studiostudio.nyc'
 
 export const revalidate = 60
 
@@ -21,6 +29,9 @@ export async function generateMetadata({
   return buildProjectMetadata({
     title: `${project.title} — ${project.client}`,
     slug,
+    // These pages live at /work/[slug], not the legacy root-level /[slug].
+    // The canonical has to point at this page's own URL.
+    path: `/work/${slug}`,
     description: project.about,
     ogImageUrl: project.heroImage,
   })
@@ -34,5 +45,32 @@ export default async function ProjectPage({
   const { slug } = await params
   const project = PLACEHOLDER_PROJECTS[slug]
   if (!project) notFound()
-  return <ProjectExperience project={project} />
+
+  const jsonLd: JsonLdObject[] = [
+    creativeWorkSchema({
+      title: project.title,
+      slug,
+      path: `/work/${slug}`,
+      description: project.about,
+      client: project.client,
+      year: project.year,
+      category: project.category,
+      keywords: [project.discipline, ...project.role],
+      heroImageUrl: project.heroImage,
+    }),
+    breadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'Work', url: `${SITE_URL}/work` },
+        { name: project.title, url: `${SITE_URL}/work/${slug}` },
+      ],
+    }),
+  ]
+
+  return (
+    <>
+      <JsonLd data={jsonLd} />
+      <ProjectExperience project={project} />
+    </>
+  )
 }

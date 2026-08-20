@@ -3,6 +3,24 @@ import type { Metadata } from 'next'
 const SITE_NAME = 'Studio Studio'
 const SITE_URL = 'https://studiostudio.nyc'
 
+// Fallback share card for every page that doesn't set its own (project and
+// note pages override it with their own hero image). A static JPEG rather than
+// a generated card — JPEG is the format every social platform reliably decodes,
+// and it's cropped from the source AVIF by `node scripts/make-og-image.mjs`.
+//
+// Exported because Next.js *replaces* rather than deep-merges a page's
+// `openGraph` object — any page that declares its own has to re-state the
+// image or it ships with no share card at all.
+export const DEFAULT_OG_IMAGE = {
+  url: '/og-default.jpg',
+  width: 1200,
+  height: 630,
+  // Described rather than named: the source file is light-around-us2.avif but
+  // landing-projects.ts assigns it to Suffolk Building, so the project it
+  // belongs to is ambiguous. Don't claim one in the alt text.
+  alt: 'A figure silhouetted against curved blue light — Studio Studio',
+}
+
 // Verbatim from docs/MIGRATION.md — preserves existing homepage description.
 // Do not paraphrase or edit for grammar.
 export const HOMEPAGE_DESCRIPTION =
@@ -32,11 +50,13 @@ export function buildRootMetadata(): Metadata {
       url: SITE_URL,
       title: SITE_NAME,
       description: HOMEPAGE_DESCRIPTION,
+      images: [DEFAULT_OG_IMAGE],
     },
     twitter: {
       card: 'summary_large_image',
       title: SITE_NAME,
       description: HOMEPAGE_DESCRIPTION,
+      images: [DEFAULT_OG_IMAGE.url],
     },
     robots: {
       index: true,
@@ -48,6 +68,12 @@ export function buildRootMetadata(): Metadata {
 export interface ProjectMetaInput {
   title: string
   slug: string
+  /**
+   * The route this page actually lives at. Canonicals must point at the page's
+   * own URL — defaults to the legacy root-level `/[slug]` route, so the newer
+   * `/work/[slug]` route has to pass its own path explicitly.
+   */
+  path?: string
   seoTitle?: string
   seoDescription?: string
   subtitle?: string
@@ -61,7 +87,7 @@ export function buildProjectMetadata(input: ProjectMetaInput): Metadata {
     input.seoDescription ?? input.subtitle ?? input.description ?? ''
   const description = rawDescription ? smartTruncate(rawDescription) : undefined
 
-  const canonicalPath = `/${input.slug}`
+  const canonicalPath = input.path ?? `/${input.slug}`
   const ogImages = input.ogImageUrl
     ? [{ url: input.ogImageUrl, width: 1200, height: 630, alt: title }]
     : undefined
@@ -106,11 +132,13 @@ export function buildPageMetadata({
       url: path,
       title: `${title} — ${SITE_NAME}`,
       description,
+      images: [DEFAULT_OG_IMAGE],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${title} — ${SITE_NAME}`,
       description,
+      images: [DEFAULT_OG_IMAGE.url],
     },
   }
 }
