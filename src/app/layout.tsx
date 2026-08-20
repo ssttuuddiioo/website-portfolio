@@ -1,4 +1,5 @@
 import type { Viewport } from 'next'
+import { Analytics } from '@vercel/analytics/next'
 import { Geist } from 'next/font/google'
 import { JetBrains_Mono } from 'next/font/google'
 import { buildRootMetadata } from '@/lib/seo/metadata'
@@ -41,6 +42,8 @@ export default async function RootLayout({
       <body>
         <JsonLd data={[organizationSchema(settings), personSchema(settings?.founder)]} />
         {children}
+        {/* Vercel Web Analytics. Cookie-free, so no consent banner needed. */}
+        <Analytics />
       </body>
     </html>
   )
