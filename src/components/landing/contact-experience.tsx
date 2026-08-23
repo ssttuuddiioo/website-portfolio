@@ -4,7 +4,8 @@ import type { ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { LandingSidebar, SocialRow } from './landing-sidebar'
+import { LandingSidebar } from './landing-sidebar'
+import { SiteFooter } from './site-footer'
 import { ContactForm } from './contact-form'
 import { SubscribeStrip } from './subscribe-form'
 import { INK, BG, BLUE } from './landing-theme'
@@ -23,7 +24,7 @@ function Eyebrow({ children }: { children: ReactNode }) {
         fontSize: '0.7rem',
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
-        color: 'rgba(10,10,10,0.5)',
+        color: 'rgba(232, 228, 223, 0.5)',
       }}
     >
       {children}
@@ -79,7 +80,7 @@ function FramedImage({
         aspectRatio: ratio,
         overflow: 'hidden',
         borderRadius: '20px',
-        background: 'rgba(10,10,10,0.04)',
+        background: 'rgba(232, 228, 223, 0.04)',
       }}
     >
       <Image
@@ -167,7 +168,7 @@ export function ContactExperience() {
                   fontWeight: 500,
                   fontSize: 'clamp(1.05rem, 1.9vw, 1.45rem)',
                   lineHeight: 1.5,
-                  color: 'rgba(10,10,10,0.7)',
+                  color: 'rgba(232, 228, 223, 0.7)',
                   margin: '1.75rem 0 0',
                   maxWidth: '52ch',
                 }}
@@ -221,7 +222,7 @@ export function ContactExperience() {
                     maxWidth: '38ch',
                     fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
                     lineHeight: 1.6,
-                    color: 'rgba(10,10,10,0.7)',
+                    color: 'rgba(232, 228, 223, 0.7)',
                   }}
                 >
                   Tell us a little about it and we&apos;ll set up a call. Prefer
@@ -271,36 +272,15 @@ export function ContactExperience() {
         {/* ---- Footer band ------------------------------------------------- */}
         <footer
           style={{
-            padding: `0 ${GUTTER} clamp(8rem, 14vh, 11rem)`,
+            padding: `0 ${GUTTER} clamp(3rem, 8vh, 6rem)`,
           }}
         >
           {/* Stay in the loop — compact newsletter strip. */}
           <SubscribeStrip style={{ marginBottom: 'clamp(3rem, 7vw, 5rem)' }} />
 
-          <div
-            className="flex flex-col items-center"
-            style={{
-              width: '100%',
-              maxWidth: '1100px',
-              margin: '0 auto',
-              gap: '1.5rem',
-            }}
-          >
-            <SocialRow size={24} gap="1.75rem" horizontal />
-            <span
-              className="font-mono"
-              style={{
-                color: INK,
-                opacity: 0.55,
-                fontSize: '0.75rem',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-              }}
-            >
-              © 2026 Studio Studio · Brooklyn, NY
-            </span>
-          </div>
         </footer>
+
+        <SiteFooter />
       </main>
 
       {/* Stack the two-column block on small screens. */}

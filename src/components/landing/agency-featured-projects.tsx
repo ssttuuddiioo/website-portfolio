@@ -5,13 +5,39 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { LANDING_PROJECTS, type LandingProject } from '@/lib/landing-projects'
+import { FEATURED_GRID_TITLES } from './agency-featured-grid'
 import { INK, BLUE } from './landing-theme'
 import { SeeAllWork } from './see-all-work'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-/** Every project, as a full editorial row. */
-const FEATURED = LANDING_PROJECTS
+/**
+ * The tail of the list, rendered as a dense index instead of full rows: older
+ * and smaller-scope pieces that still belong on the page but shouldn't cost a
+ * screen each. Titles must match `LANDING_PROJECTS` exactly.
+ */
+const COMPACT_TITLES = [
+  '9to5.tv',
+  'Scatter and Rise',
+  'Gestures',
+  'Orbitals',
+  'Snowblind',
+  'Pour Perfect',
+] as const
+
+const isCompact = (p: LandingProject) =>
+  COMPACT_TITLES.includes(p.title as (typeof COMPACT_TITLES)[number])
+
+/**
+ * Every project not carried by the grid above — those would otherwise appear
+ * twice in the same section. Split into full editorial rows and the compact
+ * index that closes the list.
+ */
+const REMAINING = LANDING_PROJECTS.filter(
+  (p) => !FEATURED_GRID_TITLES.includes(p.title as (typeof FEATURED_GRID_TITLES)[number]),
+)
+const FEATURED = REMAINING.filter((p) => !isCompact(p))
+const COMPACT = REMAINING.filter(isCompact)
 
 /**
  * Description copy with any `descriptionLinks` phrases rendered as anchors.
@@ -64,7 +90,7 @@ function ProjectRow({ project }: { project: LandingProject }) {
         width: '100%',
         aspectRatio: 4 / 3,
         overflow: 'hidden',
-        background: 'rgba(10,10,10,0.04)',
+        background: 'rgba(232, 228, 223, 0.04)',
       }}
     >
       <Image
@@ -124,7 +150,7 @@ function ProjectRow({ project }: { project: LandingProject }) {
             style={{
               margin: 'clamp(0.9rem, 1.6vw, 1.35rem) 0 0',
               maxWidth: '46ch',
-              color: 'rgba(10,10,10,0.62)',
+              color: 'rgba(232, 228, 223, 0.62)',
               fontSize: 'clamp(1rem, 1.35vw, 1.15rem)',
               lineHeight: 1.5,
             }}
@@ -174,11 +200,59 @@ function ProjectRow({ project }: { project: LandingProject }) {
 
       {/* Meta — year, category, client */}
       <div className="proj-meta font-mono">
-        <span style={{ color: 'rgba(10,10,10,0.4)' }}>{project.year}</span>
+        <span style={{ color: 'rgba(232, 228, 223, 0.4)' }}>{project.year}</span>
         <span style={{ color: INK }}>{project.category}</span>
-        <span style={{ color: 'rgba(10,10,10,0.4)' }}>{project.client}</span>
+        <span style={{ color: 'rgba(232, 228, 223, 0.4)' }}>{project.client}</span>
       </div>
     </motion.article>
+  )
+}
+
+/* ---- one project in the compact index ----------------------------------- */
+
+/**
+ * A single dense line: small thumbnail, title, then year / category / client.
+ * No description, no services, no pills — everything that makes a full row
+ * tall is dropped, so six of these cost about what one full row does.
+ */
+function CompactRow({ project }: { project: LandingProject }) {
+  const href = project.slug ? `/work/${project.slug}` : project.website
+  const external = !project.slug && Boolean(project.website)
+
+  const inner = (
+    <>
+      <div className="cprj-media">
+        <Image
+          src={project.image}
+          alt=""
+          fill
+          sizes="120px"
+          className="cprj-img"
+        />
+      </div>
+      <h3 className="cprj-title font-display">{project.title}</h3>
+      <div className="cprj-meta font-mono">
+        <span>{project.year}</span>
+        <span>{project.category}</span>
+        <span>{project.client}</span>
+      </div>
+    </>
+  )
+
+  return (
+    <li className="cprj-row">
+      {!href ? (
+        <div className="cprj-link">{inner}</div>
+      ) : external ? (
+        <a href={href} target="_blank" rel="noreferrer" className="cprj-link">
+          {inner}
+        </a>
+      ) : (
+        <Link href={href} className="cprj-link">
+          {inner}
+        </Link>
+      )}
+    </li>
   )
 }
 
@@ -209,7 +283,7 @@ export function AgencyFeaturedProjects() {
           align-items: start;
         }
         .proj-row + .proj-row {
-          border-top: 1px dashed rgba(10,10,10,0.22);
+          border-top: 1px dashed rgba(232, 228, 223, 0.22);
         }
         .proj-media { grid-area: media; }
         .proj-body  { grid-area: body; min-width: 0; }
@@ -233,7 +307,7 @@ export function AgencyFeaturedProjects() {
           font-size: 0.68rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: rgba(10,10,10,0.45);
+          color: rgba(232, 228, 223, 0.45);
         }
         .proj-services li + li::before {
           content: "·";
@@ -254,7 +328,7 @@ export function AgencyFeaturedProjects() {
           display: inline-flex;
           align-items: center;
           padding: 0.6rem 1.15rem;
-          border: 1px solid rgba(10,10,10,0.2);
+          border: 1px solid rgba(232, 228, 223, 0.2);
           border-radius: 999px;
           color: ${INK};
           font-size: 0.72rem;
@@ -266,12 +340,82 @@ export function AgencyFeaturedProjects() {
         }
         .proj-pill:hover { border-color: ${BLUE}; color: ${BLUE}; }
         .proj-pill-soft {
-          background: rgba(10,10,10,0.05);
+          background: rgba(232, 228, 223, 0.05);
           border-color: transparent;
         }
         .proj-pill-soft:hover {
           background: rgba(31,68,255,0.08);
           border-color: transparent;
+        }
+
+        /* ---- compact index ---- */
+        .cprj-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          border-top: 1px dashed rgba(232, 228, 223, 0.22);
+        }
+        .cprj-row + .cprj-row {
+          border-top: 1px dashed rgba(232, 228, 223, 0.14);
+        }
+        .cprj-link {
+          display: grid;
+          grid-template-columns: auto minmax(0, 1fr);
+          grid-template-areas: "media title" "media meta";
+          align-items: center;
+          gap: 0.25rem 1.25rem;
+          padding: 0.9rem 0;
+          color: inherit;
+          text-decoration: none;
+        }
+        .cprj-media {
+          grid-area: media;
+          position: relative;
+          width: clamp(72px, 11vw, 120px);
+          aspect-ratio: 4 / 3;
+          overflow: hidden;
+          background: rgba(232, 228, 223, 0.04);
+        }
+        .cprj-img {
+          object-fit: cover;
+          transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .cprj-row:hover .cprj-img { transform: scale(1.06); }
+        .cprj-title {
+          grid-area: title;
+          margin: 0;
+          font-weight: 700;
+          font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+          line-height: 1.2;
+          letter-spacing: -0.02em;
+          color: ${INK};
+          transition: color 200ms;
+        }
+        .cprj-row:hover .cprj-title { color: ${BLUE}; }
+        .cprj-meta {
+          grid-area: meta;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.2rem 0.75rem;
+          font-size: 0.68rem;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(232, 228, 223, 0.4);
+        }
+
+        @media (min-width: 900px) {
+          .cprj-link {
+            grid-template-columns: auto minmax(0, 1fr) minmax(0, 0.34fr);
+            grid-template-areas: "media title meta";
+            gap: clamp(1.25rem, 2.5vw, 2rem);
+            padding: 1.1rem 0;
+          }
+          .cprj-meta {
+            flex-direction: column;
+            align-items: flex-end;
+            text-align: right;
+            gap: 0.3rem;
+          }
         }
 
         @media (min-width: 900px) {
@@ -296,6 +440,16 @@ export function AgencyFeaturedProjects() {
       {FEATURED.map((p) => (
         <ProjectRow key={p.title} project={p} />
       ))}
+
+      {/* The tail, as a dense index. Same information architecture as a full
+          row, an eighth of the height. */}
+      {COMPACT.length > 0 && (
+        <ul className="cprj-list">
+          {COMPACT.map((p) => (
+            <CompactRow key={p.title} project={p} />
+          ))}
+        </ul>
+      )}
 
       <SeeAllWork
         href="/agency/work"

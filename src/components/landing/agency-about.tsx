@@ -1,9 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { motion, useReducedMotion, type Variants } from 'framer-motion'
-import { INK, BLUE } from './landing-theme'
+import { INK } from './landing-theme'
 
 const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const
 
@@ -47,17 +46,63 @@ function useCityTimes() {
 }
 
 /**
- * About block, under the hero fold. Three text columns on the same grid the
- * selected-work rows use (0.95fr / 1fr / 0.34fr, matching gutters and 900px
- * breakpoint), so the column edges run straight through the page. Scale does
- * the work: the value prop set large on the left, the ask in the middle, the
- * studio's cities and their live local time on the right. One call to action
- * per column — /about on the left, /contact in the middle, none on the right —
- * and each sits last in its column. Stacks on mobile.
+ * The studio's cities and their live local time, as a single row under the
+ * statement. Set tight — this is a footnote to the statement, not a column.
+ */
+export function CityClocks() {
+  const times = useCityTimes()
+
+  return (
+    <div className="city-clocks font-mono">
+      <style>{`
+        .city-clocks {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: baseline;
+          /* Column spacing comes from the separator's own margin/padding so the
+             hairline sits centred between two cities; row-gap only matters once
+             the row wraps on a narrow screen. */
+          column-gap: 0;
+          row-gap: 0.55rem;
+        }
+        .city-clock {
+          display: flex;
+          align-items: baseline;
+          gap: 0.5rem;
+          font-size: 0.66rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: rgba(232, 228, 223, 0.45);
+        }
+        /* Hairline between cities, standing in for the stacked rows' rules. */
+        .city-clock + .city-clock {
+          border-left: 1px dashed rgba(232, 228, 223, 0.18);
+          margin-left: clamp(1rem, 2.6vw, 2rem);
+          padding-left: clamp(1rem, 2.6vw, 2rem);
+        }
+      `}</style>
+      {CLOCKS.map((c, i) => (
+        <div key={c.city} className="city-clock">
+          <span>{c.city}</span>
+          <span
+            suppressHydrationWarning
+            style={{ color: INK, fontVariantNumeric: 'tabular-nums' }}
+          >
+            {times[i]}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/**
+ * The studio statement, with the city clocks as a row beneath it. Sits at the
+ * bottom of the first screen, so it reads as the line you land on rather than
+ * something to scroll for.
  */
 export function AgencyAbout() {
   const reduce = useReducedMotion()
-  const times = useCityTimes()
 
   const container: Variants = {
     hidden: {},
@@ -75,6 +120,9 @@ export function AgencyAbout() {
   return (
     <motion.div
       className="about-grid"
+      // The hero image trail turns the first screen into a click target; the
+      // statement is real copy sitting inside it, so it opts out.
+      data-trail-ignore
       variants={container}
       initial="hidden"
       whileInView="show"
@@ -86,156 +134,54 @@ export function AgencyAbout() {
           max-width: 1440px;
           margin: 0 auto;
           padding: 0 var(--gutter, 1.5rem);
-          display: grid;
-          grid-template-columns: minmax(0, 1fr);
-          gap: clamp(2.25rem, 6vw, 3rem);
-          align-items: start;
         }
-        .about-col { min-width: 0; }
-        .about-link {
-          color: ${INK};
-          text-decoration: underline;
-          text-underline-offset: 0.16em;
-          text-decoration-thickness: 1.5px;
-          transition: color 200ms;
+        /* Pulled left of the shared 1440 grid the work rows sit on, toward the
+           STUDIO lockup's edge, so the statement doesn't read as indented on a
+           wide display. Nudged with position/left rather than a transform:
+           this is a Framer motion element, and a CSS transform would fight the
+           reveal. The shift is the asked-for 150px wherever the slack exists,
+           clamped so the type never comes closer to the viewport edge than the
+           lockup's own 40px margin — on a narrower desktop it simply lands
+           short of the full 150px, and at/below 1440 it stays put. */
+        .about-grid {
+          position: relative;
+          left: calc(
+            -1 *
+              min(
+                150px,
+                max(0px, (100vw - 1440px) / 2 + var(--gutter, 1.5rem) - 40px)
+              )
+          );
         }
-        .about-link:hover { color: ${BLUE}; }
-        .about-pill {
-          display: inline-flex;
-          align-items: center;
-          padding: 0.65rem 1.35rem;
-          border: 1px solid rgba(10,10,10,0.25);
-          border-radius: 999px;
-          color: ${INK};
-          font-size: 0.72rem;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          text-decoration: none;
-          white-space: nowrap;
-          transition: border-color 200ms, color 200ms;
-        }
-        .about-pill:hover { border-color: ${BLUE}; color: ${BLUE}; }
-        .about-clock {
-          display: flex;
-          align-items: baseline;
-          justify-content: space-between;
-          gap: 1rem;
-          padding: 0.6rem 0;
-          font-size: 0.72rem;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: rgba(10,10,10,0.45);
-        }
-        .about-clock:first-child { padding-top: 0; }
-        .about-clock + .about-clock {
-          border-top: 1px dashed rgba(10,10,10,0.18);
-        }
+        /* Full width while the statement is the only thing on the line;
+           60% of the grid once there is room for it to sit as a column. */
+        .about-statement { max-width: 100%; }
         @media (min-width: 900px) {
-          .about-grid {
-            grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr) minmax(0, 0.34fr);
-            gap: clamp(2rem, 4vw, 4rem);
-          }
+          .about-statement { max-width: 60%; }
         }
       `}</style>
 
-      {/* Left — the value prop and one way in. */}
-      <div
-        className="about-col"
-        style={{ display: 'flex', flexDirection: 'column', gap: '1.9rem' }}
+      <motion.h2
+        variants={item}
+        className="about-statement font-display"
+        style={{
+          fontWeight: 700,
+          fontSize: 'clamp(2.1rem, 5vw, 4.4rem)',
+          lineHeight: 0.98,
+          letterSpacing: '-0.04em',
+          color: INK,
+          margin: 0,
+        }}
       >
-        <motion.h2
-          variants={item}
-          className="font-display"
-          style={{
-            fontWeight: 700,
-            fontSize: 'clamp(2rem, 4.6vw, 3.9rem)',
-            lineHeight: 0.98,
-            letterSpacing: '-0.04em',
-            color: INK,
-            margin: 0,
-          }}
-        >
-          We make interactive work for rooms, screens, and stages.
-        </motion.h2>
+        Studio Studio is a creative technology practice in Brooklyn, NY
+      </motion.h2>
 
-        <motion.div variants={item}>
-          <Link href="/about" className="about-pill font-mono">
-            About the studio
-          </Link>
-        </motion.div>
-      </div>
-
-      {/* Center — the ask, how it gets made, one way in. */}
-      <div
-        className="about-col"
-        style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+      <motion.div
+        variants={item}
+        style={{ marginTop: 'clamp(1.6rem, 4vh, 2.75rem)' }}
       >
-        <motion.p
-          variants={item}
-          className="font-display"
-          style={{
-            fontWeight: 500,
-            fontSize: 'clamp(1.25rem, 1.95vw, 1.6rem)',
-            lineHeight: 1.22,
-            letterSpacing: '-0.02em',
-            color: INK,
-            margin: 0,
-            maxWidth: '20ch',
-          }}
-        >
-          You have the idea. We take it from concept to execution.
-        </motion.p>
-
-        <motion.p
-          variants={item}
-          className="font-display"
-          style={{
-            fontWeight: 500,
-            fontSize: 'clamp(0.95rem, 1.15vw, 1.05rem)',
-            lineHeight: 1.5,
-            color: 'rgba(10,10,10,0.7)',
-            margin: 0,
-            maxWidth: '38ch',
-          }}
-        >
-          Direction, design, and code in one studio. We build it, install it,
-          and run it live.
-        </motion.p>
-
-        <motion.p
-          variants={item}
-          className="font-display"
-          style={{
-            fontWeight: 500,
-            fontSize: 'clamp(1.25rem, 1.95vw, 1.6rem)',
-            lineHeight: 1.22,
-            letterSpacing: '-0.02em',
-            color: INK,
-            margin: '0.3rem 0 0',
-          }}
-        >
-          <Link href="/contact" className="about-link">
-            Let&apos;s talk
-          </Link>
-          .
-        </motion.p>
-      </div>
-
-      {/* Right — the studio's three cities and their local time. */}
-      <div className="about-col">
-        {CLOCKS.map((c, i) => (
-          <motion.div key={c.city} variants={item} className="about-clock font-mono">
-            <span>{c.city}</span>
-            <span
-              suppressHydrationWarning
-              style={{ color: INK, fontVariantNumeric: 'tabular-nums' }}
-            >
-              {times[i]}
-            </span>
-          </motion.div>
-        ))}
-      </div>
-
+        <CityClocks />
+      </motion.div>
     </motion.div>
   )
 }

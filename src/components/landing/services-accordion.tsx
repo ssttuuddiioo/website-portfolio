@@ -48,7 +48,7 @@ export const SERVICES: Service[] = [
   },
   {
     title: 'Mentorship',
-    body: 'We mentor at NYU ITP and the Steve Jobs Archive, and take on people one on one. Sitting with artists, designers, and technologists working out what they are making, how to build it, and how to get it into the world.',
+    body: 'We mentor through university programs and arts organizations, and take on people one on one. Sitting with artists, designers, and technologists working out what they are making, how to build it, and how to get it into the world.',
     cta: 'all',
   },
 ]

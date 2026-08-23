@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm, ValidationError } from '@formspree/react'
-import { INK, BLUE, BG } from './landing-theme'
+import { INK, BLUE, BG, PAPER } from './landing-theme'
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
@@ -9,14 +9,14 @@ const labelStyle: React.CSSProperties = {
   fontSize: '0.7rem',
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
-  color: 'rgba(10,10,10,0.55)',
+  color: 'rgba(232, 228, 223, 0.55)',
   marginBottom: '0.5rem',
 }
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  background: 'rgba(255,255,255,0.7)',
-  border: '1px solid rgba(10,10,10,0.18)',
+  background: 'rgba(255,255,255,0.06)',
+  border: '1px solid rgba(232, 228, 223, 0.18)',
   borderRadius: 4,
   padding: '0.65rem 0.75rem',
   fontFamily: 'var(--font-display), sans-serif',
@@ -28,7 +28,7 @@ const inputStyle: React.CSSProperties = {
 const errStyle: React.CSSProperties = {
   fontFamily: 'var(--font-mono), monospace',
   fontSize: '0.7rem',
-  color: '#b3261e',
+  color: '#FF9B93',
   marginTop: '0.4rem',
 }
 
@@ -119,10 +119,13 @@ export function ContactForm() {
           transition: 'opacity 200ms, background 200ms',
         }}
         onMouseEnter={(e) => {
-          if (!state.submitting) e.currentTarget.style.background = BLUE
+          if (state.submitting) return
+          e.currentTarget.style.background = BLUE
+          e.currentTarget.style.color = PAPER
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.background = INK
+          e.currentTarget.style.color = BG
         }}
       >
         {state.submitting ? 'Sending…' : 'Send'}

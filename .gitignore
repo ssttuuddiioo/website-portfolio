@@ -46,3 +46,8 @@ next-env.d.ts
 
 # Heavy raw design source assets (optimized copies live in public/landing/opt)
 /_design-sources/
+
+# Lossless PNG copies of the optimized landing images. Pure derived output:
+# regenerate with `node scripts/opt-to-png.mjs` from the tracked avif/webp
+# sources in the same folder (1.6MB of sources, 11MB of PNGs).
+/public/landing/opt/png/

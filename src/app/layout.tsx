@@ -1,6 +1,6 @@
 import type { Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
-import { Geist } from 'next/font/google'
+import { Jost } from 'next/font/google'
 import { JetBrains_Mono } from 'next/font/google'
 import { buildRootMetadata } from '@/lib/seo/metadata'
 import { JsonLd } from '@/lib/seo/json-ld'
@@ -8,9 +8,14 @@ import { organizationSchema, personSchema } from '@/lib/seo/jsonld'
 import { getOrgSettings } from '@/lib/seo/fetch-org'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+/* Futura stand-in. Real Futura is listed first in --font-display, so macOS/iOS
+   renders the genuine face; everyone else gets Jost, a geometric sans cut close
+   to Futura. Loaded variable (100-900) because the design uses 300 through 700
+   and licensed Futura has no 600. */
+const jost = Jost({
+  variable: '--font-jost',
   subsets: ['latin'],
+  display: 'swap',
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -37,7 +42,7 @@ export default async function RootLayout({
     <html
       lang="en"
       data-theme="dark"
-      className={`${geistSans.variable} ${jetbrainsMono.variable} antialiased`}
+      className={`${jost.variable} ${jetbrainsMono.variable} antialiased`}
     >
       <body>
         <JsonLd data={[organizationSchema(settings), personSchema(settings?.founder)]} />

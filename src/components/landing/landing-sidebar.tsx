@@ -10,7 +10,7 @@ import {
 } from 'framer-motion'
 import { useLenis } from '@/lib/lenis-provider'
 import { centerOffset } from './use-scroll-to-section'
-import { INK, BLUE, BG } from './landing-theme'
+import { INK, BLUE, BG, SURFACE, ink } from './landing-theme'
 
 type Item =
   | { id: string; label: string; kind: 'scroll' }
@@ -107,11 +107,17 @@ export function SocialRow({
   gap,
   horizontal = false,
   onContact,
+  color = INK,
+  restOpacity = 0.5,
 }: {
   size: number
   gap: string
   horizontal?: boolean
   onContact?: () => void
+  /** Icon color. Defaults to page ink; the IKB footer passes PAPER. */
+  color?: string
+  /** Resting opacity, raised to 1 on hover. */
+  restOpacity?: number
 }) {
   return (
     <div
@@ -133,8 +139,8 @@ export function SocialRow({
             rel={isContact ? undefined : 'noreferrer'}
             aria-label={s.label}
             style={{
-              color: INK,
-              opacity: 0.5,
+              color,
+              opacity: restOpacity,
               display: 'flex',
               transition: 'opacity 200ms',
             }}
@@ -147,7 +153,9 @@ export function SocialRow({
                 : undefined
             }
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.opacity = String(restOpacity))
+            }
           >
             <SocialIcon name={s.icon} size={size} />
           </a>
@@ -411,22 +419,26 @@ export function LandingSidebar({
 
   return (
     <>
-      {/* Floating nav dock — pinned bottom-left on desktop, centered along the
-          bottom on mobile. A single cream pill of nav links with the sliding
-          blue highlight; runs full-bleed over the hero. Replaces the hamburger
-          on mobile (see the .nav-dock mobile overrides in the <style> below). */}
+      {/* Floating nav dock — pinned top-right on desktop, opposite the STUDIO
+          lockup in the top-left; centered along the top on mobile. A single
+          pill of nav links with the sliding blue highlight. Replaces the
+          hamburger on mobile (see the .nav-dock overrides in the <style>). */}
       <motion.nav
         className="flex nav-dock"
         style={{
           position: 'fixed',
-          left: 'max(1.25rem, calc(var(--gutter, 1.5rem) + env(safe-area-inset-left)))',
-          // Bottom edge sits on the same 4vh line as the mirrored STUDIO wordmark.
-          bottom: 'calc(4vh + env(safe-area-inset-bottom))',
+          // Carried as far right as it can go without leaving the viewport.
+          // A literal +200px off the old inset would hang the pill ~36px past
+          // the right edge, so the floor holds it at 1.25rem clear (plus any
+          // safe area) — roughly 145px right of where it was.
+          right: 'max(calc(1.25rem + env(safe-area-inset-right)), calc(var(--gutter, 1.5rem) + env(safe-area-inset-right) - 100px))',
+          top: 'calc(clamp(1.4rem, 3.4vh, 2.4rem) + env(safe-area-inset-top))',
           zIndex: 90,
-          background: BG,
+          background: SURFACE,
           borderRadius: 999,
           padding: '0.35rem 0.5rem',
-          boxShadow: '0 12px 40px rgba(10,10,10,0.18)',
+          border: `1px solid ${ink(0.12)}`,
+          boxShadow: '0 12px 40px rgba(0,0,0,0.55)',
           opacity: navOpacity,
           y: navY,
           pointerEvents: dockPointer,
@@ -531,7 +543,7 @@ export function LandingSidebar({
       </div>
 
       {/* Force-hide the retired hamburger + full-screen menu at every width, and
-          recenter/shrink the bottom dock so all the nav links fit on a phone.
+          recenter/shrink the dock so all the nav links fit on a phone.
           Centering uses left/right + margin:auto (not transform) so Framer's
           reveal y-animation on the dock survives. */}
       <style>{`

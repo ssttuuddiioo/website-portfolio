@@ -4,9 +4,10 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { LandingSidebar, SocialRow } from './landing-sidebar'
+import { LandingSidebar } from './landing-sidebar'
+import { SiteFooter } from './site-footer'
 import { SubscribeForm } from './subscribe-form'
-import { INK, BG, BLUE } from './landing-theme'
+import { INK, BG, BLUE, PAPER } from './landing-theme'
 import { IDEAS, IDEA_CATEGORIES, readMinutes, type Idea } from '@/lib/ideas'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -33,7 +34,7 @@ function IdeaRow({ idea, index }: { idea: Idea; index: number }) {
           alignItems: 'center',
           gap: 'clamp(1.5rem, 4vw, 3.5rem)',
           padding: 'clamp(1.75rem, 4vw, 2.75rem) 0',
-          borderBottom: '1px solid rgba(10,10,10,0.12)',
+          borderBottom: '1px solid rgba(232, 228, 223, 0.12)',
           color: INK,
           textDecoration: 'none',
         }}
@@ -53,10 +54,10 @@ function IdeaRow({ idea, index }: { idea: Idea; index: number }) {
             }}
           >
             <span style={{ color: BLUE, fontWeight: 600 }}>{idea.category}</span>
-            <span aria-hidden style={{ color: 'rgba(10,10,10,0.25)' }}>
+            <span aria-hidden style={{ color: 'rgba(232, 228, 223, 0.25)' }}>
               ·
             </span>
-            <span style={{ color: 'rgba(10,10,10,0.45)' }}>
+            <span style={{ color: 'rgba(232, 228, 223, 0.45)' }}>
               {readMinutes(idea.body)} min read
             </span>
           </div>
@@ -93,7 +94,7 @@ function IdeaRow({ idea, index }: { idea: Idea; index: number }) {
             style={{
               margin: '0.9rem 0 0',
               maxWidth: '52ch',
-              color: 'rgba(10,10,10,0.6)',
+              color: 'rgba(232, 228, 223, 0.6)',
               fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
               lineHeight: 1.55,
             }}
@@ -111,7 +112,7 @@ function IdeaRow({ idea, index }: { idea: Idea; index: number }) {
               aspectRatio: '4 / 3',
               overflow: 'hidden',
               borderRadius: '10px',
-              background: idea.dark ? '#0a0a0a' : 'rgba(10,10,10,0.04)',
+              background: idea.dark ? 'rgba(232, 228, 223, 0.11)' : 'rgba(232, 228, 223, 0.04)',
             }}
           >
             <Image
@@ -178,7 +179,7 @@ export function IdeasIndex() {
                 fontSize: '0.72rem',
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: 'rgba(10,10,10,0.55)',
+                color: 'rgba(232, 228, 223, 0.55)',
                 textDecoration: 'none',
               }}
             >
@@ -201,7 +202,7 @@ export function IdeasIndex() {
                 fontSize: '0.72rem',
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
-                color: 'rgba(10,10,10,0.5)',
+                color: 'rgba(232, 228, 223, 0.5)',
                 marginBottom: '1.25rem',
               }}
             >
@@ -228,7 +229,7 @@ export function IdeasIndex() {
                 fontWeight: 500,
                 fontSize: 'clamp(1.1rem, 2vw, 1.5rem)',
                 lineHeight: 1.4,
-                color: 'rgba(10,10,10,0.65)',
+                color: 'rgba(232, 228, 223, 0.65)',
               }}
             >
               Notes from the studio — experiments, stories, resources, and the
@@ -287,7 +288,7 @@ export function IdeasIndex() {
               width: '100%',
               maxWidth: COLUMN,
               margin: '0 auto',
-              borderTop: '1px solid rgba(10,10,10,0.12)',
+              borderTop: '1px solid rgba(232, 228, 223, 0.12)',
             }}
           >
             {filtered.map((idea, i) => (
@@ -309,7 +310,7 @@ export function IdeasIndex() {
                 overflow: 'hidden',
                 borderRadius: '24px',
                 background: BLUE,
-                color: BG,
+                color: PAPER,
                 padding: 'clamp(2rem, 5vw, 3.5rem)',
               }}
             >
@@ -333,7 +334,7 @@ export function IdeasIndex() {
                   fontSize: 'clamp(1.7rem, 4.2vw, 2.9rem)',
                   lineHeight: 1.05,
                   letterSpacing: '-0.03em',
-                  color: BG,
+                  color: PAPER,
                   maxWidth: '16ch',
                 }}
               >
@@ -356,27 +357,10 @@ export function IdeasIndex() {
               <SubscribeForm onDark />
             </div>
 
-            {/* Footer band — social over copyright, centered. */}
-            <div
-              className="flex flex-col items-center"
-              style={{ marginTop: 'clamp(4rem, 10vw, 8rem)', gap: '1.5rem' }}
-            >
-              <SocialRow size={24} gap="1.75rem" horizontal />
-              <span
-                className="font-mono"
-                style={{
-                  color: INK,
-                  opacity: 0.55,
-                  fontSize: '0.75rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                © 2026 Studio Studio · Brooklyn, NY
-              </span>
-            </div>
           </div>
         </footer>
+
+        <SiteFooter />
       </main>
 
       {/* Background tint behind everything (matches the home shell). */}

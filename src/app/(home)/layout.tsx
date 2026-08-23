@@ -1,6 +1,7 @@
 import { LenisProvider } from '@/lib/lenis-provider'
+import { BG, INK } from '@/components/landing/landing-theme'
 
-/* Homepage shell — light theme, own scroll context, no global nav/footer
+/* Homepage shell — dark theme, own scroll context, no global nav/footer
    (the landing experience owns its sidebar nav and contact footer). */
 export default function HomeLayout({
   children,
@@ -11,8 +12,8 @@ export default function HomeLayout({
     <LenisProvider>
       <div
         style={{
-          background: '#F0F0F9',
-          color: '#0A0A0A',
+          background: BG,
+          color: INK,
           minHeight: '100svh',
           width: '100%',
           maxWidth: '100%',

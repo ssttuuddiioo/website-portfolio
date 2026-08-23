@@ -39,7 +39,7 @@ export function FaqSection() {
         return (
           <div
             key={faq.q}
-            style={{ borderTop: '1px solid rgba(10,10,10,0.14)' }}
+            style={{ borderTop: '1px solid rgba(232, 228, 223, 0.14)' }}
           >
             {/* Each question is a real heading wrapping its disclosure
                 button — the standard accordion pattern. The <h3> is a bare
@@ -84,7 +84,7 @@ export function FaqSection() {
                   style={{
                     margin: 0,
                     padding: '0 3rem 1.75rem 0.25rem',
-                    color: 'rgba(10,10,10,0.66)',
+                    color: 'rgba(232, 228, 223, 0.66)',
                     fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)',
                     lineHeight: 1.6,
                     maxWidth: '66ch',
@@ -99,7 +99,7 @@ export function FaqSection() {
           </div>
         )
       })}
-      <div style={{ borderTop: '1px solid rgba(10,10,10,0.14)' }} />
+      <div style={{ borderTop: '1px solid rgba(232, 228, 223, 0.14)' }} />
     </div>
   )
 }

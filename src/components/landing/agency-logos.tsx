@@ -48,7 +48,7 @@ export function AgencyLogos({ opacity }: { opacity: MotionValue<number> }) {
           fontSize: '0.62rem',
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
-          color: 'rgba(10,10,10,0.45)',
+          color: 'rgba(232, 228, 223, 0.45)',
         }}
       >
         Trusted by
@@ -75,7 +75,7 @@ export function AgencyLogos({ opacity }: { opacity: MotionValue<number> }) {
                 height: logo.svgHeight ?? 20,
                 width: 'auto',
                 opacity: 0.55,
-                filter: 'grayscale(1)',
+                filter: 'grayscale(1) invert(1)',
               }}
             />
           ) : (

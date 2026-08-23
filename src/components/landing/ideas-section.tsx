@@ -36,7 +36,7 @@ function IdeaCard({ idea }: { idea: Idea }) {
             aspectRatio: '3 / 2',
             overflow: 'hidden',
             borderRadius: '10px',
-            background: idea.dark ? '#0a0a0a' : 'rgba(10,10,10,0.04)',
+            background: idea.dark ? 'rgba(232, 228, 223, 0.11)' : 'rgba(232, 228, 223, 0.04)',
           }}
         >
           <Image
@@ -63,10 +63,10 @@ function IdeaCard({ idea }: { idea: Idea }) {
           }}
         >
           <span style={{ color: BLUE, fontWeight: 600 }}>{idea.category}</span>
-          <span aria-hidden style={{ color: 'rgba(10,10,10,0.25)' }}>
+          <span aria-hidden style={{ color: 'rgba(232, 228, 223, 0.25)' }}>
             ·
           </span>
-          <span style={{ color: 'rgba(10,10,10,0.45)' }}>
+          <span style={{ color: 'rgba(232, 228, 223, 0.45)' }}>
             {readMinutes(idea.body)} min read
           </span>
         </div>

@@ -77,7 +77,7 @@ export function AboutSection({
             aspectRatio: 4 / 5,
             overflow: 'hidden',
             borderRadius: '20px',
-            background: 'rgba(10,10,10,0.04)',
+            background: 'rgba(232, 228, 223, 0.04)',
           }}
         >
           <Image

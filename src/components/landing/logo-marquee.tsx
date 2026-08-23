@@ -38,8 +38,13 @@ function LogoItem({ logo }: { logo: Logo }) {
         style={{
           height: logo.height ?? 22,
           width: 'auto',
-          opacity: 0.5,
-          filter: 'grayscale(1)',
+          opacity: 0.6,
+          // The marks are black-on-transparent, so they would disappear against
+          // the near-black ground; invert paints them light. grayscale-then-invert
+          // (rather than brightness(0) invert(1)) keeps hope.png and
+          // invisiblenorth.png — which are opaque plates, not cutouts — from
+          // flipping into solid white rectangles.
+          filter: 'grayscale(1) invert(1)',
           flexShrink: 0,
         }}
       />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm, ValidationError } from '@formspree/react'
-import { INK, BLUE, BG } from './landing-theme'
+import { INK, BLUE, BG, PAPER } from './landing-theme'
 
 /* Reuses the studio's Formspree endpoint. A hidden `type` field tags these as
    list signups so they can be filtered from contact messages — swap in a
@@ -22,7 +22,7 @@ export function SubscribeForm({ onDark = false }: { onDark?: boolean }) {
         style={{
           fontSize: '1.1rem',
           fontWeight: 600,
-          color: onDark ? BG : INK,
+          color: onDark ? PAPER : INK,
           margin: 0,
         }}
       >
@@ -34,8 +34,8 @@ export function SubscribeForm({ onDark = false }: { onDark?: boolean }) {
   const inputStyle: React.CSSProperties = {
     flex: '1 1 220px',
     minWidth: 0,
-    background: onDark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.7)',
-    border: `1px solid ${onDark ? 'rgba(255,255,255,0.45)' : 'rgba(10,10,10,0.18)'}`,
+    background: onDark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.06)',
+    border: `1px solid ${onDark ? 'rgba(255,255,255,0.45)' : 'rgba(232, 228, 223, 0.18)'}`,
     borderRadius: 4,
     padding: '0.75rem 0.9rem',
     fontFamily: 'var(--font-display), sans-serif',
@@ -47,7 +47,7 @@ export function SubscribeForm({ onDark = false }: { onDark?: boolean }) {
   const errStyle: React.CSSProperties = {
     fontFamily: 'var(--font-mono), monospace',
     fontSize: '0.7rem',
-    color: onDark ? '#FFD9D4' : '#b3261e',
+    color: onDark ? '#FFD9D4' : '#FF9B93',
     marginTop: '0.5rem',
   }
 
@@ -84,8 +84,8 @@ export function SubscribeForm({ onDark = false }: { onDark?: boolean }) {
             alignItems: 'center',
             gap: '0.5rem',
             padding: '0.75rem 1.6rem',
-            background: onDark ? BG : INK,
-            color: onDark ? INK : BG,
+            background: onDark ? PAPER : INK,
+            color: BG,
             border: 'none',
             borderRadius: 0,
             fontFamily: 'var(--font-mono), monospace',
@@ -99,12 +99,12 @@ export function SubscribeForm({ onDark = false }: { onDark?: boolean }) {
           }}
           onMouseEnter={(e) => {
             if (state.submitting) return
-            e.currentTarget.style.background = onDark ? INK : BLUE
-            e.currentTarget.style.color = onDark ? BG : BG
+            e.currentTarget.style.background = BLUE
+            e.currentTarget.style.color = PAPER
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = onDark ? BG : INK
-            e.currentTarget.style.color = onDark ? INK : BG
+            e.currentTarget.style.background = onDark ? PAPER : INK
+            e.currentTarget.style.color = BG
           }}
         >
           {state.submitting ? 'Sending…' : 'Keep me posted'}
@@ -117,7 +117,7 @@ export function SubscribeForm({ onDark = false }: { onDark?: boolean }) {
       <ValidationError errors={state.errors} style={errStyle} />
 
       <style>{`
-        .sub-input::placeholder { color: rgba(10,10,10,0.4); }
+        .sub-input::placeholder { color: rgba(232, 228, 223, 0.4); }
         .sub-input--dark::placeholder { color: rgba(255,255,255,0.6); }
         .sub-btn:hover .sub-arrow { transform: translateX(3px); }
       `}</style>
@@ -136,7 +136,7 @@ export function SubscribeStrip({ style }: { style?: React.CSSProperties }) {
       <div
         className="subscribe-strip"
         style={{
-          borderTop: '1px solid rgba(10,10,10,0.12)',
+          borderTop: '1px solid rgba(232, 228, 223, 0.12)',
           paddingTop: 'clamp(2rem, 4vw, 3rem)',
           display: 'flex',
           flexWrap: 'wrap',
@@ -153,7 +153,7 @@ export function SubscribeStrip({ style }: { style?: React.CSSProperties }) {
               fontSize: '0.7rem',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: 'rgba(10,10,10,0.5)',
+              color: 'rgba(232, 228, 223, 0.5)',
             }}
           >
             Stay in the loop
@@ -164,7 +164,7 @@ export function SubscribeStrip({ style }: { style?: React.CSSProperties }) {
               margin: '0.65rem 0 0',
               fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
               lineHeight: 1.5,
-              color: 'rgba(10,10,10,0.7)',
+              color: 'rgba(232, 228, 223, 0.7)',
             }}
           >
             New projects and experiments in your inbox — only when there&apos;s

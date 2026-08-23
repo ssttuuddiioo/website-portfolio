@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { INK } from '@/components/landing/landing-theme'
 
 export const metadata: Metadata = {
   title: { absolute: 'Work — Studio Studio' },
@@ -24,7 +25,7 @@ export default function AgencyWorkPage() {
         gap: '1.5rem',
         padding: '0 var(--gutter, 1.5rem)',
         textAlign: 'center',
-        color: '#0A0A0A',
+        color: INK,
       }}
     >
       <p
@@ -33,7 +34,7 @@ export default function AgencyWorkPage() {
           fontSize: '0.72rem',
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
-          color: 'rgba(10,10,10,0.5)',
+          color: 'rgba(232, 228, 223, 0.5)',
         }}
       >
         Work
@@ -53,7 +54,7 @@ export default function AgencyWorkPage() {
         className="font-display"
         style={{
           fontSize: 'clamp(0.95rem, 1.6vw, 1.15rem)',
-          color: 'rgba(10,10,10,0.62)',
+          color: 'rgba(232, 228, 223, 0.62)',
           maxWidth: '40ch',
           margin: 0,
         }}
@@ -67,13 +68,13 @@ export default function AgencyWorkPage() {
         style={{
           marginTop: '0.5rem',
           padding: '0.85rem 1.8rem',
-          border: '1px solid rgba(10,10,10,0.45)',
+          border: '1px solid rgba(232, 228, 223, 0.45)',
           borderRadius: '999px',
           fontSize: '0.74rem',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
           textDecoration: 'none',
-          color: '#0A0A0A',
+          color: INK,
         }}
       >
         ← Back

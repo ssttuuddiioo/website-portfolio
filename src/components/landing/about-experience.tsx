@@ -4,7 +4,8 @@ import { useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { LandingSidebar, SocialRow } from './landing-sidebar'
+import { LandingSidebar } from './landing-sidebar'
+import { SiteFooter } from './site-footer'
 import { ServicesAccordion } from './services-accordion'
 import { ContactForm } from './contact-form'
 import { LogoMarquee } from './logo-marquee'
@@ -26,7 +27,7 @@ function Eyebrow({ children }: { children: ReactNode }) {
         fontSize: '0.7rem',
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
-        color: 'rgba(10,10,10,0.5)',
+        color: 'rgba(232, 228, 223, 0.5)',
       }}
     >
       {children}
@@ -82,7 +83,7 @@ function FramedImage({
         aspectRatio: ratio,
         overflow: 'hidden',
         borderRadius: '20px',
-        background: 'rgba(10,10,10,0.04)',
+        background: 'rgba(232, 228, 223, 0.04)',
       }}
     >
       <Image
@@ -135,7 +136,7 @@ function Portrait({ src, name, role }: { src: string; name: string; role: string
         aspectRatio: 1,
         overflow: 'hidden',
         borderRadius: '20px',
-        background: 'rgba(10,10,10,0.06)',
+        background: 'rgba(232, 228, 223, 0.06)',
         display: 'grid',
         placeItems: 'center',
       }}
@@ -147,7 +148,7 @@ function Portrait({ src, name, role }: { src: string; name: string; role: string
             fontWeight: 700,
             fontSize: 'clamp(2rem, 5vw, 3.25rem)',
             letterSpacing: '-0.02em',
-            color: 'rgba(10,10,10,0.25)',
+            color: 'rgba(232, 228, 223, 0.25)',
           }}
         >
           {initials}
@@ -236,7 +237,7 @@ export function AboutExperience() {
                   fontWeight: 500,
                   fontSize: 'clamp(1.05rem, 1.9vw, 1.45rem)',
                   lineHeight: 1.5,
-                  color: 'rgba(10,10,10,0.7)',
+                  color: 'rgba(232, 228, 223, 0.7)',
                   margin: '1.75rem 0 0',
                   maxWidth: '52ch',
                 }}
@@ -322,7 +323,7 @@ export function AboutExperience() {
                         fontSize: '0.7rem',
                         letterSpacing: '0.14em',
                         textTransform: 'uppercase',
-                        color: 'rgba(10,10,10,0.5)',
+                        color: 'rgba(232, 228, 223, 0.5)',
                       }}
                     >
                       {person.role}
@@ -407,7 +408,7 @@ export function AboutExperience() {
         <footer
           id="contact"
           style={{
-            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER} clamp(8rem, 14vh, 11rem)`,
+            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER} clamp(3rem, 8vh, 6rem)`,
           }}
         >
           <Reveal>
@@ -444,7 +445,7 @@ export function AboutExperience() {
                     maxWidth: '36ch',
                     fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
                     lineHeight: 1.6,
-                    color: 'rgba(10,10,10,0.7)',
+                    color: 'rgba(232, 228, 223, 0.7)',
                   }}
                 >
                   Tell us a little about it and we&apos;ll set up a call.
@@ -458,32 +459,9 @@ export function AboutExperience() {
             </div>
           </Reveal>
 
-          {/* Footer band — social over copyright, centered. */}
-          <div
-            className="flex flex-col items-center"
-            style={{
-              width: '100%',
-              maxWidth: '1100px',
-              margin: '0 auto',
-              marginTop: 'clamp(4rem, 10vw, 8rem)',
-              gap: '1.5rem',
-            }}
-          >
-            <SocialRow size={24} gap="1.75rem" horizontal />
-            <span
-              className="font-mono"
-              style={{
-                color: INK,
-                opacity: 0.55,
-                fontSize: '0.75rem',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-              }}
-            >
-              © 2026 Studio Studio · Brooklyn, NY
-            </span>
-          </div>
         </footer>
+
+        <SiteFooter />
       </main>
 
       {/* Stack the team row on small screens. */}
