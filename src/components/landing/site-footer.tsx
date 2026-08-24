@@ -76,7 +76,14 @@ export function SiteFooter() {
         marginLeft: 'calc(50% - 50vw)',
         background: IKB,
         color: PAPER,
-        padding: 'clamp(4rem, 10vw, 8rem) var(--gutter, 1.5rem) clamp(2rem, 4vw, 3rem)',
+        paddingTop: 'clamp(4rem, 10vw, 8rem)',
+        // The root layout sets viewportFit: 'cover', so this block runs under
+        // the notch in landscape and under the home indicator at the bottom.
+        // It closes every page, so it's the one that has to clear them.
+        paddingLeft: 'max(var(--gutter, 1.5rem), env(safe-area-inset-left, 0px))',
+        paddingRight: 'max(var(--gutter, 1.5rem), env(safe-area-inset-right, 0px))',
+        paddingBottom:
+          'calc(clamp(2rem, 4vw, 3rem) + env(safe-area-inset-bottom, 0px))',
       }}
     >
       <style>{`
@@ -104,9 +111,8 @@ export function SiteFooter() {
         }
         .site-footer-legal {
           display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: space-between;
+          flex-direction: column;
+          align-items: flex-start;
           gap: 1.25rem;
         }
         @media (min-width: 768px) {
@@ -116,6 +122,12 @@ export function SiteFooter() {
           }
           .site-footer-nav {
             grid-template-columns: 1fr 1fr;
+          }
+          .site-footer-legal {
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
           }
         }
       `}</style>

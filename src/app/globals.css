@@ -141,6 +141,10 @@ body {
 html {
   overflow-x: hidden;
   overscroll-behavior: none;
+  /* iOS Safari inflates type on rotation to landscape unless this is pinned,
+     which throws off every clamp() on the page. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 body {
   overflow-x: hidden;

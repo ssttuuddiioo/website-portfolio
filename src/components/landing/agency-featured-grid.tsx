@@ -104,8 +104,14 @@ export function AgencyFeaturedGrid() {
         // to the work section.
         maxWidth: '1800px',
         margin: '0 auto',
-        padding:
-          'clamp(3rem, 7vw, 5.5rem) clamp(0.75rem, 1.6vw, 1.75rem) clamp(1rem, 2vw, 2rem)',
+        paddingTop: 'clamp(3rem, 7vw, 5.5rem)',
+        paddingBottom: 'clamp(1rem, 2vw, 2rem)',
+        // Nearly edge to edge, so in landscape these would slide under the
+        // notch without flooring the side padding at the inset.
+        paddingLeft:
+          'max(clamp(0.75rem, 1.6vw, 1.75rem), env(safe-area-inset-left, 0px))',
+        paddingRight:
+          'max(clamp(0.75rem, 1.6vw, 1.75rem), env(safe-area-inset-right, 0px))',
       }}
     >
       <style>{`
@@ -157,7 +163,7 @@ export function AgencyFeaturedGrid() {
         .feat-title {
           margin: 0;
           font-weight: 400;
-          font-size: clamp(0.8rem, 1.6vw, 1.5rem);
+          font-size: clamp(1rem, 1.6vw, 1.5rem);
           line-height: 1.05;
           letter-spacing: -0.03em;
           color: ${PAPER};
