@@ -46,6 +46,12 @@ interface HeroImageTrailProps {
    * trail owns no routing — the page decides where each entry goes.
    */
   onSelect?: (item: TrailItem, index: number) => void
+  /**
+   * Where the resting frame's line sits. 'corner' hangs it off the nav dock in
+   * the top-right; 'statement' drops it bottom-left onto the page's content
+   * grid, taking the slot the studio statement otherwise occupies at the fold.
+   */
+  captionAnchor?: 'corner' | 'statement'
 }
 
 // The caption hangs off the nav dock, so it copies the dock's own right inset
@@ -64,6 +70,7 @@ export function HeroImageTrail({
   images,
   grid = true,
   onSelect,
+  captionAnchor = 'corner',
 }: HeroImageTrailProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const poolRefs = useRef<(HTMLImageElement | null)[]>([])
@@ -350,30 +357,75 @@ export function HeroImageTrail({
         />
       ))}
 
-      {/* The resting frame's line. Ranged right and hung just under the nav
-          dock — the right/top insets below mirror the dock's own so the block
-          hangs off it — and above every pooled image (they climb zCounter). It
-          arrives with the first frame and stays as long as that frame does. */}
+      {/* The resting frame's line. Sits above every pooled image (they climb
+          zCounter), arrives with the first frame and stays as long as that
+          frame does. Two placements, per `captionAnchor`: hung off the nav
+          dock in the top-right, or — where the field is the whole first
+          screen — dropped onto the content grid at the fold, in the slot the
+          studio statement otherwise occupies. */}
       {hasCaptions && (
         <div
           ref={captionRef}
           aria-hidden
-          style={{
-            position: 'absolute',
-            right: CAPTION_RIGHT,
-            top: `calc(${CAPTION_TOP})`,
-            maxWidth: 'min(34rem, 60vw)',
-            zIndex: 9999,
-            textAlign: 'right',
-            opacity: 0,
-            transition: 'opacity 450ms cubic-bezier(0.22, 1, 0.36, 1)',
-            pointerEvents: 'none',
-            color: 'inherit',
-          }}
+          className={`trail-caption trail-caption--${captionAnchor}`}
         >
+          <style>{`
+            .trail-caption {
+              position: absolute;
+              z-index: 9999;
+              opacity: 0;
+              transition: opacity 450ms cubic-bezier(0.22, 1, 0.36, 1);
+              pointer-events: none;
+              color: inherit;
+              /* Corner placement — ranged right and hung just under the nav
+                 dock; the insets mirror the dock's own (landing-sidebar). */
+              right: ${CAPTION_RIGHT};
+              top: calc(${CAPTION_TOP});
+              max-width: min(34rem, 60vw);
+              text-align: right;
+            }
+            /* Statement placement — bottom-left on the page's 1440 grid, with
+               the same leftward pull the studio statement carries so the two
+               land on one optical edge. Percentages resolve against this
+               container (the full-width field), the same basis the statement's
+               own centering and shift use, so the two edges agree.
+               Desktop only: below 900px the statement keeps the fold and the
+               caption stays in the corner — moot in practice, since the trail
+               is silent on a coarse pointer. */
+            @media (min-width: 900px) {
+              .trail-caption--statement {
+                left: 0;
+                right: 0;
+                top: auto;
+                bottom: clamp(2rem, 5.5vh, 3.8rem);
+                max-width: none;
+                text-align: left;
+                padding-right: var(--gutter, 1.5rem);
+                padding-left: calc(
+                  max(
+                    var(--gutter, 1.5rem),
+                    (100% - 1440px) / 2 + var(--gutter, 1.5rem)
+                  ) -
+                    min(
+                      150px,
+                      max(
+                        0px,
+                        (100% - 1440px) / 2 + var(--gutter, 1.5rem) - 40px
+                      )
+                    )
+                );
+              }
+              /* Keep a long title off the right half of the grid, the way the
+                 statement's own column does. */
+              .trail-caption--statement .trail-caption-title,
+              .trail-caption--statement .trail-caption-meta {
+                max-width: min(60%, 46rem);
+              }
+            }
+          `}</style>
           <span
             ref={titleRef}
-            className="font-display"
+            className="trail-caption-title font-display"
             style={{
               display: 'block',
               fontWeight: 700,
@@ -384,7 +436,7 @@ export function HeroImageTrail({
           />
           <span
             ref={metaRef}
-            className="font-mono"
+            className="trail-caption-meta font-mono"
             style={{
               display: 'block',
               fontSize: 'clamp(0.72rem, 0.95vw, 1.05rem)',

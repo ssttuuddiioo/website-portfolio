@@ -142,14 +142,18 @@ export function AgencyAbout() {
            reveal. The shift is the asked-for 150px wherever the slack exists,
            clamped so the type never comes closer to the viewport edge than the
            lockup's own 40px margin — on a narrower desktop it simply lands
-           short of the full 150px, and at/below 1440 it stays put. */
+           short of the full 150px, and at/below 1440 it stays put.
+           Measured in % (the containing block), not vw, so it shares a basis
+           with the margin:auto centering above — and with the hero trail's
+           caption, which reuses this same expression to land on the statement's
+           edge when it stands in for it at the fold. */
         .about-grid {
           position: relative;
           left: calc(
             -1 *
               min(
                 150px,
-                max(0px, (100vw - 1440px) / 2 + var(--gutter, 1.5rem) - 40px)
+                max(0px, (100% - 1440px) / 2 + var(--gutter, 1.5rem) - 40px)
               )
           );
         }

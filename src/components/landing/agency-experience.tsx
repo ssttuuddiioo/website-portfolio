@@ -26,9 +26,10 @@ import { useLenis } from '@/lib/lenis-provider'
 import { centerOffset } from './use-scroll-to-section'
 
 // The hero trail flips through the same work the page lists below, naming the
-// frame that comes to rest and inviting a click through to it. Three
-// destinations, so three prompts: a case study on this site, the project's own
-// site, or nothing linked yet, which drops you at its entry in the work list.
+// frame that comes to rest and inviting a click through to it. Every entry in
+// the index has a page at /work/[slug] — hand-authored where a case study
+// exists, generated from the index entry otherwise (see lib/project-page) — so
+// there is one prompt and one destination.
 // Module-level so the array identity is stable across renders (the trail
 // preloads on it).
 /* Gap between the header lockup and the statement. The about block
@@ -39,11 +40,7 @@ const HERO_TRAIL = LANDING_PROJECTS.map((p) => ({
   src: p.image,
   title: p.title,
   meta: p.category,
-  cta: p.slug
-    ? 'Click to view'
-    : p.website
-      ? 'Click to go'
-      : 'Click to learn more',
+  cta: 'Click to learn more',
 }))
 
 const SPY_IDS = ['home', 'work', 'services', 'contact']
@@ -117,6 +114,19 @@ export function AgencyExperience() {
     mq.addEventListener('change', sync)
     return () => mq.removeEventListener('change', sync)
   }, [])
+  // Below 900px the studio statement still lands on the fold, since the image
+  // trail (pointer-only) never plays there and the first screen would otherwise
+  // be empty. From 900px up the trail's caption takes that slot and the
+  // statement moves below the fold.
+  const [statementAtFold, setStatementAtFold] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 899px)')
+    const sync = () => setStatementAtFold(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
   const WORD_SCALE = isMobile ? WORD_SCALE_MOBILE : WORD_SCALE_DESKTOP
   const MARGIN_TOP = isMobile ? MARGIN_TOP_MOBILE : MARGIN_TOP_DESKTOP
   const HEADER_PAD_BOT = isMobile
@@ -228,22 +238,14 @@ export function AgencyExperience() {
     else el.scrollIntoView({ behavior: 'smooth', block: offset < 0 ? 'center' : 'start' })
   }
 
-  // Clicking the hero field opens whichever frame is resting on it. Where it
-  // goes matches the prompt the trail is showing: a case study here, the
-  // project's own site in a new tab, or the work list for entries that have
-  // neither yet.
+  // Clicking the hero field opens the page for whichever frame is resting on
+  // it. Every index entry has one, so this never has to fall back — a project
+  // with a live site of its own links out from its page rather than instead of
+  // it.
   const openTrailProject = (_item: TrailItem, index: number) => {
     const project = LANDING_PROJECTS[index]
-    if (!project) return
-    if (project.slug) {
-      router.push(`/work/${project.slug}`)
-      return
-    }
-    if (project.website) {
-      window.open(project.website, '_blank', 'noopener,noreferrer')
-      return
-    }
-    scrollToSection('work')
+    if (!project?.slug) return
+    router.push(`/work/${project.slug}`)
   }
 
   // Release the spy lock on a genuine user scroll gesture. Lenis intercepts the
@@ -358,6 +360,12 @@ export function AgencyExperience() {
     opacity: wordOpacity,
   }
 
+  // The header band's height, as one expression both it and the sections below
+  // measure against (the clamp is the pre-measurement stand-in for the lockup).
+  const headerH = geo.measured
+    ? `${geo.headerH}px`
+    : 'clamp(7rem, 16vw, 10.5rem)'
+
   return (
     <>
       <LandingSidebar active={active} inPage onNavigate={scrollToSection} />
@@ -391,6 +399,7 @@ export function AgencyExperience() {
             images={HERO_TRAIL}
             grid={false}
             onSelect={openTrailProject}
+            captionAnchor="statement"
           />
         </div>
 
@@ -402,19 +411,21 @@ export function AgencyExperience() {
             under it), and the page's real <h1> is in the hero. */}
         <header
           aria-hidden
-          style={{
-            height: geo.measured ? geo.headerH : 'clamp(7rem, 16vw, 10.5rem)',
-          }}
+          style={{ height: headerH }}
         />
 
-        {/* Hero — the open field the image trail plays across. Holds no copy
-            of its own; the statement below is bottom-aligned into the rest of
-            the first screen, so it sits right at the fold. */}
+        {/* Hero — the open field the image trail plays across. Holds no copy of
+            its own. On desktop it takes the whole rest of the first screen and
+            the trail's own caption names the resting frame down at the fold;
+            on narrow screens it collapses to a spacer so the studio statement
+            below can bottom-align into the fold instead. */}
         <section
           id="home"
           style={{
             position: 'relative',
-            minHeight: HERO_SPACER,
+            minHeight: statementAtFold
+              ? HERO_SPACER
+              : `calc(100svh - ${headerH})`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -432,20 +443,36 @@ export function AgencyExperience() {
           </h1>
         </section>
 
-        {/* About — the studio statement, bottom-aligned into whatever is left
-            of the first screen so it lands on the fold rather than below it.
-            The block owns its own max-width + gutter so it sits on the same
-            grid as the selected-work rows below. */}
+        {/* About — the studio statement and city clocks. On desktop it reads as
+            the first thing below the fold, so it arrives on the scroll rather
+            than competing with the trail caption now standing in its old slot.
+            On narrow screens it keeps the fold, bottom-aligned into whatever is
+            left of the first screen. Either way the block owns its own
+            max-width + gutter, so it sits on the same grid as the work rows. */}
         <section
           id="about"
-          style={{
-            minHeight: geo.measured
-              ? `calc(100svh - ${geo.headerH}px - ${HERO_SPACER})`
-              : '62svh',
-            display: 'flex',
-            alignItems: 'flex-end',
-            paddingBottom: 'clamp(1.25rem, 3.5vh, 2.25rem)',
-          }}
+          style={
+            statementAtFold
+              ? {
+                  minHeight: `calc(100svh - ${headerH} - ${HERO_SPACER})`,
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  paddingBottom: 'clamp(1.25rem, 3.5vh, 2.25rem)',
+                }
+              : {
+                  // A screen of its own. The block used to run ~40svh on a
+                  // laptop (statement + clocks + its air); 100svh is that at
+                  // 2.5x. Still bottom-aligned, so the added height falls above
+                  // the statement as approach — the distance from the statement
+                  // down to the Work divider is unchanged. The top padding
+                  // stays on as a floor for viewports too short for the svh to
+                  // clear the content.
+                  minHeight: '100svh',
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  padding: 'clamp(4rem, 12vh, 8rem) 0 clamp(2rem, 6vh, 4rem)',
+                }
+          }
         >
           <AgencyAbout />
         </section>
