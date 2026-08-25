@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { AgencyExperience } from '@/components/landing/agency-experience'
+import { LegacyHashRedirect } from '@/components/legacy-hash-redirect'
 import { DEFAULT_OG_IMAGE, HOMEPAGE_DESCRIPTION } from '@/lib/seo/metadata'
 
 const HOMEPAGE_TITLE =
@@ -23,5 +24,12 @@ export const metadata: Metadata = {
 }
 
 export default function HomePage() {
-  return <AgencyExperience />
+  return (
+    <>
+      {/* Old Squarespace links arrive as #fragments, which never reach the
+          server — this catches them on the client. See legacy-redirects.ts. */}
+      <LegacyHashRedirect />
+      <AgencyExperience />
+    </>
+  )
 }
