@@ -20,6 +20,13 @@ export interface LandingProject {
   image: string
   /** Links to /work/[slug] when a detail page exists. */
   slug?: string
+  /**
+   * Further frames for the project's page, beyond `image` (which is always the
+   * first tile). Only a handful of projects have more than one shot in
+   * /public/landing/opt today — the page's media grid simply runs shorter for
+   * the rest, and a project with a single frame shows it full-width.
+   */
+  images?: string[]
   /** 1–2 sentences for the selected-work list on the homepage. */
   description?: string
   /**
@@ -49,6 +56,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Lighting Design',
     year: 2026,
     image: '/landing/opt/loop.avif',
+    slug: 'loop',
     description:
       "Lighting design and control system for LOOP, a new venue in Atlanta. Powered by Goat Farm, LOOP is a cultural hub in Georgia Tech's Creative Quarter that brings together art, research, technology, and community. Through exhibitions, performances, studios, and collaborative projects, LOOP creates space for experimentation, exchange, and new ideas.",
     services: ['Lighting design', 'Control system', 'Show programming'],
@@ -59,6 +67,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Brand and Software',
     year: 2025,
     image: '/landing/opt/coffeefive.avif',
+    slug: 'the-coffee-five',
     website: 'https://www.thecoffeefive.com/en',
     description:
       "Seed to cup coffee from Juan Medina, a consultant offering milling, sampling, and export services. Studio Studio worked alongside Juan on all of it: a new brand identity, packaging, and the software the company runs on.",
@@ -70,6 +79,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Interactive Web',
     year: 2026,
     image: '/landing/opt/ela-rsvp.avif',
+    slug: 'ela-synergy-tradeshow',
     website: 'https://www.elasynergy-tradeshow.com/',
     description:
       'An RSVP experience for the ELA and Synergy trade show, built on an interactive WebGL particle field. Behind it runs the event itself: an admin for the guest list, custom email sends, and RSVP tracking wired to hi.events.',
@@ -81,6 +91,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Design Consulting',
     year: 2026,
     image: '/landing/opt/hopehydration.avif',
+    slug: 'hope-hydration',
     website: 'https://www.hopehydration.com/',
     description:
       'Design consultants on Hope Hydration event stations, and on many projects since. Studio Studio comes in from the creative and design side, shaping how people find, use, and remember free access to water.',
@@ -92,6 +103,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Experiential',
     year: 2024,
     image: '/landing/opt/cox.png',
+    slug: 'cox-pillars',
     description:
       'A kiosk installation built around a pledge system. Visitors make a commitment on screen and watch it join the room as light and motion across a set of freestanding pillars.',
     services: ['Experience design', 'Custom software', 'Lighting design', 'Fabrication'],
@@ -103,6 +115,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Experiential',
     year: 2024,
     image: '/landing/opt/livingwalls.avif',
+    slug: 'living-walls-att',
     description:
       'An interactive art installation that maps how far people traveled to the stadium and where they came from, running a sorting algorithm to trace each path. We built the custom control system for the LEDs and the website behind it.',
     services: ['Custom software', 'Control system', 'Lighting design', 'Web design and development'],
@@ -114,6 +127,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Lighting',
     year: 2023,
     image: '/landing/opt/suffolk.avif',
+    slug: '65-suffolk-st',
     description:
       'An architectural LED lobby installation commissioned by JGN Architecture, fixture layout, pixel mapping, and content system.',
     services: ['Lighting design', 'Pixel mapping', 'Content system'],
@@ -126,6 +140,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     year: 2020,
     slug: 'the-light-around-us',
     image: '/landing/opt/light-around-us.avif',
+    images: ['/landing/opt/light-around-us2.avif'],
     description:
       'A data-driven sculpture that translates live air quality readings into shifting pattern and color. Commissioned by tvsdesign for Spacelab, their experimental design lab and showroom in Atlanta, with Studio Studio leading design and creative direction, DASH on concept, and Arc Design on fabrication.',
     services: ['Custom software', 'Lighting design', 'Interactive'],
@@ -137,6 +152,12 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Experiential',
     year: 2022,
     image: '/landing/opt/sb-pablo.avif',
+    slug: 'storybooth',
+    images: [
+      '/landing/opt/storybooth-1.avif',
+      '/landing/opt/storybooth-2.avif',
+      '/landing/opt/storybooth-4.avif',
+    ],
     website: 'https://storybooth.us',
     description:
       "A public phone booth in Montgomery, Alabama that records residents' stories and publishes them at storybooth.us. Studio Studio led creative direction, experiential design, and UX/UI, in collaboration with Eric Rabinowitz and presented by Dashboard U.S. and Kress on Dexter. Featured in the New York Times' 36 Hours in Montgomery.",
@@ -149,6 +170,11 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Experiential',
     year: 2019,
     image: '/landing/opt/bleed-for-the-throne.avif',
+    slug: 'bleed-for-the-throne',
+    images: [
+      '/landing/opt/bleed-for-the-throne1.webp',
+      '/landing/opt/bleed-for-the-throne2.webp',
+    ],
     description:
       'HBO and the American Red Cross took on a global blood shortage while launching the final season of Game of Thrones. At SXSW, donors moved through a projected world of bleeding characters to the Iron Throne, called up by name over RFID as a choir sang an original 27 minute piece in Valyrian. Donations rose 12 percent nationwide.',
     services: ['Projection mapping', 'Video content', 'Immersive design', 'Interactive audio app'],
@@ -160,6 +186,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Motion',
     year: 2014,
     image: '/landing/opt/superbowl.avif',
+    slug: 'super-bowl-video-park',
     description:
       'The 2014 NY/NJ Super Bowl Host Committee wanted arriving visitors to see what New York has to offer. Studio Studio shot screen-specific content, then edited, animated, and reformatted it for a bank of 15 foot LED screens, delivered in under three months.',
     services: ['Spatial design', 'Animation', 'Video content'],
@@ -183,6 +210,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Event',
     year: 2019,
     image: '/landing/opt/9to5-color.webp',
+    slug: '9to5-tv',
     website: 'https://vimeo.com/293862977?fl=pl&fe=cm',
     description:
       'A month-long digital art exhibition in Atlanta, founded by Studio Studio, that dissolves the boundary between artist and audience by way of an experimental livestream and emerging interfaces. From September 8 to October 6, participants interacted with the projects, performances, and broadcasts through a custom built suite of tools, influencing the final artworks as they were made.',
@@ -195,6 +223,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Public Art',
     year: 2023,
     image: '/landing/opt/scatter.avif',
+    slug: 'scatter-and-rise',
     website: 'https://scatterandrise.com/',
     description:
       'A site-specific interactive LED commission for the Goat Farm Arts Center in Atlanta. The piece reads audience movement and answers with cascading patterns of light across a suspended grid of custom diffusion elements.',
@@ -207,6 +236,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Tech Experiment',
     year: 2014,
     image: '/landing/opt/gestures.webp',
+    slug: 'gestures',
     description:
       'An interactive installation that captures visitors as looping GIFs and plays them back as a collective portrait of everyone who passed through. Featured in VICE.',
     services: ['Custom software', 'Interactive', 'Installation design'],
@@ -218,6 +248,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Tech Experiment',
     year: 2018,
     image: '/landing/opt/orbitals.avif',
+    slug: 'orbitals',
     description:
       'A generative installation built on orbital motion, simple rules, compounding paths, no two moments the same. Made during the Artist in Residence program at Mana Contemporary, curated by Grace Franck.',
     descriptionLinks: [
@@ -232,6 +263,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Public Art',
     year: 2016,
     image: '/landing/opt/snow.avif',
+    slug: 'snowblind',
     description:
       'Lighting design for The Principal, a Red Bull Studio installation shown at the end of year exhibition for NEW INC, the New Museum incubator. An installation about whiteout and disorientation, light used to take vision away rather than give it.',
     services: ['Lighting design', 'Show programming'],
@@ -243,6 +275,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Tool',
     year: 2023,
     image: '/landing/opt/pour.avif',
+    slug: 'pour-perfect',
     website: 'https://origen.nyc/timer',
     description:
       'A guided pour-over timer — brewing as a paced sequence rather than a stopwatch and a guess.',

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { PLACEHOLDER_PROJECTS } from '@/lib/placeholder-projects'
+import { getProjectPage, getProjectSlugs } from '@/lib/project-page'
 import { ProjectExperience } from '@/components/landing/project-experience'
 import { buildProjectMetadata } from '@/lib/seo/metadata'
 import { JsonLd } from '@/lib/seo/json-ld'
@@ -15,7 +15,7 @@ const SITE_URL = 'https://studiostudio.nyc'
 export const revalidate = 60
 
 export function generateStaticParams() {
-  return Object.keys(PLACEHOLDER_PROJECTS).map((slug) => ({ slug }))
+  return getProjectSlugs().map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({
@@ -24,7 +24,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const project = PLACEHOLDER_PROJECTS[slug]
+  const project = getProjectPage(slug)
   if (!project) return {}
   return buildProjectMetadata({
     title: `${project.title} — ${project.client}`,
@@ -43,7 +43,7 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const project = PLACEHOLDER_PROJECTS[slug]
+  const project = getProjectPage(slug)
   if (!project) notFound()
 
   const jsonLd: JsonLdObject[] = [

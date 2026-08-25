@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { client, isSanityConfigured } from '@/lib/sanity/client'
 import { IDEAS } from '@/lib/ideas'
-import { PLACEHOLDER_PROJECTS } from '@/lib/placeholder-projects'
+import { getProjectSlugs } from '@/lib/project-page'
 
 const SITE_URL = 'https://studiostudio.nyc'
 
@@ -52,7 +52,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // is listed exactly once, at the route the live site actually links to, so we
   // never submit two URLs for the same work. Collapse this once one of the two
   // routes is retired.
-  const placeholderSlugs = new Set(Object.keys(PLACEHOLDER_PROJECTS))
+  // Every entry in the landing index has a /work/[slug] page, hand-authored or
+  // generated from the index entry — getProjectSlugs is the same list the route
+  // prerenders, so the two can't drift.
+  const placeholderSlugs = new Set(getProjectSlugs())
 
   const placeholderRoutes: MetadataRoute.Sitemap = [...placeholderSlugs].map((slug) => ({
     url: `${SITE_URL}/work/${slug}`,

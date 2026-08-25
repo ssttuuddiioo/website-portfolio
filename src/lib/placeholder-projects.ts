@@ -36,6 +36,12 @@ export interface PlaceholderProject {
     slug: string
     image: string
   }[]
+  /**
+   * The project's own live site, when it has one. Surfaced as a link under the
+   * About lede — for entries whose page is generated from the landing index
+   * (see project-page.ts) it is often the only place with more to read.
+   */
+  website?: string
 }
 
 export const PLACEHOLDER_PROJECTS: Record<string, PlaceholderProject> = {
