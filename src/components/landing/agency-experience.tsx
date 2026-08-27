@@ -10,6 +10,7 @@ const useIsoLayoutEffect =
 import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { AgencyAbout } from './agency-about'
+import { MobileProjectScroller } from './mobile-project-scroller'
 import { AgencyFeaturedGrid } from './agency-featured-grid'
 import { AgencyFeaturedProjects } from './agency-featured-projects'
 import { ContactForm } from './contact-form'
@@ -22,6 +23,7 @@ import {
   type TrailItem,
 } from '@/components/project/hero-image-trail'
 import { LANDING_PROJECTS } from '@/lib/landing-projects'
+import { TAGS, TAG_ANCHORS, fieldPosition } from '@/lib/project-tags'
 import { useLenis } from '@/lib/lenis-provider'
 import { centerOffset } from './use-scroll-to-section'
 
@@ -32,15 +34,23 @@ import { centerOffset } from './use-scroll-to-section'
 // there is one prompt and one destination.
 // Module-level so the array identity is stable across renders (the trail
 // preloads on it).
-/* Gap between the header lockup and the statement. The about block
-   subtracts this to bottom-align itself against the fold. */
-const HERO_SPACER = 'clamp(3rem, 9vh, 7rem)'
-
 const HERO_TRAIL = LANDING_PROJECTS.map((p) => ({
   src: p.image,
   title: p.title,
   meta: p.category,
   cta: 'Click to learn more',
+  // Where the project sits between the four poles — see lib/project-tags. This
+  // is what lets the field be steered: carry the pointer toward Web and the
+  // web-leaning work is what comes up.
+  pos: fieldPosition(p),
+}))
+
+// The poles themselves, drawn on the first screen at the same coordinates the
+// positions above are derived from.
+const HERO_NODES = TAGS.map((t) => ({
+  label: t,
+  x: TAG_ANCHORS[t].x,
+  y: TAG_ANCHORS[t].y,
 }))
 
 const SPY_IDS = ['home', 'work', 'services', 'contact']
@@ -114,19 +124,6 @@ export function AgencyExperience() {
     mq.addEventListener('change', sync)
     return () => mq.removeEventListener('change', sync)
   }, [])
-  // Below 900px the studio statement still lands on the fold, since the image
-  // trail (pointer-only) never plays there and the first screen would otherwise
-  // be empty. From 900px up the trail's caption takes that slot and the
-  // statement moves below the fold.
-  const [statementAtFold, setStatementAtFold] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 899px)')
-    const sync = () => setStatementAtFold(mq.matches)
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
-
   const WORD_SCALE = isMobile ? WORD_SCALE_MOBILE : WORD_SCALE_DESKTOP
   const MARGIN_TOP = isMobile ? MARGIN_TOP_MOBILE : MARGIN_TOP_DESKTOP
   const HEADER_PAD_BOT = isMobile
@@ -368,351 +365,364 @@ export function AgencyExperience() {
 
   return (
     <>
-      <LandingSidebar active={active} inPage onNavigate={scrollToSection} />
+      {/* Desktop. Both trees are in the markup and the breakpoint is drawn
+          in CSS, not in JS: the page is prerendered, so a JS switch would
+          ship the desktop tree to every phone and only swap it after
+          hydration. */}
+      <div className="ss-desktop">
+        <LandingSidebar active={active} inPage onNavigate={scrollToSection} />
 
-      {/* Page content. */}
-      <div style={{ position: 'relative', zIndex: 3 }}>
-        {/* Image trail — the whole first screen is a field: moving the pointer
-            across it flips through the work listed further down, one frame
-            every 35px of travel. Stop moving and the last frame stays, named
-            large in the top-right under the nav dock with a prompt to click
-            through.
-            z-index -1 keeps it behind the header lockup and the studio
-            statement (the page background lives on an ancestor, so it still
-            shows through), and overflow:hidden stops frames spilling into the
-            work list below the fold. Silent on touch + reduced motion, and
-            aria-hidden throughout: it is a pointer-only shortcut to work the
-            list below already links properly. */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '100svh',
-            overflow: 'hidden',
-            zIndex: -1,
-          }}
-        >
-          <HeroImageTrail
-            images={HERO_TRAIL}
-            grid={false}
-            onSelect={openTrailProject}
-            captionAnchor="statement"
-          />
-        </div>
-
-        {/* Header band — a strip the page opens on, sized to the stacked STUDIO
-            lockup that sits fixed in its top-left corner, so the marks own a
-            header instead of crowding the statement below. Purely spatial and
-            transparent: the type itself lives in the pinned blend layer near
-            the bottom of this file (it inverts over any trail frame that lands
-            under it), and the page's real <h1> is in the hero. */}
-        <header
-          aria-hidden
-          style={{ height: headerH }}
-        />
-
-        {/* Hero — the open field the image trail plays across. Holds no copy of
-            its own. On desktop it takes the whole rest of the first screen and
-            the trail's own caption names the resting frame down at the fold;
-            on narrow screens it collapses to a spacer so the studio statement
-            below can bottom-align into the fold instead. */}
-        <section
-          id="home"
-          style={{
-            position: 'relative',
-            minHeight: statementAtFold
-              ? HERO_SPACER
-              : `calc(100svh - ${headerH})`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-            padding: '0 var(--gutter, 1.5rem)',
-          }}
-        >
-          {/* The page's <h1>. The hero carries no body copy, so the heading
-              is visually hidden — it exists for screen readers and for anything
-              parsing the page (search, LLM crawlers), which otherwise find no
-              statement of what this site is outside the <title> tag. */}
-          <h1 className="sr-only">
-            Studio Studio — experiential design and creative technology in
-            Brooklyn, New York
-          </h1>
-        </section>
-
-        {/* About — the studio statement and city clocks. On desktop it reads as
-            the first thing below the fold, so it arrives on the scroll rather
-            than competing with the trail caption now standing in its old slot.
-            On narrow screens it keeps the fold, bottom-aligned into whatever is
-            left of the first screen. Either way the block owns its own
-            max-width + gutter, so it sits on the same grid as the work rows. */}
-        <section
-          id="about"
-          style={
-            statementAtFold
-              ? {
-                  minHeight: `calc(100svh - ${headerH} - ${HERO_SPACER})`,
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                  paddingBottom: 'clamp(1.25rem, 3.5vh, 2.25rem)',
-                }
-              : {
-                  // A screen of its own. The block used to run ~40svh on a
-                  // laptop (statement + clocks + its air); 100svh is that at
-                  // 2.5x. Still bottom-aligned, so the added height falls above
-                  // the statement as approach — the distance from the statement
-                  // down to the Work divider is unchanged. The top padding
-                  // stays on as a floor for viewports too short for the svh to
-                  // clear the content.
-                  minHeight: '100svh',
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                  padding: 'clamp(4rem, 12vh, 8rem) 0 clamp(2rem, 6vh, 4rem)',
-                }
-          }
-        >
-          <AgencyAbout />
-        </section>
-
-        <SectionDivider />
-
-        {/* Work — the four-up featured grid opens the section right below the
-            fold, then the fuller editorial list + CTAs. */}
-        <div id="work">
-          <AgencyFeaturedGrid />
-          <AgencyFeaturedProjects />
-        </div>
-
-        <SectionDivider />
-
-        {/* Services — accordion. Compact + top-aligned (no longer centered in a
-            full screen) so it sits close under the work "View All Projects" CTA. */}
-        <section
-          id="services"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            padding: 'clamp(2rem, 4vh, 3rem) var(--gutter, 1.5rem)',
-          }}
-        >
-          <ServicesAccordion />
-        </section>
-
-        {/* Notes — hidden for now. Restore by uncommenting this block, the
-            IdeasSection import, and the 'ideas' entries in SPY_IDS /
-            SECTION_WORDS / the sidebar ITEMS list.
-
-        <SectionDivider />
-
-        <section
-          id="ideas"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            padding: 'clamp(2rem, 5vh, 4rem) var(--gutter, 1.5rem)',
-          }}
-        >
-          <IdeasSection />
-        </section>
-        */}
-
-        <SectionDivider />
-
-        {/* Contact — header (image + title) over the pitch + form, mirroring /contact. */}
-        <footer
-          id="contact"
-          style={{
-            minHeight: '100svh',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            padding: 'clamp(2rem, 5vh, 4rem) var(--gutter, 1.5rem) clamp(3rem, 8vh, 6rem)',
-          }}
-        >
-          {/* The section opens straight on the two-up: pitch + details left,
-              form right. The old full-width header above it (eyebrow, "Let's
-              make something together", and the partnership lede) is gone — the
-              left column already carries its own eyebrow and heading. */}
+        {/* Page content. */}
+        <div style={{ position: 'relative', zIndex: 3 }}>
+          {/* Everything the image trail plays across — the header band, the hero
+              and the studio statement — inside one positioned box, so the field
+              below can simply take `inset: 0` and reach exactly the bottom of the
+              about section without anyone measuring anything. */}
+          <div style={{ position: 'relative' }}>
+          {/* Image trail — this whole run is a field: moving the pointer across
+              it flips through the work listed further down, one frame every 35px
+              of travel. Stop moving and the last frame stays, named large at the
+              fold with a prompt to click through.
+              z-index -1 keeps it behind the header lockup and the studio
+              statement (the page background lives on an ancestor, so it still
+              shows through), and overflow:hidden stops frames spilling into the
+              work list below. Silent on touch + reduced motion, and aria-hidden
+              throughout: it is a pointer-only shortcut to work the list below
+              already links properly. */}
           <div
-            className="grid grid-cols-1 md:grid-cols-2"
+            aria-hidden
             style={{
-              width: '100%',
-              maxWidth: '1100px',
-              margin: '0 auto',
-              gap: 'clamp(2.5rem, 5vw, 5rem)',
-              alignItems: 'start',
-            }}
-          >
-            {/* Left — pitch + details. */}
-            <div
-              className="flex flex-col font-display"
-              style={{ gap: '1.25rem', color: INK }}
-            >
-              <span
-                className="font-mono"
-                style={{
-                  display: 'block',
-                  fontSize: '0.7rem',
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                  color: 'rgba(232, 228, 223, 0.5)',
-                }}
-              >
-                Get in touch
-              </span>
-              <h2
-                style={{
-                  fontWeight: 700,
-                  fontSize: 'clamp(1.8rem, 3.4vw, 2.8rem)',
-                  lineHeight: 1.05,
-                  letterSpacing: '-0.03em',
-                  margin: 0,
-                }}
-              >
-                Have a project in mind?
-              </h2>
-              <p
-                style={{
-                  margin: 0,
-                  maxWidth: '38ch',
-                  fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-                  lineHeight: 1.6,
-                  color: 'rgba(232, 228, 223, 0.7)',
-                }}
-              >
-                Tell us a little about it and we&apos;ll set up a call. Prefer
-                email? Reach us directly —
-              </p>
-              <a
-                href="mailto:hello@studiostudio.nyc"
-                className="font-display"
-                style={{
-                  fontWeight: 600,
-                  fontSize: 'clamp(1.15rem, 2.2vw, 1.6rem)',
-                  letterSpacing: '-0.01em',
-                  color: BLUE,
-                  textDecoration: 'none',
-                }}
-              >
-                hello@studiostudio.nyc
-              </a>
-            </div>
-
-            {/* Right — the form. */}
-            <div>
-              <ContactForm />
-            </div>
-          </div>
-
-          {/* Image — sits under the pitch + form, mirroring /contact. */}
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: '1100px',
-              margin: 'clamp(2.5rem, 6vw, 4.5rem) auto 0',
-              aspectRatio: 16 / 9,
+              position: 'absolute',
+              inset: 0,
               overflow: 'hidden',
-              borderRadius: '20px',
-              background: 'rgba(232, 228, 223, 0.04)',
+              zIndex: -1,
             }}
           >
-            <Image
-              src="/landing/opt/light-around-us2.avif"
-              alt="Studio Studio installation work"
-              fill
-              sizes="(min-width: 1100px) 1100px, 92vw"
-              className="object-cover"
+            <HeroImageTrail
+              images={HERO_TRAIL}
+              grid={false}
+              onSelect={openTrailProject}
+              captionAnchor="statement"
+              nodes={HERO_NODES}
             />
           </div>
 
-          {/* Stay in the loop — compact newsletter strip. */}
-          <SubscribeStrip style={{ marginTop: 'clamp(3.5rem, 8vw, 6rem)' }} />
+          {/* Header band — a strip the page opens on, sized to the stacked STUDIO
+              lockup that sits fixed in its top-left corner, so the marks own a
+              header instead of crowding the statement below. Purely spatial and
+              transparent: the type itself lives in the pinned blend layer near
+              the bottom of this file (it inverts over any trail frame that lands
+              under it), and the page's real <h1> is in the hero. */}
+          <header
+            aria-hidden
+            style={{ height: headerH }}
+          />
 
-        </footer>
-
-        <SiteFooter />
-      </div>
-
-      {/* Pinned wordmark — difference blend inverts imagery beneath. The two
-          words glide in from the left edge on load, fading up as they stack
-          together in the top-left corner, fixed there for the rest of the
-          scroll.
-          Above the nav/social bars (z80) so the lockup reads over the header
-          band; pointer-events:none keeps the nav clickable. */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          pointerEvents: 'none',
-          zIndex: 81,
-          mixBlendMode: 'difference',
-        }}
-        aria-hidden
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className="flex flex-col items-center"
-            style={{ gap: 'min(1.3vw, 1.05rem)' }}
+          {/* Hero — the open field the image trail plays across. Holds no copy of
+              its own. On desktop it takes the whole rest of the first screen and
+              the trail's own caption names the resting frame down at the fold;
+              on narrow screens it collapses to a spacer so the studio statement
+              below can bottom-align into the fold instead. */}
+          <section
+            id="home"
+            style={{
+              position: 'relative',
+              minHeight: `calc(100svh - ${headerH})`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              padding: '0 var(--gutter, 1.5rem)',
+            }}
           >
-            {/* Decorative pinned type, not document structure — the wrapper is
-                aria-hidden and the bottom word's text swaps as you scroll, so
-                these must not be headings. The page's real <h1> is in the hero.
-                wordStyle sets every type property explicitly (margin included),
-                so the tag is purely a semantics change. */}
-            <motion.div
-              ref={topWordRef}
-              initial={false}
-              animate={topTarget}
-              transition={wordTransition}
-              style={wordStyle}
+            {/* The page's <h1>. The hero carries no body copy, so the heading
+                is visually hidden — it exists for screen readers and for anything
+                parsing the page (search, LLM crawlers), which otherwise find no
+                statement of what this site is outside the <title> tag. */}
+            <h1 className="sr-only">
+              Studio Studio — experiential design and creative technology in
+              Brooklyn, New York
+            </h1>
+          </section>
+
+          {/* About — the studio statement and city clocks. On desktop it reads as
+              the first thing below the fold, so it arrives on the scroll rather
+              than competing with the trail caption now standing in its old slot.
+              On narrow screens it keeps the fold, bottom-aligned into whatever is
+              left of the first screen. Either way the block owns its own
+              max-width + gutter, so it sits on the same grid as the work rows. */}
+          <section
+            id="about"
+            style={{
+              // A screen of its own. The block used to run ~40svh on a laptop
+              // (statement + clocks + its air); 100svh is that at 2.5x. Still
+              // bottom-aligned, so the added height falls above the statement
+              // as approach — the distance from the statement down to the Work
+              // divider is unchanged. The top padding stays on as a floor for
+              // viewports too short for the svh to clear the content.
+              minHeight: '100svh',
+              display: 'flex',
+              alignItems: 'flex-end',
+              padding: 'clamp(4rem, 12vh, 8rem) 0 clamp(2rem, 6vh, 4rem)',
+            }}
+          >
+            <AgencyAbout />
+          </section>
+          </div>
+
+          <SectionDivider />
+
+          {/* Work — the four-up featured grid opens the section right below the
+              fold, then the fuller editorial list + CTAs. */}
+          <div id="work">
+            <AgencyFeaturedGrid />
+            <AgencyFeaturedProjects />
+          </div>
+
+          <SectionDivider />
+
+          {/* Services — accordion. Compact + top-aligned (no longer centered in a
+              full screen) so it sits close under the work "View All Projects" CTA. */}
+          <section
+            id="services"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              padding: 'clamp(2rem, 4vh, 3rem) var(--gutter, 1.5rem)',
+            }}
+          >
+            <ServicesAccordion />
+          </section>
+
+          {/* Notes — hidden for now. Restore by uncommenting this block, the
+              IdeasSection import, and the 'ideas' entries in SPY_IDS /
+              SECTION_WORDS / the sidebar ITEMS list.
+
+          <SectionDivider />
+
+          <section
+            id="ideas"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+              padding: 'clamp(2rem, 5vh, 4rem) var(--gutter, 1.5rem)',
+            }}
+          >
+            <IdeasSection />
+          </section>
+          */}
+
+          <SectionDivider />
+
+          {/* Contact — header (image + title) over the pitch + form, mirroring /contact. */}
+          <footer
+            id="contact"
+            style={{
+              minHeight: '100svh',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              padding: 'clamp(2rem, 5vh, 4rem) var(--gutter, 1.5rem) clamp(3rem, 8vh, 6rem)',
+            }}
+          >
+            {/* The section opens straight on the two-up: pitch + details left,
+                form right. The old full-width header above it (eyebrow, "Let's
+                make something together", and the partnership lede) is gone — the
+                left column already carries its own eyebrow and heading. */}
+            <div
+              className="grid grid-cols-1 md:grid-cols-2"
+              style={{
+                width: '100%',
+                maxWidth: '1100px',
+                margin: '0 auto',
+                gap: 'clamp(2.5rem, 5vw, 5rem)',
+                alignItems: 'start',
+              }}
             >
-              STUDIO
-            </motion.div>
-            <motion.div
-              initial={false}
-              animate={botTarget}
-              transition={wordTransition}
-              style={wordStyle}
-            >
-              <span
-                ref={botSpanRef}
-                style={{
-                  display: 'inline-block',
-                  transform: `scale(${botFit})`,
-                  transformOrigin: 'center center',
-                }}
+              {/* Left — pitch + details. */}
+              <div
+                className="flex flex-col font-display"
+                style={{ gap: '1.25rem', color: INK }}
               >
-                {bottomText}
-              </span>
-            </motion.div>
+                <span
+                  className="font-mono"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.7rem',
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(232, 228, 223, 0.5)',
+                  }}
+                >
+                  Get in touch
+                </span>
+                <h2
+                  style={{
+                    fontWeight: 700,
+                    fontSize: 'clamp(1.8rem, 3.4vw, 2.8rem)',
+                    lineHeight: 1.05,
+                    letterSpacing: '-0.03em',
+                    margin: 0,
+                  }}
+                >
+                  Have a project in mind?
+                </h2>
+                <p
+                  style={{
+                    margin: 0,
+                    maxWidth: '38ch',
+                    fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
+                    lineHeight: 1.6,
+                    color: 'rgba(232, 228, 223, 0.7)',
+                  }}
+                >
+                  Tell us a little about it and we&apos;ll set up a call. Prefer
+                  email? Reach us directly —
+                </p>
+                <a
+                  href="mailto:hello@studiostudio.nyc"
+                  className="font-display"
+                  style={{
+                    fontWeight: 600,
+                    fontSize: 'clamp(1.15rem, 2.2vw, 1.6rem)',
+                    letterSpacing: '-0.01em',
+                    color: BLUE,
+                    textDecoration: 'none',
+                  }}
+                >
+                  hello@studiostudio.nyc
+                </a>
+              </div>
+
+              {/* Right — the form. */}
+              <div>
+                <ContactForm />
+              </div>
+            </div>
+
+            {/* Image — sits under the pitch + form, mirroring /contact. */}
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: '1100px',
+                margin: 'clamp(2.5rem, 6vw, 4.5rem) auto 0',
+                aspectRatio: 16 / 9,
+                overflow: 'hidden',
+                borderRadius: '20px',
+                background: 'rgba(232, 228, 223, 0.04)',
+              }}
+            >
+              <Image
+                src="/landing/opt/light-around-us2.avif"
+                alt="Studio Studio installation work"
+                fill
+                sizes="(min-width: 1100px) 1100px, 92vw"
+                className="object-cover"
+              />
+            </div>
+
+            {/* Stay in the loop — compact newsletter strip. */}
+            <SubscribeStrip style={{ marginTop: 'clamp(3.5rem, 8vw, 6rem)' }} />
+
+          </footer>
+
+          <SiteFooter />
+        </div>
+
+        {/* Pinned wordmark — difference blend inverts imagery beneath. The two
+            words glide in from the left edge on load, fading up as they stack
+            together in the top-left corner, fixed there for the rest of the
+            scroll.
+            Above the nav/social bars (z80) so the lockup reads over the header
+            band; pointer-events:none keeps the nav clickable. */}
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 81,
+            mixBlendMode: 'difference',
+          }}
+          aria-hidden
+        >
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              className="flex flex-col items-center"
+              style={{ gap: 'min(1.3vw, 1.05rem)' }}
+            >
+              {/* Decorative pinned type, not document structure — the wrapper is
+                  aria-hidden and the bottom word's text swaps as you scroll, so
+                  these must not be headings. The page's real <h1> is in the hero.
+                  wordStyle sets every type property explicitly (margin included),
+                  so the tag is purely a semantics change. */}
+              <motion.div
+                ref={topWordRef}
+                initial={false}
+                animate={topTarget}
+                transition={wordTransition}
+                style={wordStyle}
+              >
+                STUDIO
+              </motion.div>
+              <motion.div
+                initial={false}
+                animate={botTarget}
+                transition={wordTransition}
+                style={wordStyle}
+              >
+                <span
+                  ref={botSpanRef}
+                  style={{
+                    display: 'inline-block',
+                    transform: `scale(${botFit})`,
+                    transformOrigin: 'center center',
+                  }}
+                >
+                  {bottomText}
+                </span>
+              </motion.div>
+            </div>
           </div>
         </div>
+
+        {/* White frame — left/right + bottom edges. Only at the footer. */}
+        <div
+          aria-hidden
+          className="side-frame"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 60,
+            pointerEvents: 'none',
+            borderLeft: `30px solid ${BG}`,
+            borderRight: `30px solid ${BG}`,
+            borderBottom: `30px solid ${BG}`,
+            opacity: active === 'contact' ? 1 : 0,
+            transition: 'opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        />
+        <style>{`
+          @media (max-width: 640px) {
+            .side-frame { border-left: 0 !important; border-right: 0 !important; }
+          }
+        `}</style>
+
       </div>
 
-      {/* White frame — left/right + bottom edges. Only at the footer. */}
-      <div
-        aria-hidden
-        className="side-frame"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 60,
-          pointerEvents: 'none',
-          borderLeft: `30px solid ${BG}`,
-          borderRight: `30px solid ${BG}`,
-          borderBottom: `30px solid ${BG}`,
-          opacity: active === 'contact' ? 1 : 0,
-          transition: 'opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
-      />
+      {/* Mobile — its own experience, not this page reflowed. The trail is
+          pointer-driven and silent on touch, so the work is browsed by
+          scrolling a column of it over a frame of the selected row. */}
+      <div className="ss-mobile">
+        <MobileProjectScroller />
+      </div>
+
       <style>{`
-        @media (max-width: 640px) {
-          .side-frame { border-left: 0 !important; border-right: 0 !important; }
+        .ss-mobile { display: none; }
+        @media (max-width: 899px) {
+          .ss-desktop { display: none; }
+          .ss-mobile { display: block; }
         }
       `}</style>
 
