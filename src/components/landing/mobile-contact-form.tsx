@@ -59,7 +59,7 @@ export function MobileContactForm() {
         border-radius: 0;
         padding: 0.8rem 0.85rem;
         color: ${INK};
-        font-family: var(--font-mono), monospace;
+        font-family: var(--font-mono);
         font-size: 0.76rem;
         line-height: 1.45;
         text-align: center;
@@ -94,7 +94,7 @@ export function MobileContactForm() {
         padding: 0.9rem 0.85rem;
         background: ${INK};
         color: ${BG};
-        font-family: var(--font-mono), monospace;
+        font-family: var(--font-mono);
         font-size: 0.68rem;
         font-weight: 600;
         letter-spacing: 0.18em;
@@ -114,7 +114,7 @@ export function MobileContactForm() {
         padding: 0.8rem 0.85rem;
         background: transparent;
         color: rgba(232, 228, 223, 0.6);
-        font-family: var(--font-mono), monospace;
+        font-family: var(--font-mono);
         font-size: 0.64rem;
         letter-spacing: 0.16em;
         text-transform: uppercase;
@@ -126,7 +126,7 @@ export function MobileContactForm() {
       .mcf-err {
         display: block;
         padding: 0 0.85rem 0.6rem;
-        font-family: var(--font-mono), monospace;
+        font-family: var(--font-mono);
         font-size: 0.6rem;
         color: rgba(232, 228, 223, 0.6);
       }
@@ -141,7 +141,7 @@ export function MobileContactForm() {
       }
       .mcf-done-p {
         margin: 0.45rem 0 0;
-        font-family: var(--font-mono), monospace;
+        font-family: var(--font-mono);
         font-size: 0.64rem;
         letter-spacing: 0.16em;
         text-transform: uppercase;

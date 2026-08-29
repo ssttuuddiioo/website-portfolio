@@ -70,7 +70,7 @@ Skip this section if Option A is chosen.
 | `/sound-journeys` | `/work/sound-journeys` |
 | `/snowblind` | `/work/snowblind` |
 | `/between` | `/work/between` |
-| `/gesture` | `/work/gesture` |
+| `/gesture` | `/work/gesture-gesture` |
 | `/gifbooth` | `/work/gifbooth` |
 | `/the-light-around-us` | `/work/the-light-around-us` |
 | `/orbitals` (post-cleanup) | `/work/orbitals` |
@@ -141,7 +141,7 @@ Every project page needs: unique title, unique meta description (120–160 chars
 | `/snowblind` | Snowblind | 197 | 18 | Strongest content body |
 | `/between` | Between the Two of These | 74 | 18 | Slug is short; preserve for stability |
 | `/orbitals` | Orbitals | 68 | 18 | Post-cleanup slug |
-| `/gesture` | gesture-gesture | 108 | 18 | H1 alignment — use `Gesture Gesture` |
+| `/gesture` | gesture-gesture | 108 | 18 | H1 alignment — shipped as `Gesture-Gesture` |
 | `/gifbooth` | Gifbooth | 237 | 16 | Highest word count |
 | `/rent` | rent | 48 | 3 | Lowest traffic — consider retiring |
 

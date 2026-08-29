@@ -23,7 +23,7 @@ const PLACEHOLDER_PROJECTS = [
   { title: 'StoryBooth', slug: 'storybooth', client: 'Michigan Central', year: 2019, category: 'Commercial', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&q=75', featured: false },
   { title: 'Hope Hydration', slug: 'hope-hydration', client: 'Bould Design', year: 2024, category: 'Commercial', image: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=800&q=75', featured: false },
   { title: 'Scatter and Rise', slug: 'scatter-and-rise', client: 'Goat Farm Arts', year: 2023, category: 'Art', image: 'https://images.unsplash.com/photo-1504297050568-910d24c426d3?w=800&q=75', featured: false },
-  { title: 'Gestures', slug: 'gestures', client: 'Personal', year: 2014, category: 'Art', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=75', featured: false },
+  { title: 'Gesture-Gesture', slug: 'gesture-gesture', client: 'Personal', year: 2014, category: 'Art', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=75', featured: false },
   { title: 'Suffolk Building', slug: 'suffolk-building', client: 'Chemistry Creative', year: 2023, category: 'Lighting', image: 'https://images.unsplash.com/photo-1545987796-200677ee1011?w=800&q=75', featured: false },
   { title: 'Living Walls', slug: 'living-walls', client: 'Mercedes-Benz Stadium', year: 2024, category: 'Lighting', image: 'https://images.unsplash.com/photo-1506399558188-acca6f8cbf41?w=800&q=75', featured: false },
   { title: 'Cox Pillars', slug: 'cox-pillars', client: 'Cox Communications', year: 2024, category: 'Commercial', image: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=800&q=75', featured: false },

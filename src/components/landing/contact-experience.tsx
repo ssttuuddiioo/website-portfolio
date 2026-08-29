@@ -7,7 +7,6 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { ContactForm } from './contact-form'
-import { SubscribeStrip } from './subscribe-form'
 import { INK, BG, BLUE } from './landing-theme'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -173,10 +172,13 @@ export function ContactExperience() {
                   maxWidth: '52ch',
                 }}
               >
-                An installation, an activation, a tool, a stage — tell us what you
-                have in mind. We partner with brands, agencies, and institutions
-                to turn ambitious ideas into rooms, screens, and stages people
-                remember.
+                Drop us a line or say hello.{' '}
+                <a
+                  href="mailto:hello@studiostudio.nyc"
+                  style={{ color: BLUE, textDecoration: 'none' }}
+                >
+                  hello@studiostudio.nyc
+                </a>
               </p>
             </Reveal>
           </div>
@@ -214,7 +216,7 @@ export function ContactExperience() {
                     margin: 0,
                   }}
                 >
-                  Have a project in mind?
+                  Say hello.
                 </h2>
                 <p
                   style={{
@@ -225,8 +227,7 @@ export function ContactExperience() {
                     color: 'rgba(232, 228, 223, 0.7)',
                   }}
                 >
-                  Tell us a little about it and we&apos;ll set up a call. Prefer
-                  email? Reach us directly —
+                  Use the form, or email us directly.
                 </p>
                 <a
                   href="mailto:hello@studiostudio.nyc"
@@ -268,17 +269,6 @@ export function ContactExperience() {
             </div>
           </Reveal>
         </section>
-
-        {/* ---- Footer band ------------------------------------------------- */}
-        <footer
-          style={{
-            padding: `0 ${GUTTER} clamp(3rem, 8vh, 6rem)`,
-          }}
-        >
-          {/* Stay in the loop — compact newsletter strip. */}
-          <SubscribeStrip style={{ marginBottom: 'clamp(3rem, 7vw, 5rem)' }} />
-
-        </footer>
 
         <SiteFooter />
       </main>

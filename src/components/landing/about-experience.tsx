@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
@@ -11,7 +11,7 @@ import { ContactForm } from './contact-form'
 import { LogoMarquee } from './logo-marquee'
 import { FaqSection } from './faq-section'
 import { ABOUT_TITLE } from './about-section'
-import { INK, BG, BLUE } from './landing-theme'
+import { INK, BG } from './landing-theme'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 const GUTTER = 'var(--gutter, 1.5rem)'
@@ -94,75 +94,6 @@ function FramedImage({
         priority={priority}
         className="object-cover"
       />
-    </div>
-  )
-}
-
-const TEAM = [
-  {
-    name: 'Pablo',
-    role: 'Creative and Software',
-    src: '/landing/team/pablo.avif',
-  },
-  {
-    name: 'Mario',
-    role: 'Strategy and Growth',
-    src: '/landing/team/mario.avif',
-  },
-  {
-    name: 'Mary',
-    role: 'Communications',
-    src: '/landing/team/mary.avif',
-  },
-] as const
-
-/**
- * Square team portrait, matching the 1:1 source headshots. Falls back to the
- * person's initials on a tinted
- * plate if the photo is missing, so the section never renders a broken image.
- */
-function Portrait({ src, name, role }: { src: string; name: string; role: string }) {
-  const [failed, setFailed] = useState(false)
-  const initials = name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-
-  return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        aspectRatio: 1,
-        overflow: 'hidden',
-        borderRadius: '20px',
-        background: 'rgba(232, 228, 223, 0.06)',
-        display: 'grid',
-        placeItems: 'center',
-      }}
-    >
-      {failed ? (
-        <span
-          className="font-display"
-          style={{
-            fontWeight: 700,
-            fontSize: 'clamp(2rem, 5vw, 3.25rem)',
-            letterSpacing: '-0.02em',
-            color: 'rgba(232, 228, 223, 0.25)',
-          }}
-        >
-          {initials}
-        </span>
-      ) : (
-        <Image
-          src={src}
-          alt={`${name}, ${role}`}
-          fill
-          sizes="(min-width: 768px) 340px, 92vw"
-          className="object-cover"
-          onError={() => setFailed(true)}
-        />
-      )}
     </div>
   )
 }
@@ -265,76 +196,6 @@ export function AboutExperience() {
           </Reveal>
         </section>
 
-        {/* ---- Team --------------------------------------------------------- */}
-        <section
-          style={{
-            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
-          }}
-        >
-          <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-            <Reveal style={{ marginBottom: 'clamp(2rem, 5vw, 3.5rem)' }}>
-              <div style={{ textAlign: 'center' }}>
-                <h2
-                  className="font-display"
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-                    lineHeight: 1.05,
-                    letterSpacing: '-0.03em',
-                    color: INK,
-                    margin: '1rem 0 0',
-                  }}
-                >
-                  Our Team
-                </h2>
-              </div>
-            </Reveal>
-
-            <div
-              className="about-team"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: 'clamp(1.5rem, 4vw, 3rem)',
-                margin: '0 auto',
-              }}
-            >
-              {TEAM.map((person, i) => (
-                <Reveal key={person.name} delay={i * 0.08}>
-                  <Portrait src={person.src} name={person.name} role={person.role} />
-                  <div style={{ marginTop: '1.1rem' }}>
-                    <h3
-                      className="font-display"
-                      style={{
-                        fontWeight: 700,
-                        fontSize: 'clamp(1.05rem, 1.8vw, 1.35rem)',
-                        letterSpacing: '-0.02em',
-                        lineHeight: 1.15,
-                        color: INK,
-                        margin: 0,
-                      }}
-                    >
-                      {person.name}
-                    </h3>
-                    <p
-                      className="font-mono"
-                      style={{
-                        margin: '0.5rem 0 0',
-                        fontSize: '0.7rem',
-                        letterSpacing: '0.14em',
-                        textTransform: 'uppercase',
-                        color: 'rgba(232, 228, 223, 0.5)',
-                      }}
-                    >
-                      {person.role}
-                    </p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ---- Trusted by (logo marquee) ----------------------------------- */}
         <section style={{ padding: `clamp(2.5rem, 6vw, 4.5rem) 0` }}>
           <Reveal style={{ marginBottom: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
@@ -351,7 +212,10 @@ export function AboutExperience() {
         </section>
 
         {/* ---- Services ----------------------------------------------------- */}
+        {/* id is live navigation: the nav dock and the footer's capability
+            column both link to /about#services. */}
         <section
+          id="services"
           style={{
             padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
           }}
@@ -463,13 +327,6 @@ export function AboutExperience() {
 
         <SiteFooter />
       </main>
-
-      {/* Stack the team row on small screens. */}
-      <style>{`
-        @media (max-width: 767px) {
-          .about-team { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
 
       {/* Background tint behind everything (matches the home shell). */}
       <div

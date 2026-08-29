@@ -1,11 +1,10 @@
 import type { LandingProject } from './landing-projects'
 
 /**
- * The four poles the work is read against. Nothing consumes these yet — the
- * trail behaves exactly as before — but every index entry now carries a weight
- * for each, so a field can be built that reveals work by proximity: put the
- * pointer near the Web pole and the web-heavy projects are the ones closest to
- * it.
+ * The four poles the work is read against. Every index entry carries a weight
+ * for each, which is what lets the hero trail reveal work by proximity: carry
+ * the pointer toward the Web pole and the web-heavy projects are the ones that
+ * come up.
  */
 export const TAGS = ['web', 'installation', 'lighting', 'design'] as const
 export type Tag = (typeof TAGS)[number]
@@ -16,12 +15,12 @@ export type Affinity = Record<Tag, number>
 /**
  * Where each pole sits on the first screen, in normalised 0–1 coordinates.
  *
- * Not the four corners, though that is the obvious arrangement: the corners are
- * already taken. The STUDIO lockup is fixed top-left, the nav dock top-right,
- * and the trail's caption runs along the bottom-left at the fold. So the poles
- * sit in the clear band between them — scattered rather than gridded, web and
- * design to the left, installation and lighting to the right, each pair
- * staggered so no two share a line.
+ * Nothing draws these — they are pure geometry, felt only as which work the
+ * trail offers up as the pointer crosses the screen. Not the four corners,
+ * which would leave the middle of the field dead: they are scattered instead,
+ * web and design to the left, installation and lighting to the right, each pair
+ * staggered so no two share a line and every region of the first screen leans
+ * somewhere.
  *
  * Move these and every project moves with them; positions are derived from the
  * anchors, never stored.

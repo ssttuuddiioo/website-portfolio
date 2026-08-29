@@ -19,7 +19,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
 const COMPACT_TITLES = [
   '9to5.tv',
   'Scatter and Rise',
-  'Gestures',
+  'Gesture-Gesture',
   'Orbitals',
   'Snowblind',
   'Pour Perfect',

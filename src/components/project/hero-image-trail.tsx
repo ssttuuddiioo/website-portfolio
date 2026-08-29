@@ -19,10 +19,6 @@ const FRAME_LINGER = 250
 const REST_DELAY = 1000
 // Air between the bottom of the resting frame and its prompt.
 const CTA_GAP = 14
-// Quiet after the last spawn before the credit line counts as landed and
-// settles into focus. Short — this is the pointer pausing, not resting; the
-// click prompt still waits out the full REST_DELAY above.
-const SETTLE_DELAY = 150
 
 /**
  * A trail entry: a bare src, or a src carrying the line shown beside the field
@@ -46,13 +42,6 @@ export interface TrailItem {
   pos?: { x: number; y: number }
 }
 
-/** A labelled pole on the field, placed in the same 0–1 coordinates. */
-export interface TrailNode {
-  label: string
-  x: number
-  y: number
-}
-
 export type TrailImage = string | TrailItem
 
 interface HeroImageTrailProps {
@@ -71,10 +60,11 @@ interface HeroImageTrailProps {
    */
   captionAnchor?: 'corner' | 'statement'
   /**
-   * The poles to draw on the field. Supplying them (with positioned items) is
-   * what turns the trail from a fixed cycle into something steerable.
+   * Fired once, the first time a frame credits the caption — the moment the
+   * trail starts naming work. The page uses it to clear whatever was standing
+   * in the caption's slot until then (on the landing, the studio statement).
    */
-  nodes?: TrailNode[]
+  onCaptionShown?: () => void
 }
 
 // The caption hangs off the nav dock, so it copies the dock's own right inset
@@ -94,7 +84,7 @@ export function HeroImageTrail({
   grid = true,
   onSelect,
   captionAnchor = 'corner',
-  nodes,
+  onCaptionShown,
 }: HeroImageTrailProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const poolRefs = useRef<(HTMLImageElement | null)[]>([])
@@ -118,10 +108,12 @@ export function HeroImageTrail({
   const metaRef = useRef<HTMLSpanElement>(null)
   const ctaRef = useRef<HTMLSpanElement>(null)
   const restTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const settleTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Whether a click on the field would open something right now. Drives the
   // cursor, so it has to drop as soon as the pointer leaves the field.
   const armed = useRef(false)
+  // The white dot that stands in for the hand cursor while the field is armed.
+  // Written to imperatively, like everything else the pointer drives.
+  const dotRef = useRef<HTMLDivElement>(null)
   // Pointer position within the tag field, 0–1. The field is the first screen,
   // not the whole container — the homepage runs the trail on past the fold, and
   // all four poles have to stay reachable without scrolling — so y is clamped
@@ -129,13 +121,18 @@ export function HeroImageTrail({
   const tagPoint = useRef({ x: 0.5, y: 0.5 })
   // The entry spawned last, so the picker never plays the same frame twice.
   const lastPicked = useRef(-1)
-  const nodeRefs = useRef<(HTMLDivElement | null)[]>([])
-  const nearestNode = useRef(-1)
   // Held in a ref so an inline handler from the page doesn't re-bind listeners.
   const onSelectRef = useRef(onSelect)
   useEffect(() => {
     onSelectRef.current = onSelect
   }, [onSelect])
+  const onCaptionShownRef = useRef(onCaptionShown)
+  useEffect(() => {
+    onCaptionShownRef.current = onCaptionShown
+  }, [onCaptionShown])
+  // Whether the caption has ever carried a title. The slot it lands in belongs
+  // to the page until then, so the page is told exactly once.
+  const captionShown = useRef(false)
 
   // Normalize to objects once, so the spawn path can read title/meta directly.
   const items = useMemo<TrailItem[]>(
@@ -146,11 +143,37 @@ export function HeroImageTrail({
   // Steering only makes sense when every entry knows where it sits.
   const steerable = items.length > 0 && items.every((i) => i.pos)
 
-  const setArmed = useCallback((next: boolean) => {
-    if (armed.current === next) return
-    armed.current = next
-    document.body.style.cursor = next ? 'pointer' : ''
+  /**
+   * Put the dot under the pointer. Container-relative rather than fixed: the
+   * dot lives inside the field, in the same coordinate space as the frames it
+   * sits over, so no transformed ancestor anywhere up the page can strand it.
+   */
+  const placeDot = useCallback(() => {
+    const dot = dotRef.current
+    const bounds = boundsRef.current
+    if (!dot || !bounds) return
+    const x = lastPointer.current.x - bounds.left
+    const y = lastPointer.current.y - bounds.top
+    dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`
   }, [])
+
+  /**
+   * Arming swaps the system hand for the field's own mark: the native cursor is
+   * hidden and a white dot takes its place. Placed before it is shown, so it
+   * never blinks in at the last position it held.
+   */
+  const setArmed = useCallback(
+    (next: boolean) => {
+      if (armed.current === next) return
+      armed.current = next
+      document.body.style.cursor = next ? 'none' : ''
+      const dot = dotRef.current
+      if (!dot) return
+      if (next) placeDot()
+      dot.style.opacity = next ? '1' : '0'
+    },
+    [placeDot],
+  )
 
   // Preload images + detect input/motion prefs
   useEffect(() => {
@@ -179,7 +202,9 @@ export function HeroImageTrail({
     ro.observe(container)
 
     // Scrolling moves the field out from under a stationary pointer, so the
-    // cursor has to disarm even though no mousemove ever fires.
+    // cursor has to disarm even though no mousemove ever fires. Still inside,
+    // the dot has to be re-placed for the same reason: it is drawn in the
+    // field's coordinates, and the field just moved beneath the pointer.
     const onScroll = () => {
       const b = container.getBoundingClientRect()
       boundsRef.current = b
@@ -187,6 +212,7 @@ export function HeroImageTrail({
       const inside =
         x >= b.left && x <= b.right && y >= b.top && y <= b.bottom
       if (!inside) setArmed(false)
+      else if (armed.current) placeDot()
     }
     window.addEventListener('scroll', onScroll, { passive: true })
 
@@ -194,7 +220,7 @@ export function HeroImageTrail({
       ro.disconnect()
       window.removeEventListener('scroll', onScroll)
     }
-  }, [setArmed])
+  }, [setArmed, placeDot])
 
   /**
    * Which entry to play next.
@@ -236,30 +262,6 @@ export function HeroImageTrail({
     }
     return weights.length - 1
   }, [items, steerable])
-
-  /**
-   * Light the pole the pointer is closest to, and only when it is close enough
-   * to read as deliberate. Written straight to the DOM like the caption and the
-   * pool — this runs on every mousemove and must never cost a render.
-   */
-  const highlightNearest = useCallback(() => {
-    if (!nodes?.length) return
-    const { x, y } = tagPoint.current
-    let best = -1
-    let bestDist = 0.26 // beyond this the pointer is in open ground
-    nodes.forEach((n, i) => {
-      const d = Math.hypot(n.x - x, n.y - y)
-      if (d < bestDist) {
-        bestDist = d
-        best = i
-      }
-    })
-    if (best === nearestNode.current) return
-    nearestNode.current = best
-    nodeRefs.current.forEach((el, i) => {
-      if (el) el.dataset.near = i === best ? 'true' : 'false'
-    })
-  }, [nodes])
 
   const spawnImage = useCallback(
     (x: number, y: number) => {
@@ -317,26 +319,18 @@ export function HeroImageTrail({
       topFrame.current = { slot: idx, at: performance.now() }
       resting.current = { item, index: itemIdx }
 
-      // Credit the image now on top. The line holds as long as the frame does.
-      //
-      // A frame spawns every 35px of travel, so during a sweep this runs many
-      // times a second — far too fast for a transition between titles to ever
-      // finish. Instead the line has two states. While the pointer is moving it
-      // stays deliberately provisional: dimmed, softened, sitting a few pixels
-      // low, flicking past as fast as the frames do. The pointer pauses and it
-      // settles — into focus, into place, at full strength. The arrival is the
-      // moment worth animating, not the swap.
+      // Credit the image now on top. The line holds as long as the frame does,
+      // and swaps outright when the next one lands — a frame spawns every 35px
+      // of travel, so there is nothing here worth easing.
       const cap = captionRef.current
       if (cap) {
         if (titleRef.current) titleRef.current.textContent = item.title ?? ''
         if (metaRef.current) metaRef.current.textContent = item.meta ?? ''
         cap.style.opacity = '1'
-        cap.dataset.state = 'moving'
-        if (settleTimeout.current) clearTimeout(settleTimeout.current)
-        settleTimeout.current = setTimeout(() => {
-          cap.dataset.state = 'settled'
-          settleTimeout.current = null
-        }, SETTLE_DELAY)
+        if (!captionShown.current) {
+          captionShown.current = true
+          onCaptionShownRef.current?.()
+        }
       }
 
       // The prompt follows the frame, tucked under its bottom edge. It jumps to
@@ -373,6 +367,7 @@ export function HeroImageTrail({
     const onMouseMove = (e: MouseEvent) => {
       if (isCoarse.current || prefersReducedMotion.current) return
       lastPointer.current = { x: e.clientX, y: e.clientY }
+      if (armed.current) placeDot()
       const bounds = boundsRef.current
       if (!bounds) return
 
@@ -388,13 +383,12 @@ export function HeroImageTrail({
       // The pointer's point in the tag field, read before any spawn so the
       // picker is always working from where the pointer actually is. The field
       // is the first screen: past the fold, y pins to its bottom edge.
-      if (steerable || nodes?.length) {
+      if (steerable) {
         const screen = window.innerHeight || bounds.height
         tagPoint.current = {
           x: Math.min(1, Math.max(0, x / bounds.width)),
           y: Math.min(1, Math.max(0, y / screen)),
         }
-        highlightNearest()
       }
 
       const dx = x - lastSpawn.current.x
@@ -436,17 +430,15 @@ export function HeroImageTrail({
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('click', onClick)
     }
-  }, [spawnImage, setArmed, steerable, nodes, highlightNearest])
+  }, [spawnImage, setArmed, steerable, placeDot])
 
   // Cleanup timeouts on unmount
   useEffect(() => {
     const t = timeouts.current
     const rest = restTimeout
-    const settle = settleTimeout
     return () => {
       t.forEach((timeout) => clearTimeout(timeout))
       if (rest.current) clearTimeout(rest.current)
-      if (settle.current) clearTimeout(settle.current)
       document.body.style.cursor = ''
     }
   }, [])
@@ -463,85 +455,6 @@ export function HeroImageTrail({
         backgroundSize: grid ? '32px 32px' : undefined,
       }}
     >
-      {/* The poles. Drawn under every frame and inert to the pointer — they
-          label the field, they are not controls. The drift is a few pixels over
-          twenty-odd seconds, each on its own phase: enough that the field is
-          never quite still, not enough to read as animation. */}
-      {nodes && nodes.length > 0 && (
-        <>
-          <style>{`
-            .trail-node {
-              position: absolute;
-              display: flex;
-              align-items: center;
-              gap: 0.55rem;
-              white-space: nowrap;
-              pointer-events: none;
-              z-index: 1;
-              /* Futura, set up in globals as --font-display. Geometric caps
-                 want a little more size and tracking than the mono did, and a
-                 touch of weight so the thin strokes hold at this scale. */
-              font-size: 0.78rem;
-              font-weight: 500;
-              letter-spacing: 0.2em;
-              text-transform: uppercase;
-              color: rgba(232, 228, 223, 0.68);
-              transition: color 420ms cubic-bezier(0.22, 1, 0.36, 1);
-              animation: trail-node-drift var(--dur) ease-in-out var(--delay) infinite;
-            }
-            .trail-node-dot {
-              width: 6px;
-              height: 6px;
-              border-radius: 50%;
-              background: currentColor;
-              flex: none;
-              transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
-            }
-            .trail-node[data-near='true'] { color: #e8e4df; }
-            .trail-node[data-near='true'] .trail-node-dot { transform: scale(1.9); }
-
-            /* Translate lives entirely in the keyframes: the -50% centring is
-               folded in so the animation never fights the placement. */
-            @keyframes trail-node-drift {
-              0%, 100% { transform: translate(-50%, -50%); }
-              25%  { transform: translate(-50%, -50%) translate(var(--dx), calc(var(--dy) * -1)); }
-              50%  { transform: translate(-50%, -50%) translate(calc(var(--dx) * -0.7), var(--dy)); }
-              75%  { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.5), calc(var(--dy) * 0.6)); }
-            }
-            @media (prefers-reduced-motion: reduce) {
-              .trail-node { animation: none; transform: translate(-50%, -50%); }
-            }
-          `}</style>
-          {nodes.map((n, i) => (
-            <div
-              key={n.label}
-              ref={(el) => {
-                nodeRefs.current[i] = el
-              }}
-              data-trail-ignore
-              data-near="false"
-              className="trail-node font-display"
-              style={
-                {
-                  left: `${n.x * 100}%`,
-                  // Positioned against the first screen, the same box the
-                  // pointer is normalised against — not the container, which on
-                  // the homepage runs well past the fold.
-                  top: `calc(${n.y} * 100svh)`,
-                  '--dx': `${3 + ((i * 7) % 3)}px`,
-                  '--dy': `${4 + ((i * 5) % 3)}px`,
-                  '--dur': `${19 + i * 3.5}s`,
-                  '--delay': `-${i * 4.5}s`,
-                } as React.CSSProperties
-              }
-            >
-              <span className="trail-node-dot" />
-              <span>{n.label}</span>
-            </div>
-          ))}
-        </>
-      )}
-
       {Array.from({ length: POOL_SIZE }).map((_, i) => (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -565,6 +478,35 @@ export function HeroImageTrail({
         />
       ))}
 
+      {/* The cursor, while the field is armed. A plain white disc, drawn over
+          the frames rather than by the OS — the hand said "link" when what is
+          actually under the pointer is a picture you can open, and the dot
+          reads as part of the trail instead of as browser chrome. The hairline
+          and the tight shadow are what keep it on a blown-out frame; without
+          them a white dot disappears into white work. */}
+      <div
+        ref={dotRef}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: 12,
+          height: 12,
+          borderRadius: '50%',
+          background: '#fff',
+          boxShadow:
+            '0 0 0 1px rgba(0, 0, 0, 0.25), 0 1px 6px rgba(0, 0, 0, 0.45)',
+          opacity: 0,
+          transition: 'opacity 140ms cubic-bezier(0.22, 1, 0.36, 1)',
+          pointerEvents: 'none',
+          willChange: 'transform',
+          // Above every pooled frame — they climb zCounter — and level with the
+          // caption, which never shares ground with the pointer.
+          zIndex: 9999,
+        }}
+      />
+
       {/* The resting frame's line. Sits above every pooled image (they climb
           zCounter), arrives with the first frame and stays as long as that
           frame does. Two placements, per `captionAnchor`: hung off the nav
@@ -575,7 +517,6 @@ export function HeroImageTrail({
         <div
           ref={captionRef}
           aria-hidden
-          data-state="settled"
           className={`trail-caption trail-caption--${captionAnchor}`}
         >
           <style>{`
@@ -593,55 +534,14 @@ export function HeroImageTrail({
               max-width: min(34rem, 60vw);
               text-align: right;
             }
-            /* Two states, driven off data-state in the spawn path: "moving" is
-               the readout flicking past under a sweeping pointer, "settled" is
-               the frame you actually landed on. Only transform, opacity and
-               filter are animated — all compositor-side, so this stays cheap
-               even while frames spawn several times a second. Nothing animates
-               letter-spacing or size: those reflow, and at 4.4rem that is a
-               layout pass per frame. */
-            .trail-caption-title,
+            /* The line does not animate between frames — it cuts. A frame
+               spawns every 35px of travel, so under a sweeping pointer any
+               transition here is a blur/drift the eye reads as lag rather than
+               as motion; the title simply is whatever is on top. The only fade
+               left is the block's own, above, which brings the line in once.
+               The meta sits quieter than the title, and stays there. */
             .trail-caption-meta {
-              will-change: transform, opacity, filter;
-              transition:
-                opacity 420ms cubic-bezier(0.16, 1, 0.3, 1),
-                filter 420ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
-            }
-            .trail-caption[data-state='moving'] .trail-caption-title {
-              opacity: 0.42;
-              filter: blur(3px);
-              transform: translateY(7px) scale(0.985);
-              /* Snap out of focus immediately; only the settle is eased. */
-              transition-duration: 90ms;
-            }
-            .trail-caption[data-state='moving'] .trail-caption-meta {
-              opacity: 0;
-              transform: translateY(5px);
-              transition-duration: 90ms;
-            }
-            .trail-caption[data-state='settled'] .trail-caption-title {
-              opacity: 1;
-              filter: blur(0);
-              transform: none;
-            }
-            .trail-caption[data-state='settled'] .trail-caption-meta {
               opacity: 0.55;
-              transform: none;
-              /* Lands just after the title, so the pair reads as one arrival
-                 rather than two things moving at once. */
-              transition-delay: 90ms;
-            }
-            /* The title still swaps and the line still reads; it simply does
-               not blur or travel to get there. */
-            @media (prefers-reduced-motion: reduce) {
-              .trail-caption-title,
-              .trail-caption-meta {
-                transition: opacity 200ms linear;
-                filter: none !important;
-                transform: none !important;
-              }
-              .trail-caption[data-state='moving'] .trail-caption-title { opacity: 0.7; }
             }
 
             /* Statement placement — bottom-left on the page's 1440 grid, with
@@ -657,31 +557,20 @@ export function HeroImageTrail({
                 left: 0;
                 right: 0;
                 bottom: auto;
-                /* Held at the fold, not at the foot of the field. The field now
-                   runs past the first screen (the homepage extends it down
-                   through the studio statement), so measuring up from the
-                   bottom would strand the line at the very end of that run.
-                   Measuring down from the top pins it to the first screen
-                   whatever the field's height: the block's own bottom edge
-                   lands one inset above 100svh. */
-                top: calc(100svh - clamp(2rem, 5.5vh, 3.8rem));
+                /* Held at the fold, measured DOWN from the top of the field
+                   rather than up from its foot, so the field's own height never
+                   enters into it: the block's bottom edge lands one site edge
+                   above 100svh whether the field is exactly the first screen or
+                   runs past it. The studio statement it shares this slot with
+                   pins itself with the same two values (.fold-statement in
+                   agency-experience) — and to the same left edge, so the
+                   handover doesn't move the line sideways. */
+                top: calc(100svh - var(--edge));
                 transform: translateY(-100%);
                 max-width: none;
                 text-align: left;
-                padding-right: var(--gutter, 1.5rem);
-                padding-left: calc(
-                  max(
-                    var(--gutter, 1.5rem),
-                    (100% - 1440px) / 2 + var(--gutter, 1.5rem)
-                  ) -
-                    min(
-                      150px,
-                      max(
-                        0px,
-                        (100% - 1440px) / 2 + var(--gutter, 1.5rem) - 40px
-                      )
-                    )
-                );
+                padding-right: calc(var(--edge) + env(safe-area-inset-right));
+                padding-left: calc(var(--edge) + env(safe-area-inset-left));
               }
               /* Keep a long title off the right half of the grid, the way the
                  statement's own column does. */
@@ -710,8 +599,8 @@ export function HeroImageTrail({
               fontSize: 'clamp(0.72rem, 0.95vw, 1.05rem)',
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
-              // Opacity is owned by the settle states above, not set here — an
-              // inline value would win over them.
+              // Opacity is owned by .trail-caption-meta above, not set here — an
+              // inline value would win over it.
               marginTop: '1.2rem',
             }}
           />

@@ -20,6 +20,13 @@ export const BLUE = '#1F44FF'
 export const ink = (alpha: number) => `rgba(232, 228, 223, ${alpha})`
 
 /**
+ * The hairline every rule on the site is drawn in — the project sheet's grid,
+ * the work index, the nav dock's edge. One value, so every ruled surface reads
+ * as the same system.
+ */
+export const RULE = ink(0.16)
+
+/**
  * White text; the pinned frame layer carries `mix-blend-mode: difference`,
  * so this reads near-white over the near-black page and inverts over any
  * image that scrolls beneath. Sized to fill the width when pinned.

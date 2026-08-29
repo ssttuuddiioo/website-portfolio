@@ -11,8 +11,9 @@ import { LANDING_PROJECTS, type LandingProject } from './landing-projects'
  * the landing index already holds: the hero frame, the description the
  * homepage work list shows, the services line, and the live site where there
  * is one. Nothing is invented to fill the shape — the page simply renders
- * fewer sections (no concept/production columns, no detail images, no
- * collaborators) and ProjectExperience drops each of those when it is absent.
+ * fewer sections (no concept/production columns, no detail images) and
+ * ProjectExperience drops each of those when it is absent. Credits come
+ * through where the index entry names collaborators.
  */
 
 /** Initials, for the `shortCode` slot. "Living Walls + AT&T" → "LW". */
@@ -50,7 +51,7 @@ function fromLanding(
     // What the studio actually did — the same list the homepage work entry
     // carries, which is exactly what the page's "Role" cell wants.
     role: project.services ?? [],
-    collaborators: [],
+    collaborators: project.collaborators ?? [],
     heroImage: project.image,
     about: project.description ?? '',
     // The hero is the entry's own frame; anything further the entry lists

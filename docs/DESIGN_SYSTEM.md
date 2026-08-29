@@ -159,14 +159,21 @@ Nav Link:           --text-sm / --font-mono / Regular (400) / --leading-normal /
 }
 ```
 
-### Responsive Gutters
+### The Edge
+
+One inset, every breakpoint, every page — set as `--edge` in `globals.css`.
 
 ```
-Mobile (<640px):    24px side padding
-Tablet (640-1024):  48px side padding
-Desktop (>1024):    64px side padding
-Max-width:          1440px (content), full-bleed available for hero sections
+--edge:    40px   distance from any viewport edge to anything pinned to it:
+                  the STUDIO lockup, the nav dock, the statement at the fold,
+                  the index toggle, the project sheet's frame
+--gutter:  var(--edge)   content padding, so the grid starts on the same line
+Max-width: 1440px (content), full-bleed available for hero sections
 ```
+
+Gutters used to step 24 / 48 / 64 by breakpoint, which put the frame elements
+and the content on different lines at every size. One number is the whole
+system now: change `--edge` and the site's margin changes with it.
 
 ---
 

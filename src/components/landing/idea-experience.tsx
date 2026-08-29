@@ -316,7 +316,7 @@ export function IdeaExperience({
 
         </footer>
 
-        <SiteFooter />
+        <SiteFooter subscribe={false} />
       </main>
 
       {/* Background tint behind everything (matches the home shell). */}

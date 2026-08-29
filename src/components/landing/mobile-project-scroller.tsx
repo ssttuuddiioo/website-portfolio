@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { LANDING_PROJECTS, type LandingProject } from '@/lib/landing-projects'
-import { MobileContactForm } from './mobile-contact-form'
 import { useLenis } from '@/lib/lenis-provider'
 import { INK, BG } from './landing-theme'
 
@@ -577,6 +576,10 @@ export function MobileProjectScroller() {
            this rule out with the block above it, leaving the paragraph to
            render at browser defaults — full width, full size — straight over
            the client roster. */
+        .mps-tagline-line {
+          display: block;
+          white-space: nowrap;
+        }
         .mps-tagline {
           top: ${ABOVE_WHEEL};
           margin: 0;
@@ -622,7 +625,6 @@ export function MobileProjectScroller() {
           color: rgba(232, 228, 223, 0.6);
         }
 
-        .mps-form { width: 100%; }
 
         /* The whole field below the drum, top and bottom both anchored — so
            the box never changes size as rows swap copy of different lengths,
@@ -709,7 +711,11 @@ export function MobileProjectScroller() {
           below. Both are always mounted so they fade rather than appear, and
           both sit on the same anchor so one replaces the other in place. */}
       <p className="mps-above mps-tagline font-display" data-on={row.kind === 'about'} aria-hidden>
-        A creative technology practice in Brooklyn, New York.
+        {/* Three fixed lines, each unbreakable — so the tagline reads the same
+            on every handset and the city never splits across a line end. */}
+        <span className="mps-tagline-line">A creative</span>
+        <span className="mps-tagline-line">technology practice</span>
+        <span className="mps-tagline-line">in Brooklyn, New York.</span>
       </p>
 
       <div className="mps-above mps-mark" data-on={row.kind === 'home'} aria-hidden>
@@ -804,11 +810,14 @@ export function MobileProjectScroller() {
         )}
 
         {row.kind === 'contact' && (
-          /* One ruled sheet, on the project pages' own system — the address is
-             its first cell rather than a separate line above it. */
-          <div className="mps-form">
-            <MobileContactForm />
-          </div>
+          <>
+            <p className="mps-about-lede font-display">
+              Tell us what you have in mind and we&apos;ll set up a call.
+            </p>
+            <Link href={row.href} className="mps-more font-display">
+              Get in touch
+            </Link>
+          </>
         )}
       </div>
     </section>

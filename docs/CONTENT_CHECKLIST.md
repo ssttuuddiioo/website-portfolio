@@ -39,7 +39,7 @@ Based on current inlink counts from the April 2026 baseline crawl.
 Project inventory not yet in the CMS:
 
 - Commercial: The Light Around Us, Storybooth, Dolby Moment, Cox Pillars, Cox Conserves, Living Walls, Hope Hydration HydroStation, Suffolk Building Lobby
-- Art: Scatter and Rise, Orbitals, Sound Journeys, Snowblind, Between the Two of These, Gestures
+- Art: Scatter and Rise, Orbitals, Sound Journeys, Snowblind, Between the Two of These, Gesture-Gesture
 
 ---
 

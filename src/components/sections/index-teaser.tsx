@@ -8,7 +8,7 @@ import { useRef, useEffect, useCallback, useState } from 'react'
 const PLACEHOLDER_PROJECTS = [
   { title: 'Dolby Moment', client: 'Dolby', year: 2015, tag: 'experiential', image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&q=75' },
   { title: 'Scatter and Rise', client: 'Goat Farm Arts', year: 2023, tag: 'public art', image: 'https://images.unsplash.com/photo-1504297050568-910d24c426d3?w=600&q=75' },
-  { title: 'Gestures', client: 'Personal', year: 2014, tag: 'tech experiment', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&q=75' },
+  { title: 'Gesture-Gesture', client: 'Gallery 72', year: 2014, tag: 'tech experiment', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&q=75' },
   { title: 'Suffolk Building', client: 'Chemistry Creative', year: 2023, tag: 'creative', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=75' },
   { title: 'Cox Pillars', client: 'Cox Communications', year: 2024, tag: 'experiential', image: 'https://images.unsplash.com/photo-1506399558188-acca6f8cbf41?w=600&q=75' },
   { title: 'Orbitals', client: 'Personal', year: 2018, tag: 'tech experiment', image: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=600&q=75' },

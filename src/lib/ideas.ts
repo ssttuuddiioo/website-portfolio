@@ -95,18 +95,20 @@ It is a small idea and an honest one: the best tools dissolve into the thing you
     image: '/landing/opt/gg.avif',
   },
   {
-    slug: 'gestures',
-    title: 'Gestures',
-    subtitle: 'A camera that turns hand movement into living typography.',
+    slug: 'gesture-gesture',
+    title: 'Gesture-Gesture',
+    subtitle: 'A box that archives the visual language of our hands.',
     category: 'Stories',
-    excerpt: 'A camera-driven piece that turns hand movement into living typography.',
-    body: `Gestures came out of a stubborn curiosity: what does handwriting look like if the pen is gone and only the motion remains? I wanted to read the shape of a wave, a reach, a flinch.
+    excerpt: 'A box that archives the visual language of our hands, three seconds at a time.',
+    body: `Gesture-Gesture explores the visual language we create with our hands.
 
-A camera tracks your hands and a type system answers in real time — letters that stretch, scatter, and pool depending on how you move. Slow and deliberate, the words hold together. Fast and loose, they break into a field of marks that still somehow read as language. There is no menu and no instruction; you figure out the grammar with your body, which is the part people remember.
+Everyone who wants into the archive wears the sleeves. It is one rule and it does the work of many: every pair of hands enters on the same terms, a visual equilibrium, so what you read is the motion and nothing else. You put your hands in the box and leave a gesture. After one second of presence the software captures three seconds and writes a GIF. When a new gesture arrives the oldest one leaves the display, though it is not lost. It moves to a data folder, and through the run of the show the gestures were archived on the internet as well.
 
-The build is computer vision feeding a custom renderer, but the engineering was never the story. The story was watching strangers get shy, then bold, then performative in front of it — discovering that they were writing with their whole arm. VICE picked it up, and the footage that traveled was always the same: someone laughing at what their own gesture turned into.
+The piece also made objects. A three frame GIF was printed frame by frame and hung in sequence in the gallery, so one motion existed twice: as a loop on screen, and as three stills you read left to right.
 
-It taught me that interaction is choreography. Give people a clear cause and a surprising effect and they will compose something you never could have scripted. I still pull pieces of its renderer into new work.`,
+It was built for FOREWARD, a group show at Gallery 72, Atlanta's municipal gallery. The program was written in openFrameworks by Dan Moore, the sleeves were made by Emily Dawn Long, Trek Matthews helped produce, and Danny Davis and Protect Awesome built it. VICE picked the work up, and the footage that traveled was always someone laughing at what their own hands had just done.
+
+Gallery 72 sits on the first floor of the former Atlanta Journal and Constitution Building at 72 Marietta Street, renamed 2 City Plaza and now home to the city's Department of Watershed Management. The Office of Cultural Affairs ran a design competition for the lobby in 2012, won by Stanley Beaman and Sears, and the 3,400 square feet came back split in three: a south gallery for a range of art forms, an entry lobby, and a north gallery given over to digital work.`,
     image: '/landing/opt/gestures.webp',
     dark: true,
   },

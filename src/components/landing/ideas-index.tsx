@@ -360,7 +360,7 @@ export function IdeasIndex() {
           </div>
         </footer>
 
-        <SiteFooter />
+        <SiteFooter subscribe={false} />
       </main>
 
       {/* Background tint behind everything (matches the home shell). */}

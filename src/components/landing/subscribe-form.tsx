@@ -9,8 +9,9 @@ import { INK, BLUE, BG, PAPER } from './landing-theme'
 const SUBSCRIBE_FORM_ID = 'xnjkavky'
 
 /**
- * Inline email capture. `onDark` restyles it to sit on the cobalt panel used at
- * the bottom of idea pages; the default light styling matches the contact form.
+ * Inline email capture. `onDark` restyles it for a cobalt ground: the site
+ * footer, and the panel that closes the ideas index and each idea. The default
+ * styling is for the near-black page, matching the contact form.
  */
 export function SubscribeForm({ onDark = false }: { onDark?: boolean }) {
   const [state, handleSubmit] = useForm(SUBSCRIBE_FORM_ID)
@@ -122,57 +123,5 @@ export function SubscribeForm({ onDark = false }: { onDark?: boolean }) {
         .sub-btn:hover .sub-arrow { transform: translateX(3px); }
       `}</style>
     </form>
-  )
-}
-
-/**
- * Compact "stay in the loop" footer strip — a thin divider, a short pitch, and
- * the inline form side by side. Used at the bottom of the homepage and contact
- * page. Stacks on small screens.
- */
-export function SubscribeStrip({ style }: { style?: React.CSSProperties }) {
-  return (
-    <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto', ...style }}>
-      <div
-        className="subscribe-strip"
-        style={{
-          borderTop: '1px solid rgba(232, 228, 223, 0.12)',
-          paddingTop: 'clamp(2rem, 4vw, 3rem)',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1.5rem 2.5rem',
-        }}
-      >
-        <div style={{ maxWidth: '34ch' }}>
-          <span
-            className="font-mono"
-            style={{
-              display: 'block',
-              fontSize: '0.7rem',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: 'rgba(232, 228, 223, 0.5)',
-            }}
-          >
-            Stay in the loop
-          </span>
-          <p
-            className="font-display"
-            style={{
-              margin: '0.65rem 0 0',
-              fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
-              lineHeight: 1.5,
-              color: 'rgba(232, 228, 223, 0.7)',
-            }}
-          >
-            New projects and experiments in your inbox — only when there&apos;s
-            something worth showing.
-          </p>
-        </div>
-        <SubscribeForm />
-      </div>
-    </div>
   )
 }

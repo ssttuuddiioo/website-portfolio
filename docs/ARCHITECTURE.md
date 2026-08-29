@@ -222,7 +222,7 @@ CTA at bottom: "Let's talk about your project →" linking to /contact
 | StoryBooth | Commercial | Michigan Central Station | 2019 | Complete |
 | Dolby Moment | Commercial | Dolby | 2015 | Complete |
 | Scatter and Rise | Art | Goat Farm Arts Center | 2023 | Complete |
-| Gestures | Art | Personal / Nelson Street Gallery | 2014 | VICE feature |
+| Gesture-Gesture | Art | FOREWARD / Gallery 72, Atlanta | 2014 | VICE feature |
 | Suffolk Building Lobby | Lighting | Chemistry Creative | 2023 | Complete |
 | Cox Pillars | Commercial | Cox Communications | 2024 | Complete |
 

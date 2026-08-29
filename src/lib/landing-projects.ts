@@ -17,6 +17,12 @@ import type { Affinity } from './project-tags'
 export interface LandingProject {
   title: string
   client: string
+  /**
+   * The client as one name, for the work index — where a full legal name
+   * ("NY/NJ Super Bowl Host Committee") is more than the grid needs. Falls
+   * back to `client` wherever the full name is already short.
+   */
+  clientShort?: string
   category: string
   year: number
   image: string
@@ -46,6 +52,11 @@ export interface LandingProject {
   descriptionLinks?: { text: string; href: string }[]
   /** What the studio actually did, listed under the description. */
   services?: string[]
+  /**
+   * Everyone else who made it, shown as the "Credits" register on the
+   * project page. Only entries with people to name carry this.
+   */
+  collaborators?: { name: string; role: string }[]
   /** External project/live site, shown as a secondary pill. */
   website?: string
   /**
@@ -114,6 +125,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Cox Pillars',
     client: 'Cox Communications',
+    clientShort: 'Cox',
     category: 'Experiential',
     year: 2024,
     image: '/landing/opt/cox.png',
@@ -127,6 +139,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Living Walls + AT&T',
     client: 'Mercedes-Benz Stadium',
+    clientShort: 'Mercedes-Benz',
     category: 'Experiential',
     year: 2024,
     image: '/landing/opt/livingwalls.avif',
@@ -140,6 +153,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: '65 Suffolk St, NY',
     client: 'Chemistry Creative',
+    clientShort: 'Chemistry',
     category: 'Lighting',
     year: 2023,
     image: '/landing/opt/suffolk.avif',
@@ -153,6 +167,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'The Light Around Us',
     client: 'tvsdesign / Spacelab',
+    clientShort: 'tvsdesign',
     category: 'Installation',
     year: 2020,
     slug: 'the-light-around-us',
@@ -167,6 +182,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'StoryBooth',
     client: 'Dashboard U.S.',
+    clientShort: 'Dashboard',
     category: 'Experiential',
     year: 2022,
     image: '/landing/opt/sb-pablo.avif',
@@ -203,6 +219,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Super Bowl Video Park',
     client: 'NY/NJ Super Bowl Host Committee',
+    clientShort: 'Super Bowl',
     category: 'Motion',
     year: 2014,
     image: '/landing/opt/superbowl.avif',
@@ -229,6 +246,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: '9to5.tv',
     client: 'Festival',
+    clientShort: '9to5.tv',
     category: 'Event',
     year: 2019,
     image: '/landing/opt/9to5-color.webp',
@@ -243,6 +261,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Scatter and Rise',
     client: 'Goat Farm Arts',
+    clientShort: 'Goat Farm',
     category: 'Public Art',
     year: 2023,
     image: '/landing/opt/scatter.avif',
@@ -255,21 +274,29 @@ export const LANDING_PROJECTS: LandingProject[] = [
     colStart: 8, colSpan: 4, rowStart: 5, rowSpan: 9,
   },
   {
-    title: 'Gestures',
-    client: 'Personal',
+    title: 'Gesture-Gesture',
+    client: 'Gallery 72',
     category: 'Tech Experiment',
     year: 2014,
     image: '/landing/opt/gestures.webp',
-    slug: 'gestures',
+    slug: 'gesture-gesture',
     affinity: { web: 0.4, installation: 0.38, lighting: 0.06, design: 0.16 },
     description:
-      'An interactive installation that captures visitors as looping GIFs and plays them back as a collective portrait of everyone who passed through. Featured in VICE.',
-    services: ['Custom software', 'Interactive', 'Installation design'],
+      'An interactive archive of the visual language we make with our hands. Everyone who takes part wears the same sleeves, puts their hands in the box, and leaves a gesture. After a second of presence the software captures three seconds and writes a GIF, and every new one retires the oldest from the display. Built for FOREWARD, a group show at Gallery 72 in Atlanta.',
+    services: ['Concept', 'Custom software', 'Installation design', 'Fabrication'],
+    collaborators: [
+      { name: 'Dan Moore', role: 'Software' },
+      { name: 'Emily Dawn Long', role: 'Sleeves' },
+      { name: 'Trek Matthews', role: 'Production' },
+      { name: 'Danny Davis', role: 'Construction' },
+      { name: 'Protect Awesome', role: 'Construction' },
+    ],
     colStart: 4, colSpan: 4, rowStart: 14, rowSpan: 10,
   },
   {
     title: 'Orbitals',
     client: 'Personal',
+    clientShort: 'Orbitals',
     category: 'Tech Experiment',
     year: 2018,
     image: '/landing/opt/orbitals.avif',
@@ -286,6 +313,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Snowblind',
     client: 'Personal',
+    clientShort: 'Snowblind',
     category: 'Public Art',
     year: 2016,
     image: '/landing/opt/snow.avif',
@@ -299,6 +327,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Pour Perfect',
     client: 'Personal',
+    clientShort: 'Pour Perfect',
     category: 'Tool',
     year: 2023,
     image: '/landing/opt/pour.avif',

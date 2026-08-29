@@ -32,14 +32,14 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   '/orbitals': '/work/orbitals',
   '/orbitalsv1': '/work/orbitals',
 
-  // Gestures and the GIF-booth lineage it grew out of. These pointed at
-  // /ideas/gestures before the project had a work page; /work/gestures is now
-  // where the site's own links go, so the legacy traffic follows them.
-  '/gesture': '/work/gestures',
-  '/gesture-gesture': '/work/gestures',
-  '/gifbooth': '/work/gestures',
-  '/gifbooth2': '/work/gestures',
-  '/volvox-gifs': '/work/gestures',
+  // Gesture-Gesture and the GIF-booth lineage it grew out of. The old site
+  // used both /gesture and /gesture-gesture; the project now carries its full
+  // name here, so every one of them lands on /work/gesture-gesture.
+  '/gesture': '/work/gesture-gesture',
+  '/gesture-gesture': '/work/gesture-gesture',
+  '/gifbooth': '/work/gesture-gesture',
+  '/gifbooth2': '/work/gesture-gesture',
+  '/volvox-gifs': '/work/gesture-gesture',
 
   // 9to5.tv, which had four URLs on the old site.
   '/9to5': '/work/9to5-tv',
@@ -91,14 +91,20 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
  * The homepage's own section anchors. These are live navigation, not legacy
  * URLs, and must never be redirected away from.
  */
-const LIVE_ANCHORS = new Set([
-  'home',
-  'about',
-  'work',
-  'services',
-  'ideas',
-  'contact',
-])
+const LIVE_ANCHORS = new Set(['home', 'about', 'work', 'ideas'])
+
+/**
+ * Sections that used to live on the homepage and have since moved to a page of
+ * their own. Old `/#services` and `/#contact` links — ours as much as anyone
+ * else's — land on the content rather than the top of the homepage.
+ *
+ * These are checked before the legacy map, which has no `/contact` row (that is
+ * a real page and must not be redirected) and no `/services` row at all.
+ */
+const MOVED_ANCHORS: Record<string, string> = {
+  services: '/about#services',
+  contact: '/contact',
+}
 
 /**
  * Squarespace appended digits to a slug whenever a section or page was
@@ -118,10 +124,10 @@ function normalise(name: string) {
  * Where a legacy hash fragment should land, or null to leave it alone.
  *
  * Precedence matters in both directions. An exact row is checked first, so
- * `#contact4` and `#about111` reach their targets instead of being mistaken for
- * the live `#contact` / `#about` anchors once their digits are stripped. The
- * live-anchor guard then runs before the normalised lookup, so a real section
- * link is never redirected away from the page it belongs to.
+ * `#about111` reaches its target instead of being mistaken for the live
+ * `#about` anchor once its digits are stripped. The live-anchor guard then runs
+ * before the moved-anchor and normalised lookups, so a section that is still on
+ * the homepage is never redirected away from the page it belongs to.
  */
 export function resolveLegacyHash(hash: string): string | null {
   const raw = hash.replace(/^#/, '').replace(/\/+$/, '').toLowerCase()
@@ -132,6 +138,10 @@ export function resolveLegacyHash(hash: string): string | null {
 
   // A live section anchor, in either its exact or numbered form.
   if (LIVE_ANCHORS.has(raw) || LIVE_ANCHORS.has(normalise(raw))) return null
+
+  // A section that has moved off the homepage.
+  const moved = MOVED_ANCHORS[raw] ?? MOVED_ANCHORS[normalise(raw)]
+  if (moved) return moved
 
   const stripped = normalise(raw)
   if (!stripped) return null

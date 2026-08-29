@@ -101,8 +101,10 @@ function Eyebrow({
  * the rule. One system, so nothing can fall out of alignment with anything
  * else.
  *
- * There is no brand bar: the title strip is the first row, sized so it centres
- * on the fixed nav dock (see .proj-titlebar) and the two read as one line.
+ * There is no brand bar: the title strip is the first row, and it is exactly as
+ * tall as the fixed nav dock, which sits flush in its right end — same top,
+ * bottom and right rules — so the mark, the title and the menu are one row of
+ * the grid rather than a strip with something floating over it.
  *
  * The media column takes whatever images the project has — the first as the
  * hero, the rest into the masonry. Most projects carry only the hero today, in
@@ -132,13 +134,16 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
 
   return (
     <>
-      <LandingSidebar active="work" inPage={false} />
+      {/* Unpinned: on the sheet the dock is the head row's right-hand cell, so
+          it scrolls away with the row rather than following the reader down a
+          page it is no longer part of. */}
+      <LandingSidebar active="work" inPage={false} pinned={false} />
 
       <main style={{ position: 'relative', zIndex: 3 }}>
         <div className="proj-sheet">
           {/* Head row — the studio mark in a square, then the title strip.
-              Both are set to the nav dock's own height so the mark, the title
-              and the menu all sit on one line. */}
+              The row stands to the nav dock's own height, and the dock closes
+              its right end, so mark, title and menu read as one ruled line. */}
           <div className="proj-head">
             <Link href="/" className="proj-mark" aria-label="Studio Studio — home">
               {/* The file is black type on an opaque white field, so it is
@@ -350,13 +355,10 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
            a 1px grid gap is therefore a hairline — no cell draws a border of
            its own, so the rules are continuous and exactly one pixel. */
         .proj-sheet {
-          --sheet-inset: 15px;
-          /* The nav dock is fixed at this offset and stands ~47px tall
-             (0.35rem padding + 1px border around a 0.5rem/1.1rem li holding a
-             0.95rem label). The title strip below matches centres with it. */
-          --dock-top: clamp(1.4rem, 3.4vh, 2.4rem);
-          --dock-half: 23.5px;
-
+          /* --sheet-inset, --rule-w and --dock-h live in :root, because the
+             fixed nav dock reads the same three: it insets to this frame and
+             stands to --dock-h, so it lands squarely inside the head row's
+             rules instead of floating over them. */
           margin: calc(var(--sheet-inset) + env(safe-area-inset-top))
                   calc(var(--sheet-inset) + env(safe-area-inset-right))
                   var(--sheet-inset)
@@ -376,15 +378,10 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
           background: ${BG};
         }
 
-        /* Head-row height, and therefore the mark's side. Sized so the row's
-           centre lands on the dock's: the row starts at the sheet inset, so
-           half its height must equal the dock's centre minus that inset.
-           Safe-area insets cancel — the dock and the sheet carry the same one. */
-        .proj-sheet {
-          --head-h: calc(
-            2 * (var(--dock-top) + var(--dock-half) - var(--sheet-inset))
-          );
-        }
+        /* Head-row height, and therefore the mark's side: the dock's own
+           height, so the dock fills the right end of this row exactly — flush
+           to its top, bottom and right rules. */
+        .proj-sheet { --head-h: var(--dock-h); }
         .proj-head {
           display: grid;
           grid-template-columns: var(--head-h) minmax(0, 1fr);
@@ -415,8 +412,11 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
           align-items: center;
           gap: 0.4rem clamp(1rem, 2.5vw, 2rem);
           padding: 0.4rem var(--cell-pad);
-          /* The dock floats over the top-right corner; leave it room. */
-          padding-right: clamp(8rem, 16vw, 13rem);
+          /* The dock occupies the right end of this row. It publishes its
+             measured width as --dock-w (see landing-sidebar), so the title
+             runs up to its left edge and stops — never under it. The fallback
+             covers the first paint, before the measurement lands. */
+          padding-right: calc(var(--dock-w, 26rem) + var(--cell-pad));
         }
         .proj-title {
           margin: 0;
@@ -446,7 +446,7 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
         }
         @media (min-width: 900px) {
           .proj-body {
-            grid-template-columns: minmax(0, 1fr) clamp(23.75rem, 32.5%, 35rem);
+            grid-template-columns: minmax(0, 1fr) var(--rail-w);
           }
         }
 
@@ -487,7 +487,7 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
         @media (min-width: 900px) {
           .proj-railinner {
             position: sticky;
-            top: calc(var(--sheet-inset) + 1px);
+            top: calc(var(--sheet-inset) + var(--rule-w));
           }
         }
 
@@ -656,6 +656,19 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
 
         /* Narrow: the masonry slots stop dividing usefully, so every frame
            takes the full run and keeps a single readable ratio. */
+        /* Narrow: the dock centres along the top instead of closing the head
+           row, so the title strip takes its normal inset back — and the sheet
+           starts a dock's height further down, leaving the dock a clear band
+           above it rather than sitting on the title. */
+        @media (max-width: 767px) {
+          .proj-titlebar { padding-right: var(--cell-pad); }
+          .proj-sheet {
+            margin-top: calc(
+              var(--sheet-inset) + env(safe-area-inset-top) + var(--dock-h)
+            );
+          }
+        }
+
         @media (max-width: 640px) {
           .proj-mtile {
             grid-column: 1 / -1 !important;

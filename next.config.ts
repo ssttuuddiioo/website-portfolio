@@ -48,6 +48,10 @@ const nextConfig: NextConfig = {
       })),
       // Squarespace hung deep gallery paths off the project URL; catch those
       // too (six of them were still 302'ing on the old site).
+      // Gestures shipped under a shortened name before the project was
+      // restored to Gesture-Gesture; both of its pages moved with it.
+      { source: '/work/gestures', destination: '/work/gesture-gesture', permanent: true },
+      { source: '/ideas/gestures', destination: '/ideas/gesture-gesture', permanent: true },
       { source: '/light-around-us/:hash*', destination: '/work/the-light-around-us', permanent: true },
       { source: '/the-light-around-us/:hash*', destination: '/work/the-light-around-us', permanent: true },
     ]

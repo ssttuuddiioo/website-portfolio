@@ -194,7 +194,7 @@ Body text uses the display font at regular weight. No separate body font needed 
 ### Layout
 
 - Max content width: `1440px`
-- Gutters: `24px` mobile, `48px` tablet, `64px` desktop
+- Edge: a single `--edge` (40px) at every breakpoint — the inset for anything pinned to a viewport edge, and `--gutter` reads from it so content sits on the same line
 - Grid: 12-column on desktop, 6 on tablet, 4 on mobile
 - Full-bleed sections break the max-width for hero moments
 - Generous vertical spacing between sections (120px+ on desktop)

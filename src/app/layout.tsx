@@ -1,7 +1,6 @@
 import type { Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { Jost } from 'next/font/google'
-import { JetBrains_Mono } from 'next/font/google'
 import { buildRootMetadata } from '@/lib/seo/metadata'
 import { JsonLd } from '@/lib/seo/json-ld'
 import { organizationSchema, personSchema } from '@/lib/seo/jsonld'
@@ -14,12 +13,6 @@ import './globals.css'
    and licensed Futura has no 600. */
 const jost = Jost({
   variable: '--font-jost',
-  subsets: ['latin'],
-  display: 'swap',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains-mono',
   subsets: ['latin'],
   display: 'swap',
 })
@@ -42,7 +35,7 @@ export default async function RootLayout({
     <html
       lang="en"
       data-theme="dark"
-      className={`${jost.variable} ${jetbrainsMono.variable} antialiased`}
+      className={`${jost.variable} antialiased`}
     >
       <body>
         <JsonLd data={[organizationSchema(settings), personSchema(settings?.founder)]} />

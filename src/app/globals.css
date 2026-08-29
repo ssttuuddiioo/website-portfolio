@@ -26,9 +26,16 @@
   --color-success: #4A9B6E;
   --color-error: #C45B4B;
 
-  /* ---- Fonts ---- */
+  /* ---- Fonts ----
+     One typeface for the whole site: Futura where it exists (macOS/iOS ship it),
+     Jost — a geometric sans cut close to Futura — everywhere else.
+     --font-mono keeps its name because ~110 call sites use the `font-mono`
+     utility, but it is no longer a monospace: it is the same Futura stack, held
+     as its own token so the metadata role stays separable if it ever needs its
+     own face again. Anything with ticking or column-aligned digits should set
+     font-variant-numeric: tabular-nums, since Futura's figures are proportional. */
   --font-display: Futura, 'Futura PT', var(--font-jost), 'Century Gothic', sans-serif;
-  --font-mono: var(--font-jetbrains-mono), 'SF Mono', 'Fira Code', monospace;
+  --font-mono: Futura, 'Futura PT', var(--font-jost), 'Century Gothic', sans-serif;
 
   /* ---- Type Scale (1.25 Major Third) ---- */
   --text-xs: 0.64rem;
@@ -84,19 +91,33 @@
 
   /* Layout */
   --max-width: 1440px;
-  --gutter: 24px;
-}
 
-@media (min-width: 640px) {
-  :root {
-    --gutter: 48px;
-  }
-}
+  /* The site's edge. One number, everywhere: the distance from a viewport edge
+     to anything that pins itself there — the STUDIO lockup, the nav dock, the
+     statement at the fold, the index toggle, the project sheet's frame — and
+     the content gutter inside it, so nothing sits on a different line to
+     anything else. */
+  --edge: 40px;
+  --gutter: var(--edge);
 
-@media (min-width: 1024px) {
-  :root {
-    --gutter: 64px;
-  }
+  /* Ruled-sheet geometry. The project page insets its sheet by --sheet-inset
+     and draws every division as a --rule-w gap; the fixed nav dock stands to
+     --dock-h and locks to the same inset, so its top, right and bottom edges
+     land on the head row's own rules instead of floating over them. Squares
+     and hairlines only: nothing in this system is a pill. */
+  --sheet-inset: var(--edge);
+  --rule-w: 1px;
+  --dock-h: clamp(62px, 6.8vh, 94px);
+  /* The project page's information rail, in two forms of the same measure.
+     --rail-w is read inside the sheet, where a percentage is already of the
+     sheet's interior. --rail-w-vp is read by the fixed nav dock, whose
+     percentages are of the whole viewport, so it also gives back 32.5% of the
+     32px the sheet spends on --sheet-inset and --rule-w down each side
+     (0.325 x 32 = 10.4px). Same number, so the dock's left edge and the rail's
+     hairline are one vertical rule. Written as literals because the CSS build
+     drops a custom property that multiplies through a var(). */
+  --rail-w: clamp(23.75rem, 32.5%, 35rem);
+  --rail-w-vp: clamp(23.75rem, calc(32.5% - 10.4px), 35rem);
 }
 
 /* ---- Light Mode ---- */
