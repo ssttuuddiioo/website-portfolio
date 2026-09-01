@@ -243,9 +243,19 @@ export function SiteFooter({
               color: PAPER,
             }}
           >
-            Studio
-            <br />
-            Studio
+            <span style={{ display: 'block', width: 'fit-content' }}>Studio</span>
+            {/* Second word inverted, the same lockup the header opens on. The
+                box hugs the word so the rotation stays flush left instead of
+                swinging the type to the far edge of the column. */}
+            <span
+              style={{
+                display: 'block',
+                width: 'fit-content',
+                transform: 'rotate(180deg)',
+              }}
+            >
+              Studio
+            </span>
           </p>
 
           <div className="site-footer-cols">

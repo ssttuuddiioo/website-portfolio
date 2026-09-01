@@ -51,3 +51,7 @@ next-env.d.ts
 # regenerate with `node scripts/opt-to-png.mjs` from the tracked avif/webp
 # sources in the same folder (1.6MB of sources, 11MB of PNGs).
 /public/landing/opt/png/
+
+# Copy round-trip working files: regenerate with `npm run copy:export`.
+/project-copy.csv
+/project-copy-case-studies.csv

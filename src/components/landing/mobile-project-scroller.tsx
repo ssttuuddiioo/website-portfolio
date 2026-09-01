@@ -5,34 +5,23 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { LANDING_PROJECTS, type LandingProject } from '@/lib/landing-projects'
 import { useLenis } from '@/lib/lenis-provider'
-import { INK, BG } from './landing-theme'
+import { INK, BG, IKB } from './landing-theme'
 
 /* ---- drum geometry ------------------------------------------------------ */
 
 /** Row height, and the pitch the wheel is built from. */
 const ITEM_H = 34
 /**
- * Where the drum's centre sits. High on the screen: 45% of the viewport, less
- * 120px. Everything else on the page is placed against this, so the wheel and
- * what surrounds it can never drift apart.
+ * Where the drum's centre sits: a little below the middle of the viewport.
+ * Everything else on the page is placed against this — the tagline above, the
+ * mark below, the panel under it — so the wheel and what surrounds it can
+ * never drift apart. Move this one value and the whole page follows.
  */
-const WHEEL_TOP = 'calc(45% - 120px)'
+const WHEEL_TOP = 'calc(45% - 20px)'
 /** Seven rows deep — what the drum shows at once. */
 const WHEEL_H = ITEM_H * 7
-/** The drum's edges, derived rather than restated. */
+/** The drum's bottom edge, derived rather than restated — where the panel starts. */
 const WHEEL_BOTTOM = `calc(${WHEEL_TOP} + ${WHEEL_H / 2}px)`
-const WHEEL_TOP_EDGE = `calc(${WHEEL_TOP} - ${WHEEL_H / 2}px)`
-/**
- * Halfway between the top of the screen and the top of the drum, clear of the
- * status bar. Where the studio's line sits: it cannot share the space under the
- * wheel, because that now belongs to the panel.
- */
-const ABOVE_WHEEL = `calc((env(safe-area-inset-top) + ${WHEEL_TOP_EDGE}) / 2)`
-/**
- * Halfway between the bottom of the wheel and the bottom of the screen, where
- * the studio mark sits — and it follows automatically if the wheel moves.
- */
-const BELOW_WHEEL = `calc((${WHEEL_BOTTOM} + 100%) / 2)`
 /** Degrees between neighbouring rows. 180/ANGLE is how many fit the half-turn. */
 const ANGLE = 15
 /**
@@ -40,19 +29,44 @@ const ANGLE = 15
  * face of the drum. Derived, not guessed: half a row's height over the tangent
  * of half its angle.
  */
-const RADIUS = ITEM_H / 2 / Math.tan((ANGLE / 2) * (Math.PI / 180))
+/*
+ * Rounded, and that matters: this value is interpolated into the <style> tag,
+ * which is server-rendered. Math.tan is only "implementation-approximated" by
+ * the spec, so Node's V8 and iOS Safari's JavaScriptCore can disagree in the
+ * final bits — enough for the server to emit 129.12781991632758 and the phone
+ * to hydrate 129.1278199163276, which React reports as a hydration mismatch.
+ * Two decimals is 0.01px of precision and identical on every engine.
+ */
+const RADIUS =
+  Math.round((ITEM_H / 2 / Math.tan((ANGLE / 2) * (Math.PI / 180))) * 100) / 100
 /** Past this the row has turned too far to read; it is hidden entirely. */
 const CUTOFF = 82
+/**
+ * How far the masked drum frame overhangs the wheel on each side. The frame's
+ * edge fade is a mask, and mask-clip is the border box — so without shoulders
+ * the mask would double as a horizontal crop on the longest project titles.
+ */
+const FRAME_PAD = 28
 
 /* ---- feel --------------------------------------------------------------- */
 
 /**
- * How long, in ms, a released flick keeps carrying. Release velocity is
- * measured in px/ms, so velocity ÷ drag pitch × this is the distance in rows a
- * throw covers. Kept short: a wheel that keeps running after the finger leaves
- * is a wheel you have to fight to land on a particular row.
+ * Throw physics, in rows rather than pixels — ported from beui.dev's wheel
+ * picker, which models the coast properly instead of extrapolating linearly.
+ * A flick decelerates at a constant rate, so the distance it covers goes with
+ * the SQUARE of the release velocity: a gentle nudge moves a row or two, a
+ * hard fling crosses the list. Linear extrapolation (velocity × a fixed time)
+ * gets both ends wrong — too eager when slow, too short when fast.
  */
-const THROW_MS = 130
+const DECELERATION = 0.00042
+/** Ceiling on a release, in rows/ms. Caps a hard fling to something catchable. */
+const MAX_VELOCITY = 0.18
+/**
+ * How much of the end of a drag defines its velocity. Averaging the last 90ms
+ * beats reading the final two samples: one stuttered frame at lift-off would
+ * otherwise make an even throw feel like it caught or slipped.
+ */
+const VELOCITY_WINDOW = 90
 /**
  * Finger travel per row, as a multiple of the row's own height. Above 1 the
  * drum turns slower than the finger moves, which is what makes a single row
@@ -81,13 +95,16 @@ const SHOW_DESCRIPTION = false
 const BLACK_FRAME = '/landing/opt/blank.png'
 
 /**
- * The wheel is the whole of mobile: Home, About, the work, Contact. Each row
- * declares what it puts behind itself and what it puts under itself, so the
- * page has one loop rather than a set of special cases.
+ * The wheel is the whole of mobile: Home, the work, Contact. Each row declares
+ * what it puts behind itself and what it puts under itself, so the page has
+ * one loop rather than a set of special cases.
+ *
+ * About used to be a row of its own. It said the same thing the landing said,
+ * one notch further down, so it folded into Home: the studio's line and its
+ * roster now sit under the first row you land on, and the row itself is gone.
  */
 type Row =
   | { kind: 'home'; label: string; frame: string; href: string }
-  | { kind: 'about'; label: string; frame: string; href: string }
   | { kind: 'divider'; label: string; frame: string }
   | { kind: 'project'; label: string; frame: string; href: string; project: LandingProject }
   | { kind: 'contact'; label: string; frame: string; href: string }
@@ -114,12 +131,6 @@ const YEARS = LANDING_PROJECTS.map((p) => p.year)
 
 const ROWS: Row[] = [
   { kind: 'home', label: 'Home', frame: BLACK_FRAME, href: '/' },
-  {
-    kind: 'about',
-    label: 'About',
-    frame: '/landing/opt/about.jpeg',
-    href: '/about',
-  },
   // A chapter break rather than a destination: it stops on black, states the
   // size of the body of work, and hands over to it.
   { kind: 'divider', label: 'Selected Projects', frame: BLACK_FRAME },
@@ -144,6 +155,14 @@ const WORK_SUMMARY = `${LANDING_PROJECTS.length} projects · ${Math.min(
 const COUNT = ROWS.length
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
+/**
+ * Overshoots the detent and settles back into it. The little spring at the end
+ * of a snap that makes a wheel feel mechanical rather than animated. BACK sets
+ * how far past the row it drifts before returning.
+ */
+const BACK = 1.35
+const easeOutBack = (t: number) =>
+  1 + (BACK + 1) * Math.pow(t - 1, 3) + BACK * Math.pow(t - 1, 2)
 
 /**
  * The mobile landing: an iOS-style picker drum of the work, over a full-bleed
@@ -170,8 +189,25 @@ export function MobileProjectScroller() {
   const raf = useRef(0)
   const visible = useRef(false)
   // Glide state: where a throw started, where it is going, and when.
-  const glide = useRef<{ from: number; to: number; t0: number; dur: number } | null>(null)
-  const drag = useRef<{ y: number; t: number; v: number } | null>(null)
+  const glide = useRef<{
+    from: number
+    to: number
+    t0: number
+    dur: number
+    ease: (t: number) => number
+  } | null>(null)
+  // Absolute from the start of the gesture rather than accumulated per move:
+  // the drum lands exactly where the finger says, with no drift over a long
+  // drag. `pts` is the tail used to measure the release.
+  const drag = useRef<{
+    y0: number
+    pos0: number
+    pts: [number, number][]
+  } | null>(null)
+  // One paint per frame. Raw touchmove fires several times per frame on a
+  // high-refresh screen, and painting each one is wasted work that shows.
+  const dragFrame = useRef(0)
+  const latestY = useRef(0)
   const wheelTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const reduced = useRef(false)
 
@@ -198,12 +234,15 @@ export function MobileProjectScroller() {
       const el = rowRefs.current[i]
       if (!el) continue
       const deg = (i - p) * ANGLE
+      // Write visibility only on change: an unconditional write every frame
+      // thrashes style recalc, and on a 120Hz phone that is what turns a drag
+      // draggy. (The same guard beui's picker calls out.)
       if (Math.abs(deg) > CUTOFF) {
-        el.style.visibility = 'hidden'
+        if (el.style.visibility !== 'hidden') el.style.visibility = 'hidden'
         continue
       }
       const rad = deg * (Math.PI / 180)
-      el.style.visibility = 'visible'
+      if (el.style.visibility !== 'visible') el.style.visibility = 'visible'
       el.style.transform = `rotateX(${-deg}deg) translateZ(${RADIUS}px)`
       // Falls off with the cosine, squared so the shoulders of the drum dim
       // faster than the face — that is what reads as roundness.
@@ -228,7 +267,7 @@ export function MobileProjectScroller() {
    * schedule itself, and a self-referencing useCallback is not a stable one.
    */
   const settle = useCallback(
-    (target: number) => {
+    (target: number, ease: (t: number) => number = easeOut, dur?: number) => {
       const to = clamp(Math.round(target), 0, COUNT - 1)
       const from = pos.current
       if (reduced.current) {
@@ -240,10 +279,13 @@ export function MobileProjectScroller() {
       glide.current = {
         from,
         to,
+        ease,
         t0: performance.now(),
         // Long throws take longer, but never so long that the wheel feels
         // slack — and never so short that a one-row snap looks like a jump.
-        dur: clamp(Math.abs(to - from) * 130, 320, 1000),
+        // Root, not linear: a throw across the list should not take ten times
+        // as long as one across ten rows, only three.
+        dur: dur ?? clamp(Math.sqrt(Math.abs(to - from)) * 280 + 220, 300, 1200),
       }
       const step = () => {
         const g = glide.current
@@ -259,7 +301,7 @@ export function MobileProjectScroller() {
           raf.current = 0
           return
         }
-        pos.current = g.from + (g.to - g.from) * easeOut(t)
+        pos.current = g.from + (g.to - g.from) * g.ease(t)
         paint()
         raf.current = requestAnimationFrame(step)
       }
@@ -342,7 +384,8 @@ export function MobileProjectScroller() {
       visible.current = el.getBoundingClientRect().height > 0
       if (!visible.current) return
       stop()
-      drag.current = { y: e.touches[0].clientY, t: performance.now(), v: 0 }
+      const y = e.touches[0].clientY
+      drag.current = { y0: y, pos0: pos.current, pts: [[y, performance.now()]] }
     }
 
     const onTouchMove = (e: TouchEvent) => {
@@ -350,28 +393,67 @@ export function MobileProjectScroller() {
       if (!visible.current || !d) return
       if (e.cancelable) e.preventDefault()
       const y = e.touches[0].clientY
-      const now = performance.now()
-      const dy = d.y - y
-      const dt = Math.max(1, now - d.t)
-      // px/ms, smoothed so one jittery sample cannot define the throw.
-      d.v = d.v * 0.7 + (dy / dt) * 0.3
-      d.y = y
-      d.t = now
-      // Dragging up walks down the list, as scrolling would. Past either end
-      // the drum still moves, but heavily damped, so it reads as resistance.
-      const rows = dy / (ITEM_H * DRAG_PITCH)
-      let next = pos.current + rows
-      if (next < 0 || next > COUNT - 1) next = pos.current + rows * 0.3
-      pos.current = clamp(next, -OVERSHOOT, COUNT - 1 + OVERSHOOT)
-      paint()
+      // Record every sample — the release velocity wants them all — but only
+      // render the newest position, once, on the next frame.
+      latestY.current = y
+      d.pts.push([y, performance.now()])
+      if (d.pts.length > 8) d.pts.shift()
+      if (dragFrame.current) return
+      dragFrame.current = requestAnimationFrame(() => {
+        dragFrame.current = 0
+        const dd = drag.current
+        if (!dd) return
+        // Dragging up walks down the list, as scrolling would. Past either end
+        // the drum still moves, but the overshoot itself is damped, so the
+        // resistance grows with how far you have pulled.
+        let next = dd.pos0 + (dd.y0 - latestY.current) / (ITEM_H * DRAG_PITCH)
+        if (next < 0) next *= 0.3
+        else if (next > COUNT - 1) next = COUNT - 1 + (next - (COUNT - 1)) * 0.3
+        pos.current = clamp(next, -OVERSHOOT, COUNT - 1 + OVERSHOOT)
+        paint()
+      })
     }
 
     const onTouchEnd = () => {
       const d = drag.current
       drag.current = null
+      if (dragFrame.current) {
+        cancelAnimationFrame(dragFrame.current)
+        dragFrame.current = 0
+      }
       if (!visible.current || !d) return
-      // Where the throw would carry it, snapped to the nearest row.
-      settle(pos.current + (d.v / (ITEM_H * DRAG_PITCH)) * THROW_MS)
+
+      // Release velocity in rows/ms, averaged over the last VELOCITY_WINDOW of
+      // the gesture rather than read off the final pair of samples.
+      const pts = d.pts
+      let v = 0
+      if (pts.length > 1) {
+        const latest = pts[pts.length - 1]
+        let ref = pts[0]
+        for (const pt of pts) {
+          if (latest[1] - pt[1] <= VELOCITY_WINDOW) {
+            ref = pt
+            break
+          }
+        }
+        const dt = latest[1] - ref[1]
+        if (dt > 0) {
+          v = clamp(
+            (ref[0] - latest[0]) / (ITEM_H * DRAG_PITCH) / dt,
+            -MAX_VELOCITY,
+            MAX_VELOCITY,
+          )
+        }
+      }
+
+      // Pulled past an end and let go: no coast, just spring back.
+      if (pos.current < 0 || pos.current > COUNT - 1) {
+        settle(pos.current, easeOut, 260)
+        return
+      }
+      // Where a coast at this velocity runs out, and the row nearest to it.
+      const coast = ((v * v) / (2 * DECELERATION)) * Math.sign(v)
+      settle(pos.current + coast, easeOutBack)
     }
 
     const onWheel = (e: WheelEvent) => {
@@ -385,13 +467,13 @@ export function MobileProjectScroller() {
       )
       paint()
       if (wheelTimer.current) clearTimeout(wheelTimer.current)
-      wheelTimer.current = setTimeout(() => settle(pos.current), WHEEL_SETTLE)
+      wheelTimer.current = setTimeout(() => settle(pos.current, easeOutBack, 260), WHEEL_SETTLE)
     }
 
     const onKey = (e: KeyboardEvent) => {
       if (!visible.current) return
-      if (e.key === 'ArrowDown') settle(Math.round(pos.current) + 1)
-      else if (e.key === 'ArrowUp') settle(Math.round(pos.current) - 1)
+      if (e.key === 'ArrowDown') settle(Math.round(pos.current) + 1, easeOutBack, 300)
+      else if (e.key === 'ArrowUp') settle(Math.round(pos.current) - 1, easeOutBack, 300)
       else return
       e.preventDefault()
     }
@@ -411,6 +493,7 @@ export function MobileProjectScroller() {
       window.removeEventListener('wheel', onWheel, opts)
       window.removeEventListener('keydown', onKey)
       stop()
+      if (dragFrame.current) cancelAnimationFrame(dragFrame.current)
       if (wheelTimer.current) clearTimeout(wheelTimer.current)
     }
   }, [paint, settle])
@@ -438,6 +521,9 @@ export function MobileProjectScroller() {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          /* No filter. Dimming the whole frame to make the menu readable cost
+             the picture everything it was there for — the separation belongs
+             behind the drum only, where the type actually is. See .mps-wheelbg. */
           transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1);
         }
         .mps-scrim {
@@ -451,26 +537,42 @@ export function MobileProjectScroller() {
           );
         }
 
-        /* A pool of shade under the drum, so the type reads against any frame
-           and the wheel separates from the picture instead of floating on it.
-           Sized and placed to the wheel, and soft-edged so it never draws a
-           border of its own. */
+        /* About trades the photo ground for the footer's IKB block. The studio
+           talking about itself is a different kind of place than the work, and
+           the one saturated colour on the site says so. Sits above the scrim so
+           the blue lands flat rather than dimmed, and crossfades on the frames'
+           own timing so the swap reads as one move. */
+        .mps-ikb {
+          position: absolute;
+          inset: 0;
+          background: ${IKB};
+          opacity: 0;
+          transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .mps-ikb[data-on='true'] { opacity: 1; }
+
+        /* The drum's window. This used to be a wide pool of shade bled across
+           the whole middle of the screen, which is why the frame behind it had
+           to be filtered down to stay legible — the shade was never dark enough
+           where the type was, and too dark everywhere else.
+
+           It is a panel now: sized to the drum, opaque enough on its own, and
+           blurring only what is directly behind it. The picture outside it
+           keeps its full colour and brightness, because nothing is being asked
+           of it there. Frosted glass, and the wheel turns behind the glass. */
         .mps-wheelbg {
           position: absolute;
           left: 50%;
           top: ${WHEEL_TOP};
-          width: min(30rem, 124vw);
-          height: ${ITEM_H * 13}px;
+          width: min(20rem, 86vw);
+          height: ${WHEEL_H}px;
           transform: translate(-50%, -50%);
           z-index: 1;
           pointer-events: none;
-          background: radial-gradient(
-            ellipse 62% 50% at 50% 50%,
-            rgba(10, 10, 10, 0.82) 0%,
-            rgba(10, 10, 10, 0.6) 42%,
-            rgba(10, 10, 10, 0.22) 68%,
-            rgba(10, 10, 10, 0) 82%
-          );
+          border-radius: 3px;
+          background: rgba(10, 10, 10, 0.58);
+          -webkit-backdrop-filter: blur(18px) saturate(1.1);
+          backdrop-filter: blur(18px) saturate(1.1);
         }
 
         /* The drum. Perspective on the frame, the cylinder inside it.
@@ -483,15 +585,104 @@ export function MobileProjectScroller() {
           top: ${WHEEL_TOP};
           transform: translate(-50%, -50%);
           z-index: 2;
-          width: min(15rem, 62vw);
+          width: min(17.5rem, 74vw);
           height: ${WHEEL_H}px;
+        }
+        /* The drum's own frame. Carries the perspective (so it stays the direct
+           parent of .mps-drum) and the edge fade.
+
+           Rows used to wink out the instant they passed the cutoff angle. A
+           drum's far face doesn't vanish, it turns into shadow — so the top and
+           bottom dissolve and a row leaves by going away rather than by being
+           switched off. The mask sits here rather than on .mps-wheel because
+           .mps-band overhangs the wheel by design and mask-clip would shear its
+           ends off, and it cannot sit on .mps-drum itself because a mask
+           flattens the 3D context it would be masking. */
+        .mps-drumframe {
+          position: absolute;
+          /* Wider than the wheel by FRAME_PAD. mask-clip is border-box, so the
+             mask cuts anything painted outside this element — the shoulders
+             keep that edge away from the type. */
+          inset: 0 -${FRAME_PAD}px;
           perspective: 620px;
           perspective-origin: 50% 50%;
+          /* Eleven stops rather than four. A two-stop ramp still resolves as a
+             line you can point at — the eye finds the place where the fade
+             starts. Spreading it across the outer third on an eased curve
+             leaves nowhere for that edge to be, so the drum reads as turning
+             away rather than as being cut off. */
+          -webkit-mask-image: linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.06) 9%,
+            rgba(0, 0, 0, 0.22) 17%,
+            rgba(0, 0, 0, 0.5) 24%,
+            rgba(0, 0, 0, 0.8) 31%,
+            rgba(0, 0, 0, 1) 39%,
+            rgba(0, 0, 0, 1) 61%,
+            rgba(0, 0, 0, 0.8) 69%,
+            rgba(0, 0, 0, 0.5) 76%,
+            rgba(0, 0, 0, 0.22) 83%,
+            rgba(0, 0, 0, 0.06) 91%,
+            rgba(0, 0, 0, 0) 100%
+          );
+          mask-image: linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.06) 9%,
+            rgba(0, 0, 0, 0.22) 17%,
+            rgba(0, 0, 0, 0.5) 24%,
+            rgba(0, 0, 0, 0.8) 31%,
+            rgba(0, 0, 0, 1) 39%,
+            rgba(0, 0, 0, 1) 61%,
+            rgba(0, 0, 0, 0.8) 69%,
+            rgba(0, 0, 0, 0.5) 76%,
+            rgba(0, 0, 0, 0.22) 83%,
+            rgba(0, 0, 0, 0.06) 91%,
+            rgba(0, 0, 0, 0) 100%
+          );
+        }
+        /* The cylinder's shading, painted rather than lit: the surface rolls
+           away into shade top and bottom, and catches a thin highlight across
+           the middle where it turns to face you. Two flat gradients, and the
+           drum stops reading as rows on a slope. */
+        .mps-shade {
+          position: absolute;
+          inset: 0;
+          z-index: 3;
+          pointer-events: none;
+          background:
+            linear-gradient(
+              180deg,
+              rgba(240, 240, 249, 0) 42%,
+              rgba(240, 240, 249, 0.055) 50%,
+              rgba(240, 240, 249, 0) 58%
+            ),
+            linear-gradient(
+              180deg,
+              rgba(10, 10, 10, 0.38) 0%,
+              rgba(10, 10, 10, 0.26) 16%,
+              rgba(10, 10, 10, 0.1) 32%,
+              rgba(10, 10, 10, 0) 50%,
+              rgba(10, 10, 10, 0.1) 68%,
+              rgba(10, 10, 10, 0.26) 84%,
+              rgba(10, 10, 10, 0.38) 100%
+            );
         }
         .mps-drum {
           position: absolute;
-          inset: 0;
+          /* Inset by the frame's overhang, so a row is exactly the wheel's
+             width however wide the masked frame around it runs. */
+          inset: 0 ${FRAME_PAD}px;
           transform-style: preserve-3d;
+          /* Pull the cylinder back by its own radius. Rows are placed at
+             translateZ(+RADIUS) to seat them on the drum's face, which without
+             this leaves the centre row 129px NEARER the eye than the frame —
+             and perspective duly magnified it 1.26x, so the selected row
+             rendered wider than the wheel it lives in and its title ran out
+             past both ends. Sitting the drum back puts the face at z=0: true
+             scale, and a row that fits the window it is read through. */
+          transform: translateZ(-${RADIUS}px);
         }
         /* The highlight box the selected row sits in. */
         .mps-band {
@@ -501,9 +692,16 @@ export function MobileProjectScroller() {
           top: 50%;
           height: ${ITEM_H}px;
           margin-top: -${ITEM_H / 2}px;
-          border-top: 1px solid rgba(232, 228, 223, 0.28);
-          border-bottom: 1px solid rgba(232, 228, 223, 0.28);
+          border-top: 1px solid rgba(232, 228, 223, 0.34);
+          border-bottom: 1px solid rgba(232, 228, 223, 0.34);
+          border-radius: 3px;
           background: rgba(10, 10, 10, 0.5);
+          /* A shallow well: the drum is seen THROUGH this opening, so the lip
+             above it casts down and the one below catches a little light. It
+             is what stops the band reading as a rectangle laid on top. */
+          box-shadow:
+            inset 0 3px 5px -3px rgba(10, 10, 10, 0.85),
+            inset 0 -3px 5px -3px rgba(240, 240, 249, 0.09);
           pointer-events: none;
         }
         .mps-row {
@@ -519,7 +717,7 @@ export function MobileProjectScroller() {
           gap: 0.5rem;
           padding: 0 0.55rem;
           color: rgba(232, 228, 223, 0.82);
-          font-size: 0.78rem;
+          font-size: 0.84rem;
           /* Fixed for every row, active or not — see the note below. */
           font-weight: 500;
           line-height: 1;
@@ -566,31 +764,16 @@ export function MobileProjectScroller() {
         }
         .mps-above[data-on='true'] { opacity: 1; }
 
+        /* Top of the screen, clear of the status bar — a masthead rather than
+           a footer. Half the size it used to be: up there it only has to
+           identify the page, not carry it. Anchored to the top edge and not to
+           the wheel, so it holds still while the drum moves. */
         .mps-mark {
-          top: ${BELOW_WHEEL};
-          width: min(11rem, 46vw);
+          top: calc(env(safe-area-inset-top) + 2.6rem);
+          width: min(5.5rem, 23vw);
         }
         .mps-marklogo { width: 100%; height: auto; }
 
-        /* The studio's line, above the drum. Restored: an earlier edit sliced
-           this rule out with the block above it, leaving the paragraph to
-           render at browser defaults — full width, full size — straight over
-           the client roster. */
-        .mps-tagline-line {
-          display: block;
-          white-space: nowrap;
-        }
-        .mps-tagline {
-          top: ${ABOVE_WHEEL};
-          margin: 0;
-          width: min(17rem, 74vw);
-          text-align: center;
-          font-size: clamp(0.95rem, 4.2vw, 1.12rem);
-          font-weight: 500;
-          line-height: 1.3;
-          letter-spacing: -0.022em;
-          color: ${INK};
-        }
 
         /* The chapter break's count, under the wheel. */
         .mps-summary {
@@ -657,7 +840,7 @@ export function MobileProjectScroller() {
         /* Contact is a destination, not a footnote: it takes the middle of the
            space rather than sitting on the bottom edge. */
         .mps-panel[data-kind='contact'],
-        .mps-panel[data-kind='about'] { justify-content: center; }
+        .mps-panel[data-kind='home'] { justify-content: center; }
         .mps-desc {
           margin: 0 auto;
           max-width: 26rem;
@@ -687,7 +870,7 @@ export function MobileProjectScroller() {
           text-decoration: none;
         }
         @media (prefers-reduced-motion: reduce) {
-          .mps-bg img, .mps-row { transition: none; }
+          .mps-bg img, .mps-row, .mps-ikb { transition: none; }
         }
       `}</style>
 
@@ -702,22 +885,15 @@ export function MobileProjectScroller() {
           />
         ))}
         <div className="mps-scrim" />
+        <div className="mps-ikb" data-on={row.kind === 'home'} />
       </div>
 
       <div className="mps-wheelbg" aria-hidden />
 
-      {/* The slot above the wheel. Home puts the mark here and nothing under
-          the wheel; About puts the studio's line here and keeps the live detail
-          below. Both are always mounted so they fade rather than appear, and
-          both sit on the same anchor so one replaces the other in place. */}
-      <p className="mps-above mps-tagline font-display" data-on={row.kind === 'about'} aria-hidden>
-        {/* Three fixed lines, each unbreakable — so the tagline reads the same
-            on every handset and the city never splits across a line end. */}
-        <span className="mps-tagline-line">A creative</span>
-        <span className="mps-tagline-line">technology practice</span>
-        <span className="mps-tagline-line">in Brooklyn, New York.</span>
-      </p>
-
+      {/* The slot above the wheel, now the mark alone. The studio's line used
+          to sit here on the About row, saying in three lines what the copy
+          under the wheel says in one — so the line went and the copy moved to
+          Home. Always mounted, so it fades rather than appears. */}
       <div className="mps-above mps-mark" data-on={row.kind === 'home'} aria-hidden>
         {/* White type on transparency, generated from logo.png. The blend
             trick the project page uses cannot work here: this element sits in
@@ -737,46 +913,50 @@ export function MobileProjectScroller() {
 
       <div className="mps-wheel">
         <div className="mps-band" aria-hidden />
-        <div className="mps-drum">
-          {ROWS.map((r, i) =>
-            r.kind === 'divider' ? (
-              <div
-                key={r.label}
-                ref={(el) => {
-                  rowRefs.current[i] = el
-                }}
-                className="mps-row mps-row--divider font-mono"
-                data-active={i === view.i}
-              >
-                <span>{r.label}</span>
-              </div>
-            ) : (
-              <Link
-                key={r.label}
-                href={r.href}
-                ref={(el) => {
-                  rowRefs.current[i] = el
-                }}
-                className="mps-row font-display"
-                data-active={i === view.i}
-              >
-                <span>{r.label}</span>
-                <span className="mps-arrow" aria-hidden>
-                  →
-                </span>
-              </Link>
-            ),
-          )}
+        <div className="mps-shade" aria-hidden />
+        <div className="mps-drumframe">
+          <div className="mps-drum">
+            {ROWS.map((r, i) =>
+              r.kind === 'divider' ? (
+                <div
+                  key={r.label}
+                  ref={(el) => {
+                    rowRefs.current[i] = el
+                  }}
+                  className="mps-row mps-row--divider font-mono"
+                  data-active={i === view.i}
+                >
+                  <span>{r.label}</span>
+                </div>
+              ) : (
+                <Link
+                  key={r.label}
+                  href={r.href}
+                  ref={(el) => {
+                    rowRefs.current[i] = el
+                  }}
+                  className="mps-row font-display"
+                  data-active={i === view.i}
+                >
+                  <span>{r.label}</span>
+                  <span className="mps-arrow" aria-hidden>
+                    →
+                  </span>
+                </Link>
+              ),
+            )}
+          </div>
         </div>
       </div>
 
       {/* What sits under the wheel, per row. Hidden from assistive tech: the
           row above is a real link and already carries the destination. */}
       <div className="mps-panel" data-kind={row.kind} aria-hidden>
-        {row.kind === 'about' && (
+        {row.kind === 'home' && (
           <>
-            {/* What the studio actually makes, said once. The tagline above the
-                wheel says what it is; this says what comes out of it. */}
+            {/* What the studio actually makes, said once, on the row you land
+                on. This is the whole of the old About row: there is no second
+                place to go for it. */}
             <p className="mps-about-lede font-display">
               Installations, lighting systems, and the software that runs them.
             </p>

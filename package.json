@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:site": "tsx scripts/seed-site.ts"
+    "seed:site": "tsx scripts/seed-site.ts",
+    "copy:export": "tsx scripts/export-project-copy.ts",
+    "copy:diff": "tsx scripts/diff-project-copy.ts"
   },
   "dependencies": {
     "@formspree/react": "^3.0.0",
