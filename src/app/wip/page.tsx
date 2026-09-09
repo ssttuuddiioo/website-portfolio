@@ -41,19 +41,6 @@ export default async function WipPage({
       }}
     >
       <div style={{ width: '100%', maxWidth: 640 }}>
-        <p
-          className="font-mono"
-          style={{
-            fontSize: '0.7rem',
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: ink(0.5),
-            margin: 0,
-          }}
-        >
-          Work in progress
-        </p>
-
         <h1
           className="font-display"
           style={{
@@ -61,28 +48,13 @@ export default async function WipPage({
             fontWeight: 700,
             lineHeight: 0.95,
             letterSpacing: '-0.03em',
-            margin: '1.2rem 0 0',
+            margin: 0,
           }}
         >
-          This one&apos;s
+          Website under
           <br />
-          not open yet.
+          construction.
         </h1>
-
-        <p
-          className="font-display"
-          style={{
-            fontSize: '1.05rem',
-            lineHeight: 1.5,
-            color: ink(0.7),
-            maxWidth: '38ch',
-            marginTop: '1.4rem',
-          }}
-        >
-          The site is being rebuilt, so the project pages are behind a password
-          while the writing and the edits land. Everything else is open — keep
-          exploring. If you have the password, you know what to do.
-        </p>
 
         <WipForm from={destination} />
 
