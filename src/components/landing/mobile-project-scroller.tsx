@@ -5,21 +5,61 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { LANDING_PROJECTS, type LandingProject } from '@/lib/landing-projects'
 import { useLenis } from '@/lib/lenis-provider'
-import { INK, BG, IKB } from './landing-theme'
+import { INK, BG, BLUE } from './landing-theme'
 
 /* ---- drum geometry ------------------------------------------------------ */
 
-/** Row height, and the pitch the wheel is built from. */
-const ITEM_H = 34
 /**
- * Where the drum's centre sits: a little below the middle of the viewport.
- * Everything else on the page is placed against this — the tagline above, the
- * mark below, the panel under it — so the wheel and what surrounds it can
- * never drift apart. Move this one value and the whole page follows.
+ * Row height, and the pitch the wheel is built from. Every other figure on the
+ * drum — its radius, its window, the band, the throw — is derived from it.
  */
-const WHEEL_TOP = 'calc(45% - 20px)'
-/** Seven rows deep — what the drum shows at once. */
-const WHEEL_H = ITEM_H * 7
+const ITEM_H = 28
+/**
+ * Where the drum's centre sits. Everything else on the page is placed against
+ * this — the mark above, the card under it — so the wheel and what surrounds
+ * it can never drift apart. Move this one value and the whole page follows.
+ *
+ * A custom property rather than a literal, because it is no longer one value:
+ * the drum sits high enough to leave the card a full pocket beneath it, and on
+ * a short viewport that lift has to give some of itself back or the wheel
+ * climbs into the mark. A variable is the only way a media query can reach it,
+ * since every rule downstream is built by string interpolation.
+ */
+const WHEEL_TOP = 'var(--mps-wheel-top)'
+/**
+ * The drum's default centre, and the same figure on a short screen. 45% less
+ * 120px lifts the wheel a full 100px off where it used to sit — the room the
+ * card needs. Below 720px tall there is not 100px to give, so it keeps half.
+ */
+const WHEEL_CENTRE = 'calc(45% - 120px)'
+const WHEEL_CENTRE_SHORT = 'calc(45% - 60px)'
+/**
+ * Air under the card, on top of the home indicator's own inset. The card hangs
+ * from the foot of the panel, so this is the only thing holding it off the
+ * bottom edge — and 100px of it is what stops the button reading as something
+ * stuck to the bottom of the screen. A short viewport does not have 100px
+ * spare between the drum and the edge, so it keeps about half.
+ */
+const PANEL_FOOT = '100px'
+const PANEL_FOOT_SHORT = '48px'
+/**
+ * Five rows deep — what the drum shows at once. Together with the shorter row
+ * this takes the wheel from 238px to 140px, 41% off, without touching the type
+ * or the feel: five is the floor the mask allows. Its fully-opaque band is
+ * 22% of the window (39%-61%), so at four rows of 28px that band would be
+ * narrower than a row and the SELECTED row would come up faded at its own
+ * edges. At five it is 30.8px against a 28px row, and the selection stays
+ * solid.
+ */
+const WHEEL_H = ITEM_H * 5
+/**
+ * The drum's width, and the only place it is stated. The glass panel behind
+ * the wheel and the selection band in front of it both read from this, so the
+ * three share one edge — the panel used to run 2.5rem wider than the rows it
+ * was backing and the band another 0.35rem past that, which read as the wheel
+ * sitting inside something rather than as one control.
+ */
+const WHEEL_W = 'min(17.5rem, 74vw)'
 /** The drum's bottom edge, derived rather than restated — where the panel starts. */
 const WHEEL_BOTTOM = `calc(${WHEEL_TOP} + ${WHEEL_H / 2}px)`
 /** Degrees between neighbouring rows. 180/ANGLE is how many fit the half-turn. */
@@ -71,21 +111,30 @@ const VELOCITY_WINDOW = 90
  * Finger travel per row, as a multiple of the row's own height. Above 1 the
  * drum turns slower than the finger moves, which is what makes a single row
  * easy to stop on — the whole point of the thing is choosing, not travelling.
+ *
+ * Raised from 1.7 when the row shrank from 34px to 28px. It is a MULTIPLE of
+ * the row, so leaving it alone would have cut the finger travel per row by the
+ * same 18% and made the wheel that much twitchier than it was tuned to be.
+ * 2.05 x 28 holds the absolute distance at the 58px it has always been.
  */
-const DRAG_PITCH = 1.7
+const DRAG_PITCH = 2.05
 /** Rows a wheel notch moves. */
 const WHEEL_ROWS = 1 / 5
 /** Quiet after the last wheel event before the drum settles to a row. */
 const WHEEL_SETTLE = 130
 /** How far past the ends a drag may pull before it is eased back. */
 const OVERSHOOT = 0.55
-
 /**
- * The description paragraph under a project. Off for now — the wheel and the
- * frame are carrying the page, and the copy runs 16 to 58 words, which is a
- * lot of movement under something that is meant to sit still. Flip to restore.
+ * How far past a stop the drum runs when a throw arrives with travel still in
+ * hand, in rows — half a row, about 14px on the face. The list has two ends
+ * and they are both places: About at the top, Contact at the bottom. Without
+ * this the drum simply stopped dead on them, which reads as the wheel
+ * breaking rather than as the list ending. Kept under one row so nothing ever
+ * appears past the end, because there is nothing past the end.
  */
-const SHOW_DESCRIPTION = false
+const END_BOUNCE = 0.5
+/** The return from that overshoot. Short and flat — settling, not a throw. */
+const END_BOUNCE_BACK = 280
 
 /**
  * Flat black, for the rows that are the studio rather than the work: Home, the
@@ -95,16 +144,26 @@ const SHOW_DESCRIPTION = false
 const BLACK_FRAME = '/landing/opt/blank.png'
 
 /**
- * The wheel is the whole of mobile: Home, the work, Contact. Each row declares
+ * About's ground. It used to be the footer's IKB block — one flat colour for
+ * the row where the studio speaks rather than the work. That reasoning held
+ * while About was the row the wheel opened on; now that it opens on the work,
+ * a solid field one notch up reads as a hole in the reel rather than as a
+ * change of voice. A picture of the work keeps the run of frames unbroken.
+ */
+const ABOUT_FRAME = '/landing/opt/light-around-us2.avif'
+
+/**
+ * The wheel is the whole of mobile: About, the work, Contact. Each row declares
  * what it puts behind itself and what it puts under itself, so the page has
  * one loop rather than a set of special cases.
  *
- * About used to be a row of its own. It said the same thing the landing said,
- * one notch further down, so it folded into Home: the studio's line and its
- * roster now sit under the first row you land on, and the row itself is gone.
+ * The first row used to be Home — a row whose link pointed back at the page it
+ * was already on, carrying the studio's line as a passenger. It is About now,
+ * and it says the same thing under its own name: one row above the work,
+ * reachable in a single notch up from where the wheel opens.
  */
 type Row =
-  | { kind: 'home'; label: string; frame: string; href: string }
+  | { kind: 'about'; label: string; frame: string; href: string }
   | { kind: 'divider'; label: string; frame: string }
   | { kind: 'project'; label: string; frame: string; href: string; project: LandingProject }
   | { kind: 'contact'; label: string; frame: string; href: string }
@@ -130,7 +189,7 @@ const CLIENTS = [
 const YEARS = LANDING_PROJECTS.map((p) => p.year)
 
 const ROWS: Row[] = [
-  { kind: 'home', label: 'Home', frame: BLACK_FRAME, href: '/' },
+  { kind: 'about', label: 'About', frame: ABOUT_FRAME, href: '/about' },
   // A chapter break rather than a destination: it stops on black, states the
   // size of the body of work, and hands over to it.
   { kind: 'divider', label: 'Selected Projects', frame: BLACK_FRAME },
@@ -153,6 +212,14 @@ const WORK_SUMMARY = `${LANDING_PROJECTS.length} projects · ${Math.min(
 )}–${Math.max(...YEARS)}`
 
 const COUNT = ROWS.length
+/**
+ * Where the wheel opens: the first project, not the first row. Landing on the
+ * studio's own row put a black frame and a paragraph in front of a visitor who
+ * came to see the work — so the drum starts one notch into Selected Projects,
+ * on LOOP, with its picture already behind the glass. About sits just above,
+ * where a single notch up reaches it.
+ */
+const INITIAL = ROWS.findIndex((r) => r.kind === 'project')
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
 /**
@@ -184,8 +251,8 @@ export function MobileProjectScroller() {
   const rowRefs = useRef<(HTMLElement | null)[]>([])
   const lenis = useLenis()
 
-  // Continuous position of the drum, in rows. 0 is the first project centred.
-  const pos = useRef(0)
+  // Continuous position of the drum, in rows — see INITIAL for where it opens.
+  const pos = useRef(INITIAL)
   const raf = useRef(0)
   const visible = useRef(false)
   // Glide state: where a throw started, where it is going, and when.
@@ -195,6 +262,9 @@ export function MobileProjectScroller() {
     t0: number
     dur: number
     ease: (t: number) => number
+    /** Row to glide to once this one lands, or null to stop. Only an end
+     *  bounce uses it: the first leg runs past the stop, this brings it back. */
+    rest: number | null
   } | null>(null)
   // Absolute from the start of the gesture rather than accumulated per move:
   // the drum lands exactly where the finger says, with no drift over a long
@@ -218,12 +288,12 @@ export function MobileProjectScroller() {
     frames: [string, string]
     top: 0 | 1
   }>({
-    i: 0,
-    frames: [ROWS[0].frame, ROWS[0].frame],
+    i: INITIAL,
+    frames: [ROWS[INITIAL].frame, ROWS[INITIAL].frame],
     top: 0,
   })
   const [live, setLive] = useState(false)
-  const selected = useRef(0)
+  const selected = useRef(INITIAL)
 
   const row = ROWS[view.i]
 
@@ -276,10 +346,26 @@ export function MobileProjectScroller() {
         paint()
         return
       }
+      // How much of the throw the stop has to absorb: whatever the target
+      // asked for beyond the first or last row. It only counts while the drum
+      // is still inside the list — a finger that is already holding it past an
+      // end is being released from a stretch, and a stretch just returns.
+      const spill = Math.max(0, target < 0 ? -target : target - (COUNT - 1))
+      const inside = from >= 0 && from <= COUNT - 1
+      const bounce =
+        spill > 0 && inside
+          ? Math.min(END_BOUNCE, END_BOUNCE * spill) * (to === 0 ? -1 : 1)
+          : 0
       glide.current = {
         from,
-        to,
-        ease,
+        // Aim past the stop when there is spill to absorb, and let `rest`
+        // bring it back. With no bounce the two are the same row and nothing
+        // chains, so every other throw is untouched.
+        to: to + bounce,
+        rest: bounce ? to : null,
+        // A bounce supplies its own shape across two legs; easeOutBack's
+        // detent overshoot on top of it would be a wobble against a wall.
+        ease: bounce ? easeOut : ease,
         t0: performance.now(),
         // Long throws take longer, but never so long that the wheel feels
         // slack — and never so short that a one-row snap looks like a jump.
@@ -296,6 +382,20 @@ export function MobileProjectScroller() {
         const t = (performance.now() - g.t0) / g.dur
         if (t >= 1) {
           pos.current = g.to
+          if (g.rest !== null) {
+            // The stop has been hit. Come back to the row it belongs to.
+            glide.current = {
+              from: g.to,
+              to: g.rest,
+              rest: null,
+              ease: easeOut,
+              t0: performance.now(),
+              dur: END_BOUNCE_BACK,
+            }
+            paint()
+            raf.current = requestAnimationFrame(step)
+            return
+          }
           glide.current = null
           paint()
           raf.current = 0
@@ -446,9 +546,11 @@ export function MobileProjectScroller() {
         }
       }
 
-      // Pulled past an end and let go: no coast, just spring back.
+      // Pulled past an end and let go: no coast — the stretch just returns.
+      // easeOutBack rather than a flat ease, so it comes back through the
+      // detent and settles into it instead of arriving and stopping.
       if (pos.current < 0 || pos.current > COUNT - 1) {
-        settle(pos.current, easeOut, 260)
+        settle(pos.current, easeOutBack, 260)
         return
       }
       // Where a coast at this velocity runs out, and the row nearest to it.
@@ -505,6 +607,7 @@ export function MobileProjectScroller() {
            document lock. touch-action stops the browser claiming the swipe
            before the handler sees it; taps are unaffected. */
         .mps {
+          --mps-wheel-top: ${WHEEL_CENTRE};
           position: fixed;
           inset: 0;
           overflow: hidden;
@@ -537,20 +640,6 @@ export function MobileProjectScroller() {
           );
         }
 
-        /* About trades the photo ground for the footer's IKB block. The studio
-           talking about itself is a different kind of place than the work, and
-           the one saturated colour on the site says so. Sits above the scrim so
-           the blue lands flat rather than dimmed, and crossfades on the frames'
-           own timing so the swap reads as one move. */
-        .mps-ikb {
-          position: absolute;
-          inset: 0;
-          background: ${IKB};
-          opacity: 0;
-          transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .mps-ikb[data-on='true'] { opacity: 1; }
-
         /* The drum's window. This used to be a wide pool of shade bled across
            the whole middle of the screen, which is why the frame behind it had
            to be filtered down to stay legible — the shade was never dark enough
@@ -564,7 +653,8 @@ export function MobileProjectScroller() {
           position: absolute;
           left: 50%;
           top: ${WHEEL_TOP};
-          width: min(20rem, 86vw);
+          /* Exactly the drum's width — see WHEEL_W. */
+          width: ${WHEEL_W};
           height: ${WHEEL_H}px;
           transform: translate(-50%, -50%);
           z-index: 1;
@@ -585,7 +675,7 @@ export function MobileProjectScroller() {
           top: ${WHEEL_TOP};
           transform: translate(-50%, -50%);
           z-index: 2;
-          width: min(17.5rem, 74vw);
+          width: ${WHEEL_W};
           height: ${WHEEL_H}px;
         }
         /* The drum's own frame. Carries the perspective (so it stays the direct
@@ -684,11 +774,14 @@ export function MobileProjectScroller() {
              scale, and a row that fits the window it is read through. */
           transform: translateZ(-${RADIUS}px);
         }
-        /* The highlight box the selected row sits in. */
+        /* The highlight box the selected row sits in. Flush with the drum and
+           with the glass behind it: the row's own 0.55rem of padding is what
+           keeps the type off the band's ends, so the band does not need to
+           reach past them to do it. */
         .mps-band {
           position: absolute;
-          left: -0.35rem;
-          right: -0.35rem;
+          left: 0;
+          right: 0;
           top: 50%;
           height: ${ITEM_H}px;
           margin-top: -${ITEM_H / 2}px;
@@ -784,30 +877,14 @@ export function MobileProjectScroller() {
           text-transform: uppercase;
           color: rgba(232, 228, 223, 0.55);
         }
-        .mps-about-lede {
-          margin: 0 auto;
-          max-width: 20rem;
-          font-size: 1rem;
-          font-weight: 500;
-          line-height: 1.35;
-          letter-spacing: -0.02em;
-          color: ${INK};
-        }
-        /* The roster, ruled off above and below so it reads as a register
-           rather than as more sentence. */
-        .mps-clients {
-          margin: 1.15rem auto 0;
-          padding: 0.85rem 0;
-          max-width: 20rem;
-          border-top: 1px solid rgba(232, 228, 223, 0.16);
-          border-bottom: 1px solid rgba(232, 228, 223, 0.16);
-          font-size: 0.6rem;
-          line-height: 1.85;
-          letter-spacing: 0.14em;
+        /* The roster reads as a register rather than as more sentence. The
+           rules that used to do that are the card's own row hairlines now. */
+        .mps-card .mps-clients {
+          letter-spacing: 0.12em;
           text-transform: uppercase;
-          color: rgba(232, 228, 223, 0.6);
+          font-size: 0.62rem;
+          line-height: 1.7;
         }
-
 
         /* The whole field below the drum, top and bottom both anchored — so
            the box never changes size as rows swap copy of different lengths,
@@ -822,9 +899,19 @@ export function MobileProjectScroller() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          /* A project's services and CTA belong low, near the thumb. */
+          /* The card hangs from the BOTTOM of the pocket. That fixes the one
+             edge that matters — the button's — in the same place on every row,
+             whatever the card above it runs to, and puts it where the thumb
+             already is.
+
+             This is also as far down as the card can go. A literal drop of
+             200px from where the shorter drum leaves it would put the button
+             about 16px past the safe area on a 6.1in phone, and .mps clips;
+             hanging it from the foot lands ~185px down there, more on a larger
+             screen, and cannot cut the button off on any of them. */
           justify-content: flex-end;
-          padding: 1.25rem 1.5rem calc(1.6rem + env(safe-area-inset-bottom));
+          padding: 1.1rem 1.5rem
+            calc(${PANEL_FOOT} + env(safe-area-inset-bottom));
           text-align: center;
           color: ${INK};
           /* Only the controls inside are interactive; a swipe anywhere else
@@ -837,40 +924,146 @@ export function MobileProjectScroller() {
         .mps-panel textarea,
         .mps-panel form { pointer-events: auto; }
 
-        /* Contact is a destination, not a footnote: it takes the middle of the
-           space rather than sitting on the bottom edge. */
-        .mps-panel[data-kind='contact'],
-        .mps-panel[data-kind='home'] { justify-content: center; }
+
+        /* ---- the card ------------------------------------------------------
+
+           Everything under the drum used to be centred type laid straight on
+           the photograph: no ground of its own, so it read only over the
+           frames that happened to be dark, and the fix for that would have
+           been dimming the whole picture — which is the one thing the frames
+           are there for.
+
+           So it is a card, in the drum's own material: the same glass, the
+           same width, the same 3px corner, ruled into rows the way the band
+           rules the wheel. It reads as the other half of one control rather
+           than as a caption dropped on the image, it is legible over any
+           frame because it carries its own ground, and it covers about a
+           third of the screen instead of veiling all of it. The picture keeps
+           the rest.
+
+           Left-aligned, and that is half the legibility on its own: centred
+           ragged copy over a moving photograph has no edge for the eye to
+           return to. */
+        .mps-card {
+          width: ${WHEEL_W};
+          border-radius: 3px;
+          overflow: hidden;
+          text-align: left;
+          background: rgba(10, 10, 10, 0.58);
+          -webkit-backdrop-filter: blur(18px) saturate(1.1);
+          backdrop-filter: blur(18px) saturate(1.1);
+        }
+        /* Between rows only — the card's own edge already closes the ends.
+           Same hairline the selection band uses, at the same weight. */
+        .mps-card > * + * { border-top: 1px solid rgba(232, 228, 223, 0.16); }
+
+        /* One cell of the grid: a mono key over its value. The key is the
+           divider row's type at the divider row's weight, so the card and the
+           wheel are speaking the same language. */
+        .mps-cell { padding: 0.72rem 0.8rem; }
+        /* Two keys abreast, where both values are short. Equal columns, so the
+           second key lands on the same line whatever the first value runs to. */
+        .mps-cell--split {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0 0.8rem;
+        }
+        .mps-key {
+          display: block;
+          margin-bottom: 0.32rem;
+          font-size: 0.55rem;
+          line-height: 1;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: rgba(232, 228, 223, 0.5);
+        }
+        .mps-val {
+          margin: 0;
+          font-size: 0.75rem;
+          line-height: 1.4;
+          color: rgba(232, 228, 223, 0.92);
+        }
+
+        /* The project's line, as the card's opening row. */
         .mps-desc {
-          margin: 0 auto;
-          max-width: 26rem;
-          font-size: 0.88rem;
+          margin: 0;
+          padding: 0.85rem 0.8rem;
+          font-size: 0.8rem;
           line-height: 1.5;
-          /* Descriptions run 16 to 58 words; the frame is fixed, so the longest
-             is clamped rather than allowed to push the panel off screen. */
+          color: ${INK};
+          /* The card is narrower than the panel was, so the same words take
+             more lines. Four is what the pocket holds; nothing in
+             landing-projects runs past it since the copy was cut. */
           display: -webkit-box;
-          -webkit-line-clamp: 5;
+          -webkit-line-clamp: 4;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
-        .mps-services {
-          margin: 0 auto;
-          max-width: 24rem;
-          font-size: 0.76rem;
-          line-height: 1.45;
-          color: rgba(232, 228, 223, 0.72);
-        }
-        .mps-more {
-          display: inline-block;
-          margin-top: 1.35rem;
-          font-size: 0.78rem;
-          font-weight: 700;
-          letter-spacing: 0.02em;
+        /* The studio's own line — About and Contact. Larger than a project's
+           description: it is a statement, not metadata. */
+        .mps-lede {
+          margin: 0;
+          padding: 0.95rem 0.8rem;
+          font-size: 0.92rem;
+          font-weight: 500;
+          line-height: 1.35;
+          letter-spacing: -0.02em;
           color: ${INK};
+        }
+        /* The panel's action. It was a bold word with no decoration, which on
+           a photo ground read as one more line of copy — nothing about it said
+           it could be pressed. It is a solid block now, the same one the
+           contact sheet's submit uses (see .mcf-submit in mobile-contact-form):
+           ink field, mono caps, square corners. Inline rather than full width,
+           because it sits under centred copy and a bar across the panel would
+           outweigh what it follows.
+
+           Sized for a thumb — the tap target clears 44px on its own padding —
+           and it is the one element down here that takes pointer events, so it
+           has to be unmissable to be worth anything.
+
+           It is the card's last row: full width, square, closing the stack the
+           way the ruled cells open it. No hairline above it — an ink field
+           against glass is its own separation. */
+        .mps-more {
+          display: block;
+          width: 100%;
+          border: 0;
+          border-top: 0;
+          border-radius: 0;
+          padding: 0.9rem 0.8rem;
+          text-align: center;
+          background: ${INK};
+          color: ${BG};
+          font-size: 0.68rem;
+          font-weight: 600;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
           text-decoration: none;
+          transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+            color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        /* Says it goes somewhere. The panel is aria-hidden — the wheel row
+           above is the real link — so this is decoration, not content. */
+        .mps-more::after { content: ' →'; }
+        /* No hover on a phone — the press is the only state there is to draw,
+           and it is the same blue the contact sheet answers a tap with. */
+        .mps-more:active { background: ${BLUE}; color: #fff; }
+        /* Short viewports. The wheel keeps only half its lift — there is not
+           100px to give above it — and the description loses a line, so the
+           card still closes above the home indicator. */
+        @media (max-height: 720px) {
+          .mps { --mps-wheel-top: ${WHEEL_CENTRE_SHORT}; }
+          .mps-desc { -webkit-line-clamp: 3; }
+          .mps-cell { padding: 0.6rem 0.8rem; }
+          .mps-panel {
+            padding-bottom: calc(
+              ${PANEL_FOOT_SHORT} + env(safe-area-inset-bottom)
+            );
+          }
         }
         @media (prefers-reduced-motion: reduce) {
-          .mps-bg img, .mps-row, .mps-ikb { transition: none; }
+          .mps-bg img, .mps-row { transition: none; }
         }
       `}</style>
 
@@ -885,16 +1078,16 @@ export function MobileProjectScroller() {
           />
         ))}
         <div className="mps-scrim" />
-        <div className="mps-ikb" data-on={row.kind === 'home'} />
       </div>
 
       <div className="mps-wheelbg" aria-hidden />
 
-      {/* The slot above the wheel, now the mark alone. The studio's line used
-          to sit here on the About row, saying in three lines what the copy
-          under the wheel says in one — so the line went and the copy moved to
-          Home. Always mounted, so it fades rather than appears. */}
-      <div className="mps-above mps-mark" data-on={row.kind === 'home'} aria-hidden>
+      {/* The slot above the wheel, the mark alone. It used to show only on the
+          first row, which worked while that row was the one the wheel opened
+          on — now that the wheel opens on the work, hiding it there would
+          leave the landing screen with nothing naming the studio. It is a
+          masthead: anchored to the top edge, on for every row. */}
+      <div className="mps-above mps-mark" data-on aria-hidden>
         {/* White type on transparency, generated from logo.png. The blend
             trick the project page uses cannot work here: this element sits in
             a stacking context of its own (absolute + z-index), so mix-blend
@@ -952,52 +1145,75 @@ export function MobileProjectScroller() {
       {/* What sits under the wheel, per row. Hidden from assistive tech: the
           row above is a real link and already carries the destination. */}
       <div className="mps-panel" data-kind={row.kind} aria-hidden>
-        {row.kind === 'home' && (
-          <>
-            {/* What the studio actually makes, said once, on the row you land
-                on. This is the whole of the old About row: there is no second
-                place to go for it. */}
-            <p className="mps-about-lede font-display">
+        {row.kind === 'about' && (
+          <div className="mps-card">
+            {/* What the studio actually makes, said once. The wheel opens one
+                notch below this, so it is the first thing reached rather than
+                the first thing shown. */}
+            <p className="mps-lede font-display">
               Installations, lighting systems, and the software that runs them.
             </p>
-            <p className="mps-clients font-mono">
-              {CLIENTS.join(' · ')}
-            </p>
-            <Link href="/about" className="mps-more font-display">
-              Read about the studio
+            <div className="mps-cell">
+              <span className="mps-key font-mono">Clients</span>
+              <p className="mps-val mps-clients font-mono">
+                {CLIENTS.join(' · ')}
+              </p>
+            </div>
+            <Link href="/about" className="mps-more font-mono">
+              Learn more
             </Link>
-          </>
+          </div>
         )}
 
+        {/* The chapter break gets no card: it is a caption on the wheel, not a
+            place, and its frame is flat black — there is nothing here for a
+            ground to rescue. */}
         {row.kind === 'divider' && (
           <p className="mps-summary font-mono">{WORK_SUMMARY}</p>
         )}
 
         {row.kind === 'project' && (
-          <>
-            {SHOW_DESCRIPTION && row.project.description && (
+          <div className="mps-card">
+            {row.project.description && (
               <p className="mps-desc font-display">{row.project.description}</p>
             )}
+            {/* Who and when, abreast — both values are a few words at most, and
+                side by side they cost one row instead of two. */}
+            <div className="mps-cell mps-cell--split">
+              <div>
+                <span className="mps-key font-mono">Client</span>
+                <p className="mps-val font-display">
+                  {row.project.clientShort ?? row.project.client}
+                </p>
+              </div>
+              <div>
+                <span className="mps-key font-mono">Year</span>
+                <p className="mps-val font-mono">{row.project.year}</p>
+              </div>
+            </div>
             {row.project.services?.length ? (
-              <p className="mps-services font-display">
-                {row.project.services.join(', ')}
-              </p>
+              <div className="mps-cell">
+                <span className="mps-key font-mono">Role</span>
+                <p className="mps-val font-display">
+                  {row.project.services.join(', ')}
+                </p>
+              </div>
             ) : null}
-            <Link href={row.href} className="mps-more font-display">
+            <Link href={row.href} className="mps-more font-mono">
               See project
             </Link>
-          </>
+          </div>
         )}
 
         {row.kind === 'contact' && (
-          <>
-            <p className="mps-about-lede font-display">
+          <div className="mps-card">
+            <p className="mps-lede font-display">
               Tell us what you have in mind and we&apos;ll set up a call.
             </p>
-            <Link href={row.href} className="mps-more font-display">
+            <Link href={row.href} className="mps-more font-mono">
               Get in touch
             </Link>
-          </>
+          </div>
         )}
       </div>
     </section>

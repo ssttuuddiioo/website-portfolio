@@ -21,6 +21,69 @@ const REST_DELAY = 1000
 const CTA_GAP = 14
 
 /**
+ * The cursor the field shows while it is armed: the old Macintosh clicking
+ * hand, drawn as pixel art on a 15x21 grid. `B` is the outline, `W` the fill,
+ * `P` the cuff band, `.` nothing. The three strokes above the finger are the
+ * classic click burst — they are what say "this opens", where a plain hand
+ * only ever said "link".
+ */
+const HAND_ART = [
+  '.......B.......',
+  '...B...B...B...',
+  '....B..B..B....',
+  '.....B...B.....',
+  '...............',
+  '.BBB...B...BBB.',
+  '......BBB......',
+  '......BWB......',
+  '......BWB......',
+  '......BWB......',
+  '......BWB......',
+  '......BWBBB....',
+  '....BBBWBWBBB..',
+  '...BWWBWBWBWBB.',
+  '..BWWWBWBWBWBWB',
+  '..BWWWWWWWWWWWB',
+  '...BWWWWWWWWWWB',
+  '....BWWWWWWWWWB',
+  '.....BWWWWWWWWB',
+  '.....BPPPPPPPPB',
+  '.....BBBBBBBBBB',
+]
+const HAND_COLS = HAND_ART[0].length
+const HAND_ROWS = HAND_ART.length
+// Rendered size. Bigger than the disc it replaces and about the size of the
+// system hand, so it reads as a cursor rather than as a sticker on the frame.
+const HAND_WIDTH = 24
+const HAND_HEIGHT = (HAND_WIDTH / HAND_COLS) * HAND_ROWS
+// Hotspot — the tip of the index finger, as a fraction of the artwork. The
+// burst sits above it, the way it does on a real click.
+const HAND_HOTSPOT_X = 7.5 / HAND_COLS
+const HAND_HOTSPOT_Y = 6 / HAND_ROWS
+const HAND_FILL: Record<string, string> = {
+  B: '#000000',
+  W: '#ffffff',
+  P: '#3d2fc9',
+}
+/** Runs of one colour, so the hand is a couple of dozen rects, not 200. */
+const HAND_RECTS = HAND_ART.flatMap((row, y) => {
+  const out: { x: number; y: number; w: number; fill: string }[] = []
+  let x = 0
+  while (x < row.length) {
+    const ch = row[x]
+    if (ch === '.') {
+      x += 1
+      continue
+    }
+    let w = 1
+    while (row[x + w] === ch) w += 1
+    out.push({ x, y, w, fill: HAND_FILL[ch] })
+    x += w
+  }
+  return out
+})
+
+/**
  * A trail entry: a bare src, or a src carrying the line shown beside the field
  * while that image is the one resting on top.
  */
@@ -111,7 +174,7 @@ export function HeroImageTrail({
   // Whether a click on the field would open something right now. Drives the
   // cursor, so it has to drop as soon as the pointer leaves the field.
   const armed = useRef(false)
-  // The white dot that stands in for the hand cursor while the field is armed.
+  // The Mac hand that stands in for the system cursor while the field is armed.
   // Written to imperatively, like everything else the pointer drives.
   const dotRef = useRef<HTMLDivElement>(null)
   // Pointer position within the tag field, 0–1. The field is the first screen,
@@ -144,9 +207,11 @@ export function HeroImageTrail({
   const steerable = items.length > 0 && items.every((i) => i.pos)
 
   /**
-   * Put the dot under the pointer. Container-relative rather than fixed: the
-   * dot lives inside the field, in the same coordinate space as the frames it
-   * sits over, so no transformed ancestor anywhere up the page can strand it.
+   * Put the hand under the pointer. Container-relative rather than fixed: it
+   * lives inside the field, in the same coordinate space as the frames it sits
+   * over, so no transformed ancestor anywhere up the page can strand it. The
+   * percentage offset lands the fingertip — not the artwork's centre — on the
+   * pointer, so the hand points at what a click would open.
    */
   const placeDot = useCallback(() => {
     const dot = dotRef.current
@@ -154,13 +219,14 @@ export function HeroImageTrail({
     if (!dot || !bounds) return
     const x = lastPointer.current.x - bounds.left
     const y = lastPointer.current.y - bounds.top
-    dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`
+    dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(${-HAND_HOTSPOT_X *
+      100}%, ${-HAND_HOTSPOT_Y * 100}%)`
   }, [])
 
   /**
-   * Arming swaps the system hand for the field's own mark: the native cursor is
-   * hidden and a white dot takes its place. Placed before it is shown, so it
-   * never blinks in at the last position it held.
+   * Arming swaps the system hand for the field's own: the native cursor is
+   * hidden and the bitmap hand takes its place. Placed before it is shown, so
+   * it never blinks in at the last position it held.
    */
   const setArmed = useCallback(
     (next: boolean) => {
@@ -478,12 +544,12 @@ export function HeroImageTrail({
         />
       ))}
 
-      {/* The cursor, while the field is armed. A plain white disc, drawn over
-          the frames rather than by the OS — the hand said "link" when what is
-          actually under the pointer is a picture you can open, and the dot
-          reads as part of the trail instead of as browser chrome. The hairline
-          and the tight shadow are what keep it on a blown-out frame; without
-          them a white dot disappears into white work. */}
+      {/* The cursor, while the field is armed. Drawn over the frames rather
+          than by the OS: a bitmap Macintosh clicking hand, flat and
+          orthogonal, so it reads as part of the trail instead of as browser
+          chrome. White fill inside a hard black outline is what keeps it
+          legible on both a blown-out frame and the near-black ground —
+          nothing here needs a shadow to survive. */}
       <div
         ref={dotRef}
         aria-hidden
@@ -491,12 +557,8 @@ export function HeroImageTrail({
           position: 'absolute',
           top: 0,
           left: 0,
-          width: 12,
-          height: 12,
-          borderRadius: '50%',
-          background: '#fff',
-          boxShadow:
-            '0 0 0 1px rgba(0, 0, 0, 0.25), 0 1px 6px rgba(0, 0, 0, 0.45)',
+          width: HAND_WIDTH,
+          height: HAND_HEIGHT,
           opacity: 0,
           transition: 'opacity 140ms cubic-bezier(0.22, 1, 0.36, 1)',
           pointerEvents: 'none',
@@ -505,7 +567,28 @@ export function HeroImageTrail({
           // caption, which never shares ground with the pointer.
           zIndex: 9999,
         }}
-      />
+      >
+        <svg
+          width={HAND_WIDTH}
+          height={HAND_HEIGHT}
+          viewBox={`0 0 ${HAND_COLS} ${HAND_ROWS}`}
+          // Snap every edge to the device grid: the whole point is that the
+          // pixels stay pixels at any scale.
+          shapeRendering="crispEdges"
+          style={{ display: 'block' }}
+        >
+          {HAND_RECTS.map((r, i) => (
+            <rect
+              key={i}
+              x={r.x}
+              y={r.y}
+              width={r.w}
+              height={1}
+              fill={r.fill}
+            />
+          ))}
+        </svg>
+      </div>
 
       {/* The resting frame's line. Sits above every pooled image (they climb
           zCounter), arrives with the first frame and stays as long as that

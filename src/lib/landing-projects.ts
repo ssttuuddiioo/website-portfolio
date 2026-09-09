@@ -80,7 +80,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: 'loop',
     affinity: { web: 0.05, installation: 0.24, lighting: 0.61, design: 0.1 },
     description:
-      "Lighting design and control system for LOOP, a new venue in Atlanta. Powered by Goat Farm, LOOP is a cultural hub in Georgia Tech's Creative Quarter that brings together art, research, technology, and community. Through exhibitions, performances, studios, and collaborative projects, LOOP creates space for experimentation, exchange, and new ideas.",
+      "Lighting design and control system for LOOP, a new Atlanta venue from Goat Farm in Georgia Tech's Creative Quarter.",
     services: ['Lighting design', 'Control system', 'Show programming'],
   },
   {
@@ -93,7 +93,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     affinity: { web: 0.4, installation: 0.1, lighting: 0.05, design: 0.45 },
     website: 'https://www.thecoffeefive.com/en',
     description:
-      "Seed to cup coffee from Juan Medina, a consultant offering milling, sampling, and export services. Studio Studio worked alongside Juan on all of it: a new brand identity, packaging, and the software the company runs on.",
+      'Seed to cup coffee from Juan Medina. Brand identity, packaging, and the software behind it.',
     services: ['Brand identity', 'Packaging design', 'Software development'],
   },
   {
@@ -106,7 +106,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     affinity: { web: 0.7, installation: 0.09, lighting: 0.03, design: 0.18 },
     website: 'https://www.elasynergy-tradeshow.com/',
     description:
-      'An RSVP experience for the ELA and Synergy trade show, built on an interactive WebGL particle field. Behind it runs the event itself: an admin for the guest list, custom email sends, and RSVP tracking wired to hi.events.',
+      'RSVP experience for the ELA and Synergy trade show. WebGL particle field, guest list admin, RSVP tracking.',
     services: ['WebGL', 'Custom software', 'Email system', 'Event admin'],
   },
   {
@@ -119,7 +119,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     affinity: { web: 0.12, installation: 0.28, lighting: 0.05, design: 0.55 },
     website: 'https://www.hopehydration.com/',
     description:
-      'Design consultants on Hope Hydration event stations, and on many projects since. Studio Studio comes in from the creative and design side, shaping how people find, use, and remember free access to water.',
+      "Design consultant on Hope Hydration's event stations — how people find and use free water.",
     services: ['Creative direction', 'Experience design', 'Design consulting'],
   },
   {
@@ -132,7 +132,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: 'cox-pillars',
     affinity: { web: 0.24, installation: 0.42, lighting: 0.24, design: 0.1 },
     description:
-      'A kiosk installation built around a pledge system. Visitors make a commitment on screen and watch it join the room as light and motion across a set of freestanding pillars.',
+      'A kiosk pledge system — commitments made on screen become light across freestanding pillars.',
     services: ['Experience design', 'Custom software', 'Lighting design', 'Fabrication'],
     colStart: 9, colSpan: 3, rowStart: 19, rowSpan: 7,
   },
@@ -146,7 +146,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: 'living-walls-att',
     affinity: { web: 0.3, installation: 0.38, lighting: 0.24, design: 0.08 },
     description:
-      'An interactive art installation that maps how far people traveled to the stadium and where they came from, running a sorting algorithm to trace each path. We built the custom control system for the LEDs and the website behind it.',
+      'An interactive installation mapping how far people traveled to the stadium — custom LED control system and website.',
     services: ['Custom software', 'Control system', 'Lighting design', 'Web design and development'],
     colStart: 6, colSpan: 5, rowStart: 28, rowSpan: 13,
   },
@@ -160,7 +160,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: '65-suffolk-st',
     affinity: { web: 0.03, installation: 0.3, lighting: 0.6, design: 0.07 },
     description:
-      'An architectural LED lobby installation commissioned by JGN Architecture, fixture layout, pixel mapping, and content system.',
+      'An architectural LED lobby installation for JGN Architecture.',
     services: ['Lighting design', 'Pixel mapping', 'Content system'],
     colStart: 9, colSpan: 3, rowStart: 39, rowSpan: 8,
   },
@@ -175,7 +175,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     image: '/landing/opt/light-around-us.avif',
     images: ['/landing/opt/light-around-us2.avif'],
     description:
-      'A data-driven sculpture that translates live air quality readings into shifting pattern and color. Commissioned by tvsdesign for Spacelab, their experimental design lab and showroom in Atlanta, with Studio Studio leading design and creative direction, DASH on concept, and Arc Design on fabrication.',
+      'A data-driven sculpture that turns live air quality readings into shifting pattern and color. Commissioned by tvsdesign for Spacelab.',
     services: ['Custom software', 'Lighting design', 'Interactive'],
     colStart: 2, colSpan: 3, rowStart: 25, rowSpan: 6,
   },
@@ -195,7 +195,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     ],
     website: 'https://storybooth.us',
     description:
-      "A public phone booth in Montgomery, Alabama that records residents' stories and publishes them at storybooth.us. Studio Studio led creative direction, experiential design, and UX/UI, in collaboration with Eric Rabinowitz and presented by Dashboard U.S. and Kress on Dexter. Featured in the New York Times' 36 Hours in Montgomery.",
+      "A public phone booth in Montgomery, Alabama that records residents' stories and publishes them at storybooth.us. Creative direction, experiential design, UX/UI.",
     services: ['Custom software', 'Fabrication', 'Web design and development'],
     colStart: 2, colSpan: 4, rowStart: 61, rowSpan: 9,
   },
@@ -212,7 +212,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
       '/landing/opt/bleed-for-the-throne2.webp',
     ],
     description:
-      'HBO and the American Red Cross took on a global blood shortage while launching the final season of Game of Thrones. At SXSW, donors moved through a projected world of bleeding characters to the Iron Throne, called up by name over RFID as a choir sang an original 27 minute piece in Valyrian. Donations rose 12 percent nationwide.',
+      'HBO and the American Red Cross fought a blood shortage at SXSW. Donors reached the Iron Throne by name over RFID. Donations rose 12 percent.',
     services: ['Projection mapping', 'Video content', 'Immersive design', 'Interactive audio app'],
     colStart: 2, colSpan: 5, rowStart: 8, rowSpan: 6,
   },
@@ -226,7 +226,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: 'super-bowl-video-park',
     affinity: { web: 0.07, installation: 0.25, lighting: 0.18, design: 0.5 },
     description:
-      'The 2014 NY/NJ Super Bowl Host Committee wanted arriving visitors to see what New York has to offer. Studio Studio shot screen-specific content, then edited, animated, and reformatted it for a bank of 15 foot LED screens, delivered in under three months.',
+      'Content for the 2014 NY/NJ Super Bowl Host Committee — shot, edited, and animated for 15 foot LED screens in three months.',
     services: ['Spatial design', 'Animation', 'Video content'],
     colStart: 2, colSpan: 4, rowStart: 32, rowSpan: 7,
   },
@@ -239,7 +239,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     affinity: { web: 0.1, installation: 0.46, lighting: 0.38, design: 0.06 },
     image: '/landing/opt/sugar.avif',
     description:
-      "An immersive, interactive LED installation for Dolby's San Francisco headquarters. Hundreds of individually addressable RGB cubes respond to presence and gesture, turning the lobby into a living wall of light and color.",
+      "Interactive LED for Dolby's San Francisco headquarters: hundreds of addressable RGB cubes answering presence and gesture.",
     services: ['Lighting design', 'Custom software', 'Interactive', 'Fabrication'],
     colStart: 2, colSpan: 3, rowStart: 1, rowSpan: 7,
   },
@@ -254,7 +254,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     affinity: { web: 0.45, installation: 0.27, lighting: 0.08, design: 0.2 },
     website: 'https://vimeo.com/293862977?fl=pl&fe=cm',
     description:
-      'A month-long digital art exhibition in Atlanta, founded by Studio Studio, that dissolves the boundary between artist and audience by way of an experimental livestream and emerging interfaces. From September 8 to October 6, participants interacted with the projects, performances, and broadcasts through a custom built suite of tools, influencing the final artworks as they were made.',
+      'A month-long digital art exhibition in Atlanta, founded by Studio Studio — an experimental livestream where the audience shaped the work as it was made.',
     services: ['Festival programming', 'Production', 'Brand identity', 'Custom software'],
     colStart: 2, colSpan: 3, rowStart: 85, rowSpan: 7,
   },
@@ -269,7 +269,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     affinity: { web: 0.1, installation: 0.44, lighting: 0.4, design: 0.06 },
     website: 'https://scatterandrise.com/',
     description:
-      'A site-specific interactive LED commission for the Goat Farm Arts Center in Atlanta. The piece reads audience movement and answers with cascading patterns of light across a suspended grid of custom diffusion elements.',
+      'Site-specific LED for the Goat Farm Arts Center: audience movement answered in cascading light.',
     services: ['Lighting design', 'Custom software', 'Interactive', 'Fabrication'],
     colStart: 8, colSpan: 4, rowStart: 5, rowSpan: 9,
   },
@@ -282,7 +282,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: 'gesture-gesture',
     affinity: { web: 0.4, installation: 0.38, lighting: 0.06, design: 0.16 },
     description:
-      'An interactive archive of the visual language we make with our hands. Everyone who takes part wears the same sleeves, puts their hands in the box, and leaves a gesture. After a second of presence the software captures three seconds and writes a GIF, and every new one retires the oldest from the display. Built for FOREWARD, a group show at Gallery 72 in Atlanta.',
+      'An interactive archive of the gestures we make with our hands — three seconds captured as a GIF, each new one retiring the oldest. Built for FOREWARD at Gallery 72.',
     services: ['Concept', 'Custom software', 'Installation design', 'Fabrication'],
     collaborators: [
       { name: 'Dan Moore', role: 'Software' },
@@ -303,7 +303,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: 'orbitals',
     affinity: { web: 0.24, installation: 0.36, lighting: 0.1, design: 0.3 },
     description:
-      'A generative installation built on orbital motion, simple rules, compounding paths, no two moments the same. Made during the Artist in Residence program at Mana Contemporary, curated by Grace Franck.',
+      'A generative installation on orbital motion — simple rules, compounding paths, no two moments alike. Made at Mana Contemporary, curated by Grace Franck.',
     descriptionLinks: [
       { text: 'Grace Franck', href: 'https://gracefranck.cargo.site/' },
     ],
@@ -320,7 +320,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: 'snowblind',
     affinity: { web: 0.03, installation: 0.35, lighting: 0.55, design: 0.07 },
     description:
-      'Lighting design for The Principal, a Red Bull Studio installation shown at the end of year exhibition for NEW INC, the New Museum incubator. An installation about whiteout and disorientation, light used to take vision away rather than give it.',
+      'Lighting design for The Principal, a Red Bull Studio installation at NEW INC. Light that takes vision away.',
     services: ['Lighting design', 'Show programming'],
     colStart: 5, colSpan: 4, rowStart: 50, rowSpan: 9,
   },
@@ -334,8 +334,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     slug: 'pour-perfect',
     affinity: { web: 0.6, installation: 0.07, lighting: 0.03, design: 0.3 },
     website: 'https://origen.nyc/timer',
-    description:
-      'A guided pour-over timer — brewing as a paced sequence rather than a stopwatch and a guess.',
+    description: 'A guided pour-over timer — brewing as a paced sequence.',
     colStart: 6, colSpan: 5, rowStart: 87, rowSpan: 11,
   },
 ]
