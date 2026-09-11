@@ -208,7 +208,7 @@ export function SiteFooter({
             </p>
             <p style={{ margin: 0 }}>
               We make installations and brand experiences for companies,
-              agencies, and cultural institutions, and install them ourselves.
+              agencies, and cultural institutions.
               Work for HBO, Netflix, Google, AT&amp;T, Audible, Under Armour,
               Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central
               Station, and Cox.
