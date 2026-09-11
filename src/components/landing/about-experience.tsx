@@ -160,74 +160,26 @@ export function AboutExperience() {
                 An art and technology studio in Brooklyn.
               </h1>
             </Reveal>
-            {/* Studio voice leads (that's who a client hires); the founder
-                follows, named, so it stays personal. Desktop: side by side.
-                Mobile: stacked, with a rule between. */}
-            <style>{`
-              .about-intro {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr);
-                gap: 2rem;
-                margin-top: clamp(1.75rem, 3vw, 2.5rem);
-              }
-              .about-intro-note {
-                padding-top: 1.5rem;
-                border-top: 1px solid rgba(232, 228, 223, 0.15);
-              }
-              @media (min-width: 900px) {
-                .about-intro {
-                  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-                  column-gap: clamp(3rem, 6vw, 5rem);
-                  align-items: start;
-                }
-                .about-intro-note {
-                  padding-top: 0;
-                  border-top: 0;
-                }
-              }
-            `}</style>
-            <div className="about-intro font-display">
-              <Reveal delay={0.1}>
-                <p
-                  style={{
-                    margin: 0,
-                    fontWeight: 500,
-                    fontSize: 'clamp(1.1rem, 1.9vw, 1.45rem)',
-                    lineHeight: 1.5,
-                    color: 'rgba(232, 228, 223, 0.85)',
-                  }}
-                >
-                  Studio Studio makes work for galleries, festivals, retail,
-                  brand pop-ups, and public space. We build installations,
-                  websites, apps, and sometimes lamps that run other apps for
-                  our own projects or for brands, agencies, and cultural
-                  institutions. Same tools, same care, sometimes from concept
-                  to making the actual sausage.
-                </p>
-              </Reveal>
-
-              <Reveal delay={0.15}>
-                <div className="about-intro-note">
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: 'clamp(0.98rem, 1.3vw, 1.12rem)',
-                      lineHeight: 1.6,
-                      color: 'rgba(232, 228, 223, 0.65)',
-                    }}
-                  >
-                    Pablo Gnecco started the studio in 2015 as an inaugural
-                    member of NEW INC, the New Museum&apos;s incubator. The idea
-                    from day one: the commercial work funds the art, and the art
-                    sharpens the commercial work. We can run the whole
-                    production with a crew we trust (fabricators, lighting
-                    designers, developers, producers), or slot in next to an
-                    agency&apos;s team, a fabrication shop, or an install crew
-                    that&apos;s already on the job.
-                  </p>
-                </div>
-              </Reveal>
-            </div>
+            <Reveal delay={0.1}>
+              <p
+                className="font-display"
+                style={{
+                  margin: 'clamp(1.75rem, 3vw, 2.5rem) 0 0',
+                  maxWidth: '46ch',
+                  fontWeight: 500,
+                  fontSize: 'clamp(1.1rem, 1.9vw, 1.45rem)',
+                  lineHeight: 1.5,
+                  color: 'rgba(232, 228, 223, 0.85)',
+                }}
+              >
+                Studio Studio makes work for galleries, festivals, retail, brand
+                pop-ups, and public space. We build installations, websites,
+                apps, and sometimes lamps that run other apps for our own
+                projects or for brands, agencies, and cultural institutions.
+                Same tools, same care, sometimes from concept to making the
+                actual sausage.
+              </p>
+            </Reveal>
           </div>
 
           <Reveal delay={0.15} style={{ marginTop: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
@@ -241,6 +193,44 @@ export function AboutExperience() {
               />
             </div>
           </Reveal>
+
+          {/* The founder note reads after the photo, in the right half on
+              desktop so it answers the intro across the image. */}
+          <style>{`
+            .about-founder {
+              margin-top: clamp(2rem, 4vw, 3rem);
+            }
+            @media (min-width: 900px) {
+              .about-founder {
+                width: 46%;
+                margin-left: auto;
+              }
+            }
+          `}</style>
+          <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
+            <div className="about-founder">
+              <Reveal delay={0.1}>
+                <p
+                  className="font-display"
+                  style={{
+                    margin: 0,
+                    fontSize: 'clamp(0.98rem, 1.3vw, 1.12rem)',
+                    lineHeight: 1.6,
+                    color: 'rgba(232, 228, 223, 0.65)',
+                  }}
+                >
+                  Pablo Gnecco started the studio in 2015 as an inaugural member
+                  of NEW INC, the New Museum&apos;s incubator. The idea from day
+                  one: the commercial work funds the art, and the art sharpens
+                  the commercial work. We can run the whole production with a
+                  crew we trust (fabricators, lighting designers, developers,
+                  producers), or slot in next to an agency&apos;s team, a
+                  fabrication shop, or an install crew that&apos;s already on
+                  the job.
+                </p>
+              </Reveal>
+            </div>
+          </div>
         </section>
 
         {/* ---- Clients and partners (logo marquee) ------------------------- */}
