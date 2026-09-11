@@ -99,8 +99,8 @@ function FramedImage({
 /**
  * Standalone /contact page. Built on the same visual language as the /about
  * experience (warm shell, left-hand sidebar, Reveal-on-scroll, framed imagery):
- * an intro, the contact block (pitch + details on the left, form on the right),
- * and the shared footer band. inPage={false} → sidebar links route back to the
+ * the contact block (pitch + details on the left, form on the right) and the
+ * shared footer band. inPage={false} → sidebar links route back to the
  * homepage's /#sections.
  */
 export function ContactExperience() {
@@ -134,60 +134,10 @@ export function ContactExperience() {
           </div>
         </div>
 
-        {/* ---- Intro -------------------------------------------------------- */}
-        <section
-          style={{
-            padding: `clamp(3rem, 8vw, 6rem) ${GUTTER} clamp(2rem, 5vw, 4rem)`,
-          }}
-        >
-          <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-            <Reveal>
-              <Eyebrow>Contact</Eyebrow>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h1
-                className="font-display"
-                style={{
-                  fontWeight: 700,
-                  fontSize: 'clamp(2.2rem, 6.5vw, 4.5rem)',
-                  lineHeight: 1.02,
-                  letterSpacing: '-0.03em',
-                  color: INK,
-                  margin: '1.25rem 0 0',
-                  maxWidth: '15ch',
-                }}
-              >
-                Let&apos;s make something together.
-              </h1>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p
-                className="font-display"
-                style={{
-                  fontWeight: 500,
-                  fontSize: 'clamp(1.05rem, 1.9vw, 1.45rem)',
-                  lineHeight: 1.5,
-                  color: 'rgba(232, 228, 223, 0.7)',
-                  margin: '1.75rem 0 0',
-                  maxWidth: '52ch',
-                }}
-              >
-                Drop us a line or say hello.{' '}
-                <a
-                  href="mailto:hello@studiostudio.nyc"
-                  style={{ color: BLUE, textDecoration: 'none' }}
-                >
-                  hello@studiostudio.nyc
-                </a>
-              </p>
-            </Reveal>
-          </div>
-        </section>
-
         {/* ---- Contact block ----------------------------------------------- */}
         <section
           style={{
-            padding: `clamp(2rem, 5vw, 4rem) ${GUTTER} clamp(3rem, 7vw, 6rem)`,
+            padding: `clamp(3rem, 8vw, 6rem) ${GUTTER} clamp(3rem, 7vw, 6rem)`,
           }}
         >
           <Reveal>
@@ -207,7 +157,7 @@ export function ContactExperience() {
                 style={{ gap: '1.25rem', color: INK }}
               >
                 <Eyebrow>Get in touch</Eyebrow>
-                <h2
+                <h1
                   style={{
                     fontWeight: 700,
                     fontSize: 'clamp(1.8rem, 3.4vw, 2.8rem)',
@@ -217,7 +167,7 @@ export function ContactExperience() {
                   }}
                 >
                   Say hello.
-                </h2>
+                </h1>
                 <p
                   style={{
                     margin: 0,
