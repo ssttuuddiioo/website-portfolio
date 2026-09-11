@@ -34,6 +34,27 @@ function Eyebrow({ children }: { children: ReactNode }) {
   )
 }
 
+/** Left cell of an about ledger row: mono label, dimmer detail under it. */
+function RowLabel({ title, detail }: { title: string; detail: string }) {
+  return (
+    <div
+      className="font-mono"
+      style={{ display: 'grid', gap: '0.4rem', alignContent: 'start' }}
+    >
+      <Eyebrow>{title}</Eyebrow>
+      <span
+        style={{
+          fontSize: '0.72rem',
+          letterSpacing: '0.04em',
+          color: 'rgba(232, 228, 223, 0.35)',
+        }}
+      >
+        {detail}
+      </span>
+    </div>
+  )
+}
+
 function Reveal({
   children,
   delay = 0,
@@ -138,12 +159,34 @@ export function AboutExperience() {
         </div>
 
         {/* ---- Intro -------------------------------------------------------- */}
+        {/* A ledger, like the project pages: headline, then ruled rows with a
+            mono label on the left and the copy in one shared column on the
+            right. The photo spans the sheet between the two rows. Mobile:
+            everything stacks, label above copy. */}
+        <style>{`
+          .about-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            row-gap: 1rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(232, 228, 223, 0.15);
+          }
+          @media (min-width: 900px) {
+            .about-row {
+              grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+              column-gap: clamp(2rem, 4vw, 3rem);
+            }
+          }
+        `}</style>
         <section
           style={{
             padding: `clamp(3rem, 8vw, 6rem) ${GUTTER} clamp(2rem, 5vw, 4rem)`,
           }}
         >
           <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
+            <Reveal>
+              <Eyebrow>About</Eyebrow>
+            </Reveal>
             <Reveal delay={0.05}>
               <h1
                 className="font-display"
@@ -160,30 +203,32 @@ export function AboutExperience() {
                 An art and technology studio in Brooklyn.
               </h1>
             </Reveal>
-            <Reveal delay={0.1}>
-              <p
-                className="font-display"
-                style={{
-                  margin: 'clamp(1.75rem, 3vw, 2.5rem) 0 0',
-                  maxWidth: '46ch',
-                  fontWeight: 500,
-                  fontSize: 'clamp(1.1rem, 1.9vw, 1.45rem)',
-                  lineHeight: 1.5,
-                  color: 'rgba(232, 228, 223, 0.85)',
-                }}
-              >
-                Studio Studio makes work for galleries, festivals, retail, brand
-                pop-ups, and public space. We build installations, websites,
-                apps, and sometimes lamps that run other apps for our own
-                projects or for brands, agencies, and cultural institutions.
-                Same tools, same care, sometimes from concept to making the
-                actual sausage.
-              </p>
-            </Reveal>
-          </div>
 
-          <Reveal delay={0.15} style={{ marginTop: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
-            <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
+            <Reveal delay={0.1} style={{ marginTop: 'clamp(2rem, 4vw, 3rem)' }}>
+              <div className="about-row">
+                <RowLabel title="Studio" detail="Brooklyn, NY · Since 2015" />
+                <p
+                  className="font-display"
+                  style={{
+                    margin: 0,
+                    maxWidth: '46ch',
+                    fontWeight: 500,
+                    fontSize: 'clamp(1.1rem, 1.7vw, 1.35rem)',
+                    lineHeight: 1.5,
+                    color: 'rgba(232, 228, 223, 0.85)',
+                  }}
+                >
+                  Studio Studio makes work for galleries, festivals, retail,
+                  brand pop-ups, and public space. We build installations,
+                  websites, apps, and sometimes lamps that run other apps for
+                  our own projects or for brands, agencies, and cultural
+                  institutions. Same tools, same care, sometimes from concept
+                  to making the actual sausage.
+                </p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.15} style={{ marginTop: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
               <FramedImage
                 src="/landing/opt/light-around-us2.avif"
                 alt="Studio Studio installation work"
@@ -191,29 +236,16 @@ export function AboutExperience() {
                 sizes="(min-width: 1100px) 1100px, 92vw"
                 priority
               />
-            </div>
-          </Reveal>
+            </Reveal>
 
-          {/* The founder note reads after the photo, in the right half on
-              desktop so it answers the intro across the image. */}
-          <style>{`
-            .about-founder {
-              margin-top: clamp(2rem, 4vw, 3rem);
-            }
-            @media (min-width: 900px) {
-              .about-founder {
-                width: 46%;
-                margin-left: auto;
-              }
-            }
-          `}</style>
-          <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-            <div className="about-founder">
-              <Reveal delay={0.1}>
+            <Reveal delay={0.1} style={{ marginTop: 'clamp(2rem, 4vw, 3rem)' }}>
+              <div className="about-row">
+                <RowLabel title="Founder" detail="Pablo Gnecco" />
                 <p
                   className="font-display"
                   style={{
                     margin: 0,
+                    maxWidth: '52ch',
                     fontSize: 'clamp(0.98rem, 1.3vw, 1.12rem)',
                     lineHeight: 1.6,
                     color: 'rgba(232, 228, 223, 0.65)',
@@ -228,8 +260,8 @@ export function AboutExperience() {
                   fabrication shop, or an install crew that&apos;s already on
                   the job.
                 </p>
-              </Reveal>
-            </div>
+              </div>
+            </Reveal>
           </div>
         </section>
 
