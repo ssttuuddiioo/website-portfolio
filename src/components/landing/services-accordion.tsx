@@ -22,6 +22,16 @@ export const SERVICES: Service[] = [
     cta: 'direction',
   },
   {
+    title: 'Exhibitions and installations',
+    body: 'Our own work, shown in galleries and public space, usually built from light, sound, and interaction.',
+    cta: 'installation',
+  },
+  {
+    title: 'Commissions and collaborations',
+    body: 'Commissioned art for institutions and partners, and joint pieces with other artists and studios.',
+    cta: 'commissioned',
+  },
+  {
     title: 'Creative technology',
     body: 'Custom software and interactive systems: real-time graphics, sensor-driven rooms, and livestreamed pieces that remote audiences can control. Also kiosks, control apps, and tools built for one specific space.',
     cta: 'creative technology',
@@ -35,16 +45,6 @@ export const SERVICES: Service[] = [
     title: 'Experiential production',
     body: 'Large installations and brand experiences. We design them, build them, install them, and run them live when the job calls for it. Work for HBO, Netflix, Google, AT&T, Audible, Under Armour, Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central Station, and Cox.',
     cta: 'experiential',
-  },
-  {
-    title: 'Exhibitions and installations',
-    body: 'Our own work, shown in galleries and public space, usually built from light, sound, and interaction.',
-    cta: 'installation',
-  },
-  {
-    title: 'Commissions and collaborations',
-    body: 'Commissioned art for institutions and partners, and joint pieces with other artists and studios.',
-    cta: 'commissioned',
   },
   {
     title: 'Mentorship',

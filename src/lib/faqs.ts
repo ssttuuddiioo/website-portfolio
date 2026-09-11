@@ -16,11 +16,11 @@ export interface Faq {
 export const FAQS: Faq[] = [
   {
     q: 'What kinds of projects do you take on?',
-    a: 'Installations, brand activations, exhibitions, and interactive spaces. We handle the concept, creative direction, software, lighting, fabrication, and install. Recent clients include HBO, Google, AT&T, Dolby, and Michigan Central Station. We also make and exhibit our own work.',
+    a: 'Our own artworks and exhibitions, commissions for institutions and private clients, and installations, brand activations, and interactive spaces for brands and agencies. We can handle the concept, creative direction, software, lighting, fabrication, and install, or just the part you need. Recent clients include HBO, Google, AT&T, Dolby, and Michigan Central Station.',
   },
   {
     q: 'Do you work with agencies and institutions, or only direct clients?',
-    a: 'Both. Agencies bring us in as their creative technology and production team. Galleries, festivals, and cultural institutions commission work from us. We can lead a project or work inside a bigger team.',
+    a: 'Both. Agencies bring us in as their creative technology and production team, and galleries, festivals, and cultural institutions commission work from us. We can lead the whole project or work inside a bigger team, next to fabricators, install crews, and other studios.',
   },
   {
     q: 'What does a typical engagement look like?',

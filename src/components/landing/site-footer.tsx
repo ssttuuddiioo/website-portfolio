@@ -202,13 +202,14 @@ export function SiteFooter({
             }}
           >
             <p style={{ margin: 0 }}>
-              Studio Studio is the creative technology practice of Pablo Gnecco.
-              Experiential direction, lighting design, and custom software, made
-              in Brooklyn, New York.
+              Studio Studio is an art and technology studio founded by Pablo
+              Gnecco. Experiential direction, lighting design, and custom
+              software, made in Brooklyn, New York.
             </p>
             <p style={{ margin: 0 }}>
-              We make installations and brand experiences for companies,
-              agencies, and cultural institutions.
+              We make our own work, take commissions, and build installations
+              and brand experiences with agencies, companies, and cultural
+              institutions.
               Work for HBO, Netflix, Google, AT&amp;T, Audible, Under Armour,
               Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central
               Station, and Cox.

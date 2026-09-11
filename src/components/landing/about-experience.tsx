@@ -157,7 +157,7 @@ export function AboutExperience() {
                   maxWidth: '18ch',
                 }}
               >
-                A small creative tech studio in Brooklyn.
+                An art and technology studio in Brooklyn.
               </h1>
             </Reveal>
             {/* Studio voice leads (that's who a client hires); the founder
@@ -197,11 +197,12 @@ export function AboutExperience() {
                     color: 'rgba(232, 228, 223, 0.85)',
                   }}
                 >
-                  Studio Studio designs and builds interactive installations,
-                  websites, apps, and sometimes lamps that run apps. We work
-                  across experiential activations and light-based mediums in
-                  different capacities, from creative or technical direction to
-                  making the actual sausage.
+                  Studio Studio makes our own work for galleries, festivals,
+                  and public space, and builds installations, websites, apps,
+                  and sometimes lamps that run apps for brands, agencies, and
+                  cultural institutions. We can take a project from the first
+                  idea to opening night, or join partway through, anywhere from
+                  creative or technical direction to making the actual sausage.
                 </p>
               </Reveal>
 
@@ -216,12 +217,13 @@ export function AboutExperience() {
                     }}
                   >
                     Pablo Gnecco started the studio in 2015 as an inaugural
-                    member of NEW INC, the New Museum&apos;s incubator, as a way
-                    to make exciting immersive work that would then fund
-                    artworks. The name has always been grounded in art x tech.
-                    Pablo is on every project, and bigger ones bring in a crew
-                    of people we trust: fabricators, lighting designers,
-                    developers, and producers.
+                    member of NEW INC, the New Museum&apos;s incubator. The idea
+                    from day one: the commercial work funds the art, and the art
+                    sharpens the commercial work. Pablo is on every project. We
+                    can run the whole production with a crew we trust
+                    (fabricators, lighting designers, developers, producers), or
+                    slot in next to an agency&apos;s team, a fabrication shop, or
+                    an install crew that&apos;s already on the job.
                   </p>
                 </div>
               </Reveal>
@@ -241,7 +243,7 @@ export function AboutExperience() {
           </Reveal>
         </section>
 
-        {/* ---- Trusted by (logo marquee) ----------------------------------- */}
+        {/* ---- Clients and partners (logo marquee) ------------------------- */}
         <section style={{ padding: `clamp(2.5rem, 6vw, 4.5rem) 0` }}>
           <Reveal style={{ marginBottom: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
             <div
@@ -250,7 +252,7 @@ export function AboutExperience() {
                 textAlign: 'center',
               }}
             >
-              <Eyebrow>Trusted by</Eyebrow>
+              <Eyebrow>Clients and partners</Eyebrow>
             </div>
           </Reveal>
           <LogoMarquee />
