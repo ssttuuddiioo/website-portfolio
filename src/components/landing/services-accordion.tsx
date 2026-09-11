@@ -23,12 +23,12 @@ export const SERVICES: Service[] = [
   },
   {
     title: 'Creative technology',
-    body: 'Custom software and interactive systems: real-time graphics, sensor-driven rooms, and livestreamed pieces that remote audiences can control. Recent builds include touchscreen pledge kiosks for Cox and a web-based lighting controller for a venue.',
+    body: 'Custom software and interactive systems: real-time graphics, sensor-driven rooms, and livestreamed pieces that remote audiences can control. Also kiosks, control apps, and tools built for one specific space.',
     cta: 'creative technology',
   },
   {
     title: 'Lighting design',
-    body: 'Architectural and experiential lighting, as a standalone job or as part of a bigger build. LED systems, pixel mapping, DMX and sACN, and show programming. Most recently, the lighting and control system for LOOP in Atlanta.',
+    body: 'Architectural and experiential lighting, as a standalone job or as part of a bigger build. LED systems, pixel mapping, DMX and sACN, show programming, and the control systems that run it all.',
     cta: 'lighting',
   },
   {
@@ -38,17 +38,17 @@ export const SERVICES: Service[] = [
   },
   {
     title: 'Exhibitions and installations',
-    body: 'Our own work, shown in galleries and public space, usually built from light, sound, and interaction. We Are Stars / Somos Estrellas at The Gallery by Wish. Storybooth on Dexter Avenue in Montgomery.',
+    body: 'Our own work, shown in galleries and public space, usually built from light, sound, and interaction.',
     cta: 'installation',
   },
   {
     title: 'Commissions and collaborations',
-    body: 'Commissioned art for institutions and partners, and joint pieces with other artists and studios. 9to5.tv at The Goat Farm, with custom robots and a public livestream, started as one of these.',
+    body: 'Commissioned art for institutions and partners, and joint pieces with other artists and studios.',
     cta: 'commissioned',
   },
   {
     title: 'Mentorship',
-    body: 'Mentoring through NYU ITP, the Steve Jobs Archive, and arts organizations, plus one-on-one time with artists, designers, and technologists on what they are making and how to build it.',
+    body: 'Mentoring through university programs and arts organizations, plus one-on-one time with artists, designers, and technologists on what they are making and how to build it.',
     cta: 'all',
   },
 ]
