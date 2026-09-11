@@ -197,12 +197,12 @@ export function AboutExperience() {
                     color: 'rgba(232, 228, 223, 0.85)',
                   }}
                 >
-                  Studio Studio makes our own work for galleries, festivals,
-                  and public space, and builds installations, websites, apps,
-                  and sometimes lamps that run apps for brands, agencies, and
-                  cultural institutions. We can take a project from the first
-                  idea to opening night, or join partway through, anywhere from
-                  creative or technical direction to making the actual sausage.
+                  Studio Studio makes work for galleries, festivals, retail,
+                  brand pop-ups, and public space. We build installations,
+                  websites, apps, and sometimes lamps that run other apps for
+                  our own projects or for brands, agencies, and cultural
+                  institutions. Same tools, same care, sometimes from concept
+                  to making the actual sausage.
                 </p>
               </Reveal>
 
@@ -219,11 +219,11 @@ export function AboutExperience() {
                     Pablo Gnecco started the studio in 2015 as an inaugural
                     member of NEW INC, the New Museum&apos;s incubator. The idea
                     from day one: the commercial work funds the art, and the art
-                    sharpens the commercial work. Pablo is on every project. We
-                    can run the whole production with a crew we trust
-                    (fabricators, lighting designers, developers, producers), or
-                    slot in next to an agency&apos;s team, a fabrication shop, or
-                    an install crew that&apos;s already on the job.
+                    sharpens the commercial work. We can run the whole
+                    production with a crew we trust (fabricators, lighting
+                    designers, developers, producers), or slot in next to an
+                    agency&apos;s team, a fabrication shop, or an install crew
+                    that&apos;s already on the job.
                   </p>
                 </div>
               </Reveal>
