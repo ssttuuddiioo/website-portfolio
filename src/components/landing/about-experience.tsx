@@ -10,7 +10,6 @@ import { ServicesAccordion } from './services-accordion'
 import { ContactForm } from './contact-form'
 import { LogoMarquee } from './logo-marquee'
 import { FaqSection } from './faq-section'
-import { ABOUT_TITLE } from './about-section'
 import { INK, BG } from './landing-theme'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -158,29 +157,75 @@ export function AboutExperience() {
                   maxWidth: '18ch',
                 }}
               >
-                {ABOUT_TITLE}
+                A small creative tech studio in Brooklyn.
               </h1>
             </Reveal>
-            <Reveal delay={0.1}>
-              <p
-                className="font-display"
-                style={{
-                  fontWeight: 500,
-                  fontSize: 'clamp(1.05rem, 1.9vw, 1.45rem)',
-                  lineHeight: 1.5,
-                  color: 'rgba(232, 228, 223, 0.7)',
-                  margin: '1.75rem 0 0',
-                  maxWidth: '52ch',
-                }}
-              >
-                Studio Studio is a Brooklyn studio and a network of
-                multidisciplinary collaborators. Experiential directors,
-                creative technologists, lighting designers, fabricators, and
-                producers who assemble around each project. We partner with
-                brands, agencies, and institutions to turn ambitious ideas into
-                rooms, screens, and stages people remember.
-              </p>
-            </Reveal>
+            {/* Studio voice leads (that's who a client hires); the founder
+                follows, named, so it stays personal. Desktop: side by side.
+                Mobile: stacked, with a rule between. */}
+            <style>{`
+              .about-intro {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 2rem;
+                margin-top: clamp(1.75rem, 3vw, 2.5rem);
+              }
+              .about-intro-note {
+                padding-top: 1.5rem;
+                border-top: 1px solid rgba(232, 228, 223, 0.15);
+              }
+              @media (min-width: 900px) {
+                .about-intro {
+                  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+                  column-gap: clamp(3rem, 6vw, 5rem);
+                  align-items: start;
+                }
+                .about-intro-note {
+                  padding-top: 0;
+                  border-top: 0;
+                }
+              }
+            `}</style>
+            <div className="about-intro font-display">
+              <Reveal delay={0.1}>
+                <p
+                  style={{
+                    margin: 0,
+                    fontWeight: 500,
+                    fontSize: 'clamp(1.1rem, 1.9vw, 1.45rem)',
+                    lineHeight: 1.5,
+                    color: 'rgba(232, 228, 223, 0.85)',
+                  }}
+                >
+                  Studio Studio designs and builds interactive installations,
+                  websites, apps, and sometimes lamps that run apps. We work
+                  across experiential activations and light-based mediums in
+                  different capacities, from creative or technical direction to
+                  making the actual sausage.
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.15}>
+                <div className="about-intro-note">
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 'clamp(0.98rem, 1.3vw, 1.12rem)',
+                      lineHeight: 1.6,
+                      color: 'rgba(232, 228, 223, 0.65)',
+                    }}
+                  >
+                    Pablo Gnecco started the studio in 2015 as an inaugural
+                    member of NEW INC, the New Museum&apos;s incubator, as a way
+                    to make exciting immersive work that would then fund
+                    artworks. The name has always been grounded in art x tech.
+                    Pablo is on every project, and bigger ones bring in a crew
+                    of people we trust: fabricators, lighting designers,
+                    developers, and producers.
+                  </p>
+                </div>
+              </Reveal>
+            </div>
           </div>
 
           <Reveal delay={0.15} style={{ marginTop: 'clamp(2.5rem, 6vw, 4.5rem)' }}>

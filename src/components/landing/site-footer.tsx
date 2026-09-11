@@ -207,10 +207,11 @@ export function SiteFooter({
               in Brooklyn, New York.
             </p>
             <p style={{ margin: 0 }}>
-              We build installations and brand experiences from first concept
-              through fabrication and on-site delivery, for brands, agencies, and
-              institutions. Work for HBO, Google, Intel, Sony, Dolby,
-              Mercedes-Benz Stadium, Michigan Central Station, and Cox.
+              We make installations and brand experiences for companies,
+              agencies, and cultural institutions, and install them ourselves.
+              Work for HBO, Netflix, Google, AT&amp;T, Audible, Under Armour,
+              Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central
+              Station, and Cox.
             </p>
             <FooterLink href="/about">
               Learn more{' '}

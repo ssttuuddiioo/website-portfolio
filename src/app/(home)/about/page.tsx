@@ -9,7 +9,7 @@ const SITE_URL = 'https://studiostudio.nyc'
 
 const ABOUT_PAGE_TITLE = 'About — Studio Studio'
 const ABOUT_PAGE_DESCRIPTION =
-  'Studio Studio is the Brooklyn creative practice of Pablo Gnecco — experiential direction, creative technology, and lighting design for brands, agencies, and institutions. Trusted by HBO, Intel, Dolby, Michigan Central Station, and more.'
+  'Studio Studio is a small creative tech studio in Brooklyn, founded by Pablo Gnecco. Installations, custom software, and lighting for HBO, Netflix, Google, AT&T, and Dolby.'
 
 export const metadata: Metadata = {
   title: { absolute: ABOUT_PAGE_TITLE },

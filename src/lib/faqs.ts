@@ -16,26 +16,26 @@ export interface Faq {
 export const FAQS: Faq[] = [
   {
     q: 'What kinds of projects do you take on?',
-    a: 'Installations, brand activations, exhibitions, and interactive environments — for rooms, screens, and stages. We work end to end: concept and creative direction, custom software and lighting, fabrication, and on-site delivery. Recent work spans clients like HBO, Intel, Dolby, and Michigan Central Station, alongside our own exhibited artwork.',
+    a: 'Installations, brand activations, exhibitions, and interactive spaces. We handle the concept, creative direction, software, lighting, fabrication, and install. Recent clients include HBO, Google, AT&T, Dolby, and Michigan Central Station. We also make and exhibit our own work.',
   },
   {
     q: 'Do you work with agencies and institutions, or only direct clients?',
-    a: 'Both. We partner with brands and agencies as a production and creative-technology arm, and we take commissioned work from galleries, festivals, and cultural institutions. We are comfortable leading a project or plugging into a larger team.',
+    a: 'Both. Agencies bring us in as their creative technology and production team. Galleries, festivals, and cultural institutions commission work from us. We can lead a project or work inside a bigger team.',
   },
   {
     q: 'What does a typical engagement look like?',
-    a: 'It usually starts with a conversation about what the experience should be — before anyone builds anything. From there we move through concept, design, prototyping, fabrication, and install. Scope can be a single moment or a full multi-month production; we scale the team to fit.',
+    a: 'Most projects start with a call about the idea. Then comes concept and design, a working prototype, fabrication, and install. Some jobs are a single piece built in a few weeks, others run for months, and the team grows or shrinks to match.',
   },
   {
     q: 'What technologies do you work with?',
-    a: 'A wide range. Lighting and LED systems (DMX/sACN, pixel mapping, show control), real-time installation software (TouchDesigner, Three.js, React Three Fiber, openFrameworks, Unity), sensor-driven and networked systems, computer vision, projection and media servers, audio and show playback. On the software side: websites and web apps (Next.js, React), native and mobile apps, kiosks and touch interfaces, custom hardware and microcontrollers, and the backend and streaming plumbing that ties a piece together. We choose the stack around the idea, not the other way around.',
+    a: 'Lighting and LED systems (DMX/sACN, pixel mapping, show control). Real-time software in TouchDesigner, Three.js, React Three Fiber, openFrameworks, and Unity. Sensors, computer vision, projection, media servers, and audio playback. We also build websites and web apps in Next.js and React, native and mobile apps, kiosks and touch interfaces, firmware for custom hardware, and the backend and streaming systems behind them.',
   },
   {
     q: 'Where are you based, and do you travel?',
-    a: 'New York, London, and Bogota. Our main studio is in New York, and the network works out of all three. We travel everywhere to install and run work on-site, wherever a project lives.',
+    a: 'New York, London, and Bogotá. The main studio is in New York, and collaborators work out of all three cities. We travel to install and run work wherever it is.',
   },
   {
     q: 'How do we start a project together?',
-    a: 'Send a note through the form below with a rough sense of the idea, timeline, and budget. We will set up a call to figure out whether it is a fit and what the first step looks like.',
+    a: 'Send a note through the form below with the idea, timeline, and budget, even if they are rough. We will set up a call to see if it is a fit and what the first step should be.',
   },
 ]

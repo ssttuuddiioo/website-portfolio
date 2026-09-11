@@ -18,37 +18,37 @@ interface Service {
 export const SERVICES: Service[] = [
   {
     title: 'Consulting',
-    body: 'We help brands, agencies, and institutions figure out what an experience should be before anyone starts building. Strategy, concept, and direction from the front of the process.',
+    body: 'We help brands, agencies, and institutions work out what to make and how to make it. Sometimes that is the whole job and another team builds it.',
     cta: 'direction',
   },
   {
     title: 'Creative technology',
-    body: 'Custom software and interactive systems. Real-time graphics, sensor-driven environments, livestreamed and networked pieces that let people anywhere shape what happens in a room. Built on Three.js and React Three Fiber when a moment needs to react.',
+    body: 'Custom software and interactive systems: real-time graphics, sensor-driven rooms, and livestreamed pieces that remote audiences can control. Recent builds include touchscreen pledge kiosks for Cox and a web-based lighting controller for a venue.',
     cta: 'creative technology',
   },
   {
     title: 'Lighting design',
-    body: 'Light as its own discipline and as a layer inside a larger build. Architectural and experiential lighting that gives a space depth and direction.',
+    body: 'Architectural and experiential lighting, as a standalone job or as part of a bigger build. LED systems, pixel mapping, DMX and sACN, and show programming. Most recently, the lighting and control system for LOOP in Atlanta.',
     cta: 'lighting',
   },
   {
     title: 'Experiential production',
-    body: 'We build large-scale installations and brand experiences from first concept through fabrication and on-site delivery. The full arc: design, build, install, run the thing live. Work for HBO, Google, Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central Station, and Cox.',
+    body: 'Large installations and brand experiences. We design them, build them, install them, and run them live when the job calls for it. Work for HBO, Netflix, Google, AT&T, Audible, Under Armour, Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central Station, and Cox.',
     cta: 'experiential',
   },
   {
     title: 'Exhibitions and installations',
-    body: 'Our own work, shown in galleries and public space. Light, sound, and interaction built into pieces a person steps inside. We Are Stars / Somos Estrellas at The Gallery by Wish. Storybooth on Dexter Avenue in Montgomery.',
+    body: 'Our own work, shown in galleries and public space, usually built from light, sound, and interaction. We Are Stars / Somos Estrellas at The Gallery by Wish. Storybooth on Dexter Avenue in Montgomery.',
     cta: 'installation',
   },
   {
     title: 'Commissions and collaborations',
-    body: 'We take on commissioned art from institutions and partners, and work alongside other artists and studios on pieces that cross disciplines. 9to5.tv at The Goat Farm, with custom robots and a public livestream, came out of exactly this.',
+    body: 'Commissioned art for institutions and partners, and joint pieces with other artists and studios. 9to5.tv at The Goat Farm, with custom robots and a public livestream, started as one of these.',
     cta: 'commissioned',
   },
   {
     title: 'Mentorship',
-    body: 'We mentor through university programs and arts organizations, and take on people one on one. Sitting with artists, designers, and technologists working out what they are making, how to build it, and how to get it into the world.',
+    body: 'Mentoring through NYU ITP, the Steve Jobs Archive, and arts organizations, plus one-on-one time with artists, designers, and technologists on what they are making and how to build it.',
     cta: 'all',
   },
 ]

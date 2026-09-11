@@ -54,9 +54,9 @@ export async function GET() {
 
 Studio Studio designs and builds interactive installations, brand activations, exhibitions, and immersive environments, working end to end: concept and creative direction, custom software, lighting and pixel-mapped LED systems (DMX/sACN), fabrication, and on-site delivery.
 
-Founded and led by Pablo Gnecco, a Colombian-born experiential director and creative technologist. Inaugural member of the New Museum's NEW INC; resident artist at Mana Contemporary; mentor at NYU ITP and the Steve Jobs Archive.
+Founded and led by Pablo Gnecco, a Colombian-born experiential director and creative technologist. Pablo started the studio in 2015 as an inaugural member of the New Museum's NEW INC. Resident artist at Mana Contemporary; mentor at NYU ITP and the Steve Jobs Archive.
 
-Clients and collaborators include HBO, Google, Intel, Sony, Dolby, Michigan Central Station, Cox Communications, and Mercedes-Benz Stadium.
+Clients and collaborators include HBO, Netflix, Google, AT&T, Audible, Under Armour, Intel, Sony, Dolby, Michigan Central Station, Cox Communications, and Mercedes-Benz Stadium.
 
 Based in Brooklyn, New York. Travels to install and run work on-site.
 
