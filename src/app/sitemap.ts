@@ -55,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Every entry in the landing index has a /work/[slug] page, hand-authored or
   // generated from the index entry — getProjectSlugs is the same list the route
   // prerenders, so the two can't drift.
-  const placeholderSlugs = new Set(getProjectSlugs())
+  const placeholderSlugs = new Set(await getProjectSlugs())
 
   const placeholderRoutes: MetadataRoute.Sitemap = [...placeholderSlugs].map((slug) => ({
     url: `${SITE_URL}/work/${slug}`,

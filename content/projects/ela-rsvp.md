@@ -1,4 +1,5 @@
 TITLE: RSVP Platform
+SLUG: ela-synergy-tradeshow
 YEAR: 2026
 CLIENT: ELA + Synergy
 CLIENT URL:

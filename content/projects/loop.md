@@ -1,4 +1,5 @@
 TITLE: Loop
+SLUG: loop
 YEAR: 2026
 CLIENT: The Goat Farm, Georgia Tech Arts
 CLIENT URL:

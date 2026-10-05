@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
+import { PortableText, type PortableTextComponents } from '@portabletext/react'
 import type { PlaceholderProject } from '@/lib/placeholder-projects'
 import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
@@ -90,6 +91,21 @@ function Eyebrow({
   )
 }
 
+/**
+ * The case-study body, set in the rail's note style. Headings and quotes from
+ * Studio fall back to paragraphs here — the rail is one voice, not a document.
+ */
+const STORY: PortableTextComponents = {
+  block: ({ children }) => <p className="proj-note font-display">{children}</p>,
+  marks: {
+    link: ({ children, value }) => (
+      <a href={value?.href} target="_blank" rel="noreferrer" className="proj-link">
+        {children}
+      </a>
+    ),
+  },
+}
+
 /* ---- page --------------------------------------------------------------- */
 
 /**
@@ -168,45 +184,47 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
 
           <div className="proj-body">
             <div className="proj-media">
-              {/* Hero — the frame the project leads with, full width of the
-                  media column. */}
-              {hero && (
-                <div className="proj-hero">
-                  <Image
-                    src={hero}
-                    alt={`${project.title} — ${project.client}`}
-                    fill
-                    priority
-                    sizes="(min-width: 900px) 74vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-              )}
+              <div className="proj-mediarun">
+                {/* Hero — the frame the project leads with, full width of the
+                    media column. */}
+                {hero && (
+                  <div className="proj-hero">
+                    <Image
+                      src={hero}
+                      alt={`${project.title} — ${project.client}`}
+                      fill
+                      priority
+                      sizes="(min-width: 900px) 74vw, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                )}
 
-              {/* Masonry — the remaining frames, each on its own slot so the
-                  run reads as a composed spread rather than a contact sheet. */}
-              {masonry.length > 0 && (
-                <div className="proj-masonry">
-                  {masonry.map((src, i) => (
-                    <div
-                      key={src}
-                      className="proj-mtile"
-                      style={{
-                        gridColumn: `span ${MASONRY_SLOTS[i].cols}`,
-                        aspectRatio: MASONRY_SLOTS[i].ratio,
-                      }}
-                    >
-                      <Image
-                        src={src}
-                        alt={`${project.title} — detail ${i + 1}`}
-                        fill
-                        sizes="(min-width: 900px) 50vw, 100vw"
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+                {/* Masonry — the remaining frames, each on its own slot so the
+                    run reads as a composed spread rather than a contact sheet. */}
+                {masonry.length > 0 && (
+                  <div className="proj-masonry">
+                    {masonry.map((src, i) => (
+                      <div
+                        key={src}
+                        className="proj-mtile"
+                        style={{
+                          gridColumn: `span ${MASONRY_SLOTS[i].cols}`,
+                          aspectRatio: MASONRY_SLOTS[i].ratio,
+                        }}
+                      >
+                        <Image
+                          src={src}
+                          alt={`${project.title} — detail ${i + 1}`}
+                          fill
+                          sizes="(min-width: 900px) 50vw, 100vw"
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Rail — the project's information, set as a stack of ruled
@@ -236,10 +254,19 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
                       <div className="proj-reg">
                         <span className="proj-label font-mono">Year</span>
                         <span className="proj-value font-display">
-                          {project.year}
+                          {project.yearDisplay ?? project.year}
                         </span>
                       </div>
                     </div>
+
+                    {project.location && (
+                      <div className="proj-reg">
+                        <span className="proj-label font-mono">Location</span>
+                        <span className="proj-value font-display">
+                          {project.location}
+                        </span>
+                      </div>
+                    )}
 
                     {project.role.length > 0 && (
                       <div className="proj-reg">
@@ -254,6 +281,14 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
                             </li>
                           ))}
                         </ol>
+                      </div>
+                    )}
+
+                    {/* The case study itself, for projects that come from
+                        Sanity. Unlabelled: it reads on from the lede. */}
+                    {project.body && project.body.length > 0 && (
+                      <div className="proj-reg proj-story">
+                        <PortableText value={project.body} components={STORY} />
                       </div>
                     )}
 
@@ -272,6 +307,33 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
                       </div>
                     )}
 
+                    {project.outcome && (
+                      <div className="proj-reg">
+                        <h2 className="proj-label font-mono">Outcome</h2>
+                        <p className="proj-note font-display">{project.outcome}</p>
+                      </div>
+                    )}
+
+                    {project.stack && project.stack.length > 0 && (
+                      <div className="proj-reg">
+                        <h2 className="proj-label font-mono">Stack</h2>
+                        <ul className="proj-list">
+                          {project.stack.map((item) => (
+                            <li key={item} className="proj-value font-display">
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {project.materials && (
+                      <div className="proj-reg">
+                        <h2 className="proj-label font-mono">Materials</h2>
+                        <p className="proj-note font-display">{project.materials}</p>
+                      </div>
+                    )}
+
                     {collabs.length > 0 && (
                       <div className="proj-reg">
                         <h2 className="proj-label font-mono">Credits</h2>
@@ -287,6 +349,16 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
                             </li>
                           ))}
                         </ul>
+                        {project.credit && (
+                          <p className="proj-attrib font-display">{project.credit}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {project.thanks && (
+                      <div className="proj-reg">
+                        <h2 className="proj-label font-mono">Thanks</h2>
+                        <p className="proj-note font-display">{project.thanks}</p>
                       </div>
                     )}
 
@@ -450,11 +522,18 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
           }
         }
 
-        .proj-media {
+        /* The media column runs the full height of the body, which a long
+           case study in the rail can make far taller than the frames. So the
+           column paints the page ground, and the frames sit in a run of their
+           own that is painted in the rule colour — its gaps are the hairlines
+           between them, and a 1px shadow closes it underneath. Where the frames
+           are the taller side, that shadow lands on the sheet's own rule. */
+        .proj-media { background: ${BG}; }
+        .proj-mediarun {
           display: grid;
           gap: 1px;
           background: ${RULE};
-          align-content: start;
+          box-shadow: 0 1px 0 ${RULE};
         }
         .proj-hero {
           position: relative;
@@ -576,6 +655,35 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
           font-size: clamp(0.86rem, 1.05vw, 0.95rem);
           line-height: 1.6;
           color: rgba(232, 228, 223, 0.66);
+        }
+
+        /* The body runs as paragraphs in one register, spaced like prose
+           rather than split into registers of their own. */
+        .proj-story { gap: 0.9em; }
+        .proj-link {
+          color: inherit;
+          text-decoration: underline;
+          text-underline-offset: 0.2em;
+          text-decoration-color: rgba(232, 228, 223, 0.3);
+        }
+        .proj-link:hover { color: ${BLUE}; }
+
+        .proj-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+
+        /* Attribution for work led in another role — a footnote to the
+           credits, quieter than any credit line. */
+        .proj-attrib {
+          margin: 0.4rem 0 0;
+          font-size: 0.78rem;
+          line-height: 1.5;
+          color: rgba(232, 228, 223, 0.45);
         }
 
         .proj-credits {

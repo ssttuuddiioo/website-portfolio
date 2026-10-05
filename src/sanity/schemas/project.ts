@@ -52,6 +52,12 @@ export const project = defineType({
       validation: (Rule) => Rule.required(),
     },
     {
+      name: 'yearDisplay',
+      title: 'Year (display)',
+      type: 'string',
+      description: 'Shown in place of the year for ongoing work, e.g. "2021–present". Year still sorts.',
+    },
+    {
       name: 'location',
       title: 'Location',
       type: 'string',
@@ -76,6 +82,21 @@ export const project = defineType({
       title: 'Role',
       type: 'string',
       description: 'Creative Director, Lead Developer, Artist, etc.',
+    },
+    {
+      name: 'disciplines',
+      title: 'Disciplines',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: { layout: 'tags' },
+      description: 'Lighting Design, Custom Software, etc. Shown beside the title.',
+    },
+    {
+      name: 'scope',
+      title: 'Scope',
+      type: 'array',
+      of: [{ type: 'string' }],
+      description: 'What the studio did, one item each. Shown as the numbered Roles list.',
     },
 
     /* Media */
@@ -129,6 +150,27 @@ export const project = defineType({
       title: 'Body',
       type: 'projectContent',
     },
+    {
+      name: 'outcome',
+      title: 'Outcome',
+      type: 'text',
+      rows: 3,
+      description: 'What happened after — still running, awards, results.',
+    },
+    {
+      name: 'stack',
+      title: 'Stack',
+      type: 'array',
+      of: [{ type: 'string' }],
+      description: 'Hardware and software, one item each.',
+    },
+    {
+      name: 'materials',
+      title: 'Materials',
+      type: 'text',
+      rows: 2,
+      description: 'Physical materials, kept apart from the stack.',
+    },
 
     /* Collaborators */
     {
@@ -141,6 +183,8 @@ export const project = defineType({
           fields: [
             { name: 'name', type: 'string', title: 'Name' },
             { name: 'role', type: 'string', title: 'Role' },
+            { name: 'organization', type: 'string', title: 'Organization' },
+            { name: 'location', type: 'string', title: 'Location' },
             { name: 'url', type: 'url', title: 'URL' },
           ],
           preview: {
@@ -148,6 +192,19 @@ export const project = defineType({
           },
         },
       ],
+    },
+    {
+      name: 'credit',
+      title: 'Attribution',
+      type: 'text',
+      rows: 3,
+      description: 'For work led in another role, e.g. at Chemistry Creative.',
+    },
+    {
+      name: 'thanks',
+      title: 'Thanks',
+      type: 'text',
+      rows: 2,
     },
 
     /* Links */

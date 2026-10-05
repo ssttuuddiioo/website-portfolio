@@ -1,10 +1,19 @@
+import { cache } from 'react'
 import {
   PLACEHOLDER_PROJECTS,
   type PlaceholderProject,
 } from './placeholder-projects'
 import { LANDING_PROJECTS, type LandingProject } from './landing-projects'
+import { client, isSanityConfigured } from './sanity/client'
+import { PROJECT_PAGE_QUERY, PROJECT_PAGE_SLUGS_QUERY } from './sanity/queries'
+import type { SanityProjectPage } from './sanity/types'
 
 /**
+ * A project's copy comes from Sanity when it has a document there — seeded from
+ * content/projects by `npm run seed:projects`. Sanity holds no media yet, so
+ * those pages borrow their frames from the matching landing entry (same slug)
+ * until a hero image is uploaded in Studio.
+ *
  * Every entry in the landing index is reachable at /work/[slug]. Three of them
  * — dolby-moment, the-light-around-us, scatter-and-rise — are hand-authored
  * case studies in PLACEHOLDER_PROJECTS. The rest are generated here from what
@@ -65,23 +74,86 @@ function fromLanding(
   }
 }
 
-/** The project page for a slug, hand-authored where one exists. */
-export function getProjectPage(slug: string): PlaceholderProject | null {
-  const authored = PLACEHOLDER_PROJECTS[slug]
-  if (authored) return authored
-  const index = LANDING_PROJECTS.findIndex((p) => p.slug === slug)
-  if (index === -1) return null
-  return fromLanding(LANDING_PROJECTS[index], index)
+/**
+ * The Sanity document as a page. Anything the document leaves empty falls back
+ * to the landing entry, so a project that is in both never loses its frames,
+ * its live-site link or its place in the similar-projects rotation. One that is
+ * only in Sanity starts the rotation from the top of the index.
+ */
+function fromSanity(doc: SanityProjectPage): PlaceholderProject {
+  const index = LANDING_PROJECTS.findIndex((p) => p.slug === doc.slug)
+  const landing = index === -1 ? undefined : LANDING_PROJECTS[index]
+  const disciplines = doc.disciplines?.join(' · ')
+  return {
+    slug: doc.slug,
+    client: doc.client ?? landing?.client ?? '',
+    title: doc.title,
+    shortCode: initials(doc.title),
+    year: doc.year,
+    yearDisplay: doc.yearDisplay,
+    category: disciplines || landing?.category || '',
+    discipline: disciplines || landing?.category || '',
+    role: doc.scope ?? landing?.services ?? [],
+    // The organization rides on the role line — "Interiors lead · JGN
+    // Architecture" — since the register already pairs name with one line.
+    collaborators: (doc.collaborators ?? []).map((c) => ({
+      name: c.name,
+      role: [c.role, c.organization].filter(Boolean).join(' · '),
+    })),
+    heroImage: doc.heroImage ?? landing?.image ?? '',
+    about: doc.subtitle ?? landing?.description ?? '',
+    mainMedia: '',
+    supportingImages: landing?.images ?? [],
+    sections: [],
+    similarProjects: neighbours(index),
+    website: doc.projectUrl ?? landing?.website,
+    location: doc.location,
+    body: doc.body,
+    outcome: doc.outcome,
+    stack: doc.stack,
+    materials: doc.materials,
+    credit: doc.credit,
+    thanks: doc.thanks,
+  }
 }
 
+async function fetchSanity<T>(query: string, params: Record<string, string> = {}) {
+  if (!isSanityConfigured) return null
+  try {
+    return await client.fetch<T>(query, params)
+  } catch {
+    // Sanity unreachable — the hardcoded pages still render.
+    return null
+  }
+}
+
+/**
+ * The project page for a slug: Sanity first, then the hand-authored case study,
+ * then the page generated from the landing index. Cached per request, since
+ * generateMetadata and the page both ask.
+ */
+export const getProjectPage = cache(
+  async (slug: string): Promise<PlaceholderProject | null> => {
+    const doc = await fetchSanity<SanityProjectPage | null>(PROJECT_PAGE_QUERY, { slug })
+    if (doc) return fromSanity(doc)
+    const authored = PLACEHOLDER_PROJECTS[slug]
+    if (authored) return authored
+    const index = LANDING_PROJECTS.findIndex((p) => p.slug === slug)
+    if (index === -1) return null
+    return fromLanding(LANDING_PROJECTS[index], index)
+  },
+)
+
 /** Every slug that resolves to a page — drives generateStaticParams. */
-export function getProjectSlugs(): string[] {
+export async function getProjectSlugs(): Promise<string[]> {
+  const sanity = (await fetchSanity<string[]>(PROJECT_PAGE_SLUGS_QUERY)) ?? []
   return Array.from(
     new Set([
       ...Object.keys(PLACEHOLDER_PROJECTS),
       ...LANDING_PROJECTS.map((p) => p.slug).filter(
         (s): s is string => Boolean(s),
       ),
+      ...sanity,
     ]),
   )
 }

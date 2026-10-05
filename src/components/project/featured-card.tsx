@@ -28,7 +28,7 @@ export function FeaturedCard({ project, index }: FeaturedCardProps) {
       }}
     >
       <Link
-        href={`/${project.slug.current}`}
+        href={`/work/${project.slug.current}`}
         className="block relative group"
         style={{ minHeight: '65vh' }}
       >

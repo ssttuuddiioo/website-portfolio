@@ -97,6 +97,34 @@ export const PROJECT_DETAIL_QUERY = `
   }
 `
 
+/** The /work/[slug] case-study page. Published documents only. */
+export const PROJECT_PAGE_QUERY = `
+  *[_type == "project" && slug.current == $slug && !hidden && !(_id in path("drafts.**"))][0] {
+    title,
+    "slug": slug.current,
+    subtitle,
+    client,
+    year,
+    yearDisplay,
+    location,
+    disciplines,
+    scope,
+    body,
+    outcome,
+    stack,
+    materials,
+    collaborators[]{name, role, organization},
+    credit,
+    thanks,
+    projectUrl,
+    "heroImage": heroImage.asset->url
+  }
+`
+
+export const PROJECT_PAGE_SLUGS_QUERY = `
+  *[_type == "project" && !hidden && !(_id in path("drafts.**"))].slug.current
+`
+
 export const EXPERIMENTS_QUERY = `
   *[_type == "experiment"] | order(sortOrder asc, year desc) {
     _id,

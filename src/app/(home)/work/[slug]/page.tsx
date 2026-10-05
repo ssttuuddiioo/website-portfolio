@@ -14,8 +14,8 @@ const SITE_URL = 'https://studiostudio.nyc'
 
 export const revalidate = 60
 
-export function generateStaticParams() {
-  return getProjectSlugs().map((slug) => ({ slug }))
+export async function generateStaticParams() {
+  return (await getProjectSlugs()).map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({
@@ -24,7 +24,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const project = getProjectPage(slug)
+  const project = await getProjectPage(slug)
   if (!project) return {}
   return buildProjectMetadata({
     title: `${project.title} — ${project.client}`,
@@ -43,7 +43,7 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const project = getProjectPage(slug)
+  const project = await getProjectPage(slug)
   if (!project) notFound()
 
   const jsonLd: JsonLdObject[] = [
@@ -54,8 +54,13 @@ export default async function ProjectPage({
       description: project.about,
       client: project.client,
       year: project.year,
+      location: project.location,
       category: project.category,
-      keywords: [project.discipline, ...project.role],
+      // The category already leads the keywords, and a Sanity page's
+      // discipline is the same string.
+      keywords: [project.discipline, ...project.role].filter(
+        (k) => k !== project.category,
+      ),
       heroImageUrl: project.heroImage,
     }),
     breadcrumbSchema({

@@ -3,6 +3,8 @@
    Replace with Sanity content once populated
    ============================================ */
 
+import type { PortableTextBlock } from '@portabletext/react'
+
 export interface PlaceholderProject {
   slug: string
   client: string
@@ -42,6 +44,21 @@ export interface PlaceholderProject {
    * (see project-page.ts) it is often the only place with more to read.
    */
   website?: string
+  /*
+   * The fuller case study, present on projects that come from Sanity (see
+   * project-page.ts). Each renders as its own register on the rail and is
+   * simply absent on the hand-authored and index-generated pages.
+   */
+  /** Replaces `year` in the rail for ongoing work — "2021–present". */
+  yearDisplay?: string
+  location?: string
+  body?: PortableTextBlock[]
+  outcome?: string
+  stack?: string[]
+  materials?: string
+  /** Attribution for work led in another role, set under the credits. */
+  credit?: string
+  thanks?: string
 }
 
 export const PLACEHOLDER_PROJECTS: Record<string, PlaceholderProject> = {

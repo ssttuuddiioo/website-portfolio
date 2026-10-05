@@ -2,6 +2,8 @@
    Sanity TypeScript Types — Studio Studio
    ============================================ */
 
+import type { PortableTextBlock } from '@portabletext/react'
+
 export interface SanityImage {
   _type: 'image'
   asset: {
@@ -88,6 +90,28 @@ export interface SanityProjectDetail extends SanityProject {
     slug: { current: string }
     thumbnail?: SanityImage
   }
+}
+
+/** What PROJECT_PAGE_QUERY returns. */
+export interface SanityProjectPage {
+  title: string
+  slug: string
+  subtitle?: string
+  client?: string
+  year: number
+  yearDisplay?: string
+  location?: string
+  disciplines?: string[]
+  scope?: string[]
+  body?: PortableTextBlock[]
+  outcome?: string
+  stack?: string[]
+  materials?: string
+  collaborators?: { name: string; role?: string; organization?: string }[]
+  credit?: string
+  thanks?: string
+  projectUrl?: string
+  heroImage?: string
 }
 
 export interface SanityPerson {

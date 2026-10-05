@@ -9,7 +9,8 @@
     "lint": "eslint",
     "seed:site": "tsx scripts/seed-site.ts",
     "copy:export": "tsx scripts/export-project-copy.ts",
-    "copy:diff": "tsx scripts/diff-project-copy.ts"
+    "copy:diff": "tsx scripts/diff-project-copy.ts",
+    "seed:projects": "tsx scripts/seed-projects.ts"
   },
   "dependencies": {
     "@formspree/react": "^3.0.0",

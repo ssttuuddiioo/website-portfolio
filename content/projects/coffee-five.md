@@ -1,4 +1,5 @@
 TITLE: Coffee Five Project
+SLUG: the-coffee-five
 YEAR: 2026
 YEAR DISPLAY: 2025–2026
 CLIENT: Juan Medina — Coffee Five Project

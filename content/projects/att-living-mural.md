@@ -1,4 +1,5 @@
 TITLE: AT&T Living Mural
+SLUG: living-walls-att
 YEAR: 2025
 CLIENT: AT&T
 CLIENT URL:

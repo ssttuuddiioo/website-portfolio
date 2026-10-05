@@ -1,4 +1,5 @@
 TITLE: 65 Suffolk Street
+SLUG: 65-suffolk-st
 YEAR: 2024
 CLIENT: JGN Architecture
 CLIENT URL:

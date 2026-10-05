@@ -1,4 +1,5 @@
 TITLE: Cox Conserves
+SLUG: cox-conserves
 YEAR: 2026
 CLIENT: Cox Communications
 CLIENT URL:

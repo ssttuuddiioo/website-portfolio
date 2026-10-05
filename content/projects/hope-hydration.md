@@ -1,4 +1,5 @@
 TITLE: HOPE Hydration
+SLUG: hope-hydration
 YEAR: 2021
 YEAR DISPLAY: 2021–present
 CLIENT: HOPE Hydration
