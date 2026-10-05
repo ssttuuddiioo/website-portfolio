@@ -32,7 +32,7 @@ export const SITE_SETTINGS_QUERY = `
 `
 
 export const FEATURED_PROJECTS_QUERY = `
-  *[_type == "project" && featured == true && !hidden] | order(sortOrder asc) {
+  *[_type == "project" && featured == true && hidden != true] | order(sortOrder asc) {
     _id,
     title,
     slug,
@@ -49,7 +49,7 @@ export const FEATURED_PROJECTS_QUERY = `
 `
 
 export const PROJECT_INDEX_QUERY = `
-  *[_type == "project" && !hidden] | order(sortOrder asc, year desc) {
+  *[_type == "project" && hidden != true] | order(sortOrder asc, year desc) {
     _id,
     title,
     slug,
@@ -89,7 +89,7 @@ export const PROJECT_DETAIL_QUERY = `
         poster{asset->{url}}
       },
     },
-    "nextProject": *[_type == "project" && !hidden && sortOrder > ^.sortOrder] | order(sortOrder asc) [0] {
+    "nextProject": *[_type == "project" && hidden != true && sortOrder > ^.sortOrder] | order(sortOrder asc) [0] {
       title,
       slug,
       thumbnail{..., asset->{url, metadata{lqip}}}
@@ -99,7 +99,7 @@ export const PROJECT_DETAIL_QUERY = `
 
 /** The /work/[slug] case-study page. Published documents only. */
 export const PROJECT_PAGE_QUERY = `
-  *[_type == "project" && slug.current == $slug && !hidden && !(_id in path("drafts.**"))][0] {
+  *[_type == "project" && slug.current == $slug && hidden != true && !(_id in path("drafts.**"))][0] {
     title,
     "slug": slug.current,
     subtitle,
@@ -122,7 +122,7 @@ export const PROJECT_PAGE_QUERY = `
 `
 
 export const PROJECT_PAGE_SLUGS_QUERY = `
-  *[_type == "project" && !hidden && !(_id in path("drafts.**"))].slug.current
+  *[_type == "project" && hidden != true && !(_id in path("drafts.**"))].slug.current
 `
 
 export const EXPERIMENTS_QUERY = `
@@ -141,7 +141,7 @@ export const EXPERIMENTS_QUERY = `
 `
 
 export const PROJECT_SLUGS_QUERY = `
-  *[_type == "project" && !hidden]{
+  *[_type == "project" && hidden != true]{
     "slug": slug.current
   }
 `

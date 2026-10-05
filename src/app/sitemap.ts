@@ -11,7 +11,7 @@ interface ProjectEntry {
 }
 
 const PROJECTS_FOR_SITEMAP_QUERY = `
-  *[_type == "project" && !(_id in path("drafts.**")) && !hidden]{
+  *[_type == "project" && !(_id in path("drafts.**")) && hidden != true]{
     "slug": slug.current,
     _updatedAt
   }
