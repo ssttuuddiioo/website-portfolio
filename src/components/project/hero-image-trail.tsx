@@ -481,8 +481,15 @@ export function HeroImageTrail({
       const y = e.clientY - bounds.top
       if (x < 0 || y < 0 || x > bounds.width || y > bounds.height) return
 
-      const target = e.target as Element | null
-      if (target?.closest?.(IGNORE_CLICK)) return
+      // Walk the path the event was dispatched along, not e.target's current
+      // ancestors: by the time the click bubbles up to the window, React has
+      // already re-rendered for it — the index mark swaps its grid glyph for
+      // the cross — so the element under the pointer can be detached, and
+      // .closest() from it never finds the nav it was clicked in.
+      const onControl = e
+        .composedPath()
+        .some((n) => n instanceof Element && n.matches(IGNORE_CLICK))
+      if (onControl) return
       // A click that ends a text selection is not a click on the field.
       const selection = window.getSelection()
       if (selection && !selection.isCollapsed) return
