@@ -7,7 +7,7 @@ import { breadcrumbSchema, itemListSchema, type JsonLdObject } from '@/lib/seo/j
 
 const SITE_URL = 'https://studiostudio.nyc'
 
-const IDEAS_PAGE_TITLE = 'Notes — Studio Studio'
+const IDEAS_PAGE_TITLE = 'Notes | Studio Studio'
 const IDEAS_PAGE_DESCRIPTION =
   'Notes from the studio — experiments, stories, resources, and the occasional half-finished thought from Pablo Gnecco of Studio Studio.'
 

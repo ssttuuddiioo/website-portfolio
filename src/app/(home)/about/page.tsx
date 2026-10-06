@@ -7,7 +7,7 @@ import { breadcrumbSchema, faqSchema, type JsonLdObject } from '@/lib/seo/jsonld
 
 const SITE_URL = 'https://studiostudio.nyc'
 
-const ABOUT_PAGE_TITLE = 'About — Studio Studio'
+const ABOUT_PAGE_TITLE = 'About | Studio Studio'
 const ABOUT_PAGE_DESCRIPTION =
   'Studio Studio is an art and technology studio in Brooklyn, founded by Pablo Gnecco. Artworks, commissions, installations, software, and light for galleries, festivals, institutions, agencies, and brands.'
 

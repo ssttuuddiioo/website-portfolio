@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { INK } from '@/components/landing/landing-theme'
 
 export const metadata: Metadata = {
-  title: { absolute: 'Work — Studio Studio' },
+  title: { absolute: 'Work | Studio Studio' },
   description: 'Selected work from Studio Studio.',
   alternates: { canonical: '/agency/work' },
   // Placeholder page. Crawlable (so the link from the homepage still passes

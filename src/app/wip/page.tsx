@@ -4,7 +4,7 @@ import { BG, INK, RULE, ink } from '@/components/landing/landing-theme'
 import { WipForm } from './wip-form'
 
 export const metadata: Metadata = {
-  title: 'Work in progress — Studio Studio',
+  title: 'Work in progress | Studio Studio',
   description: 'This part of the site is still being built.',
   // The wall stands at every project URL while the site is unfinished. Keeping
   // it out of the index means those URLs are not crawled as a password page and

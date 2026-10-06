@@ -27,7 +27,7 @@ export async function generateMetadata({
   const project = await getProjectPage(slug)
   if (!project) return {}
   return buildProjectMetadata({
-    title: `${project.title} — ${project.client}`,
+    title: `${project.title} | ${project.client}`,
     slug,
     // These pages live at /work/[slug], not the legacy root-level /[slug].
     // The canonical has to point at this page's own URL.

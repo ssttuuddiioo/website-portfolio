@@ -21,7 +21,7 @@ export async function generateMetadata({
   const idea = IDEAS_BY_SLUG[slug]
   if (!idea) return {}
 
-  const title = `${idea.title} — Studio Studio`
+  const title = `${idea.title} | Studio Studio`
   const description = smartTruncate(idea.subtitle)
   const path = `/ideas/${slug}`
   const ogImages = [{ url: idea.image, width: 1200, height: 630, alt: idea.title }]

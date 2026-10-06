@@ -39,7 +39,7 @@ export function buildRootMetadata(): Metadata {
     metadataBase: new URL(SITE_URL),
     title: {
       default: SITE_NAME,
-      template: `%s — ${SITE_NAME}`,
+      template: `%s | ${SITE_NAME}`,
     },
     description: HOMEPAGE_DESCRIPTION,
     applicationName: SITE_NAME,
@@ -130,13 +130,13 @@ export function buildPageMetadata({
     openGraph: {
       type: 'website',
       url: path,
-      title: `${title} — ${SITE_NAME}`,
+      title: `${title} | ${SITE_NAME}`,
       description,
       images: [DEFAULT_OG_IMAGE],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} — ${SITE_NAME}`,
+      title: `${title} | ${SITE_NAME}`,
       description,
       images: [DEFAULT_OG_IMAGE.url],
     },

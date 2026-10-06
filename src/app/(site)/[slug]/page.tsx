@@ -47,7 +47,7 @@ export async function generateMetadata({
   const placeholder = PLACEHOLDER_PROJECTS[slug]
   if (placeholder) {
     return buildProjectMetadata({
-      title: `${placeholder.title} — ${placeholder.client}`,
+      title: `${placeholder.title} | ${placeholder.client}`,
       slug,
       path: `/${slug}`,
       description: placeholder.about,

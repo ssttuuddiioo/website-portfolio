@@ -4,7 +4,7 @@ import { LegacyHashRedirect } from '@/components/legacy-hash-redirect'
 import { DEFAULT_OG_IMAGE, HOMEPAGE_DESCRIPTION } from '@/lib/seo/metadata'
 
 const HOMEPAGE_TITLE =
-  'Studio Studio — Experiential Design & Creative Technology, NYC'
+  'Studio Studio | Experiential Design & Creative Technology, NYC'
 
 export const metadata: Metadata = {
   title: { absolute: HOMEPAGE_TITLE },
