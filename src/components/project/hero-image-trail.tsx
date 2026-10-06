@@ -4,8 +4,8 @@ import { useRef, useEffect, useMemo, useCallback } from 'react'
 
 const POOL_SIZE = 10
 const SPAWN_DISTANCE = 35
-const IMAGE_WIDTH = 364
-const IMAGE_HEIGHT = 234
+const IMAGE_WIDTH = 437
+const IMAGE_HEIGHT = 281
 // Opacity a frame settles at. The page ground is near-black, so anything much
 // below this reads muddy rather than lit.
 const PEAK_OPACITY = 0.9
@@ -621,7 +621,7 @@ export function HeroImageTrail({
                  dock; the insets mirror the dock's own (landing-sidebar). */
               right: ${CAPTION_RIGHT};
               top: calc(${CAPTION_TOP});
-              max-width: min(34rem, 60vw);
+              max-width: min(68rem, 80vw);
               text-align: right;
             }
             /* The line does not animate between frames — it cuts. A frame
@@ -666,7 +666,7 @@ export function HeroImageTrail({
                  statement's own column does. */
               .trail-caption--statement .trail-caption-title,
               .trail-caption--statement .trail-caption-meta {
-                max-width: min(60%, 46rem);
+                max-width: min(85%, 92rem);
               }
             }
           `}</style>
@@ -676,7 +676,7 @@ export function HeroImageTrail({
             style={{
               display: 'block',
               fontWeight: 700,
-              fontSize: 'clamp(2.1rem, 5vw, 4.4rem)',
+              fontSize: 'clamp(3.36rem, 8vw, 7.04rem)',
               letterSpacing: '-0.04em',
               lineHeight: 0.98,
             }}
@@ -686,12 +686,12 @@ export function HeroImageTrail({
             className="trail-caption-meta font-mono"
             style={{
               display: 'block',
-              fontSize: 'clamp(0.72rem, 0.95vw, 1.05rem)',
+              fontSize: 'clamp(1.44rem, 1.9vw, 2.1rem)',
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
               // Opacity is owned by .trail-caption-meta above, not set here — an
               // inline value would win over it.
-              marginTop: '1.2rem',
+              marginTop: '2.4rem',
             }}
           />
         </div>

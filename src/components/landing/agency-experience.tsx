@@ -32,7 +32,7 @@ import { centerOffset } from './use-scroll-to-section'
 const HERO_TRAIL = LANDING_PROJECTS.map((p) => ({
   src: p.image,
   title: p.title,
-  meta: p.category,
+  meta: p.tagline ?? p.category,
   cta: 'Click to learn more',
   // Where the project sits between the four poles — see lib/project-tags. This
   // is what lets the field be steered: carry the pointer toward Web and the

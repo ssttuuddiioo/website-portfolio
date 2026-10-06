@@ -24,6 +24,11 @@ export interface LandingProject {
    */
   clientShort?: string
   category: string
+  /**
+   * What the project is, in 3–5 words — the second line under the title in
+   * the homepage trail's caption.
+   */
+  tagline?: string
   year: number
   image: string
   /** Links to /work/[slug] when a detail page exists. */
@@ -73,6 +78,7 @@ export interface LandingProject {
 export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Loop',
+    tagline: 'Lighting system for an Atlanta venue',
     client: 'Goat Farm',
     category: 'Lighting Design',
     year: 2026,
@@ -85,6 +91,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Coffee Five Project',
+    tagline: 'Coffee brand, packaging, and software',
     client: 'Juan Medina',
     category: 'Brand and Software',
     year: 2025,
@@ -98,6 +105,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'RSVP Platform',
+    tagline: 'WebGL RSVP for a trade show',
     client: 'ELA',
     category: 'Interactive Web',
     year: 2026,
@@ -111,6 +119,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'HOPE Hydration',
+    tagline: 'Free water stations for events',
     client: 'Hope Hydration',
     category: 'Design Consulting',
     year: 2026,
@@ -124,6 +133,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Cox Conserves',
+    tagline: 'Sustainability pledge kiosks and web',
     client: 'Cox Communications',
     clientShort: 'Cox',
     category: 'Experiential',
@@ -138,6 +148,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'AT&T Living Mural',
+    tagline: 'Interactive LED mural for a stadium',
     client: 'Mercedes-Benz Stadium',
     clientShort: 'Mercedes-Benz',
     category: 'Experiential',
@@ -152,6 +163,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: '65 Suffolk Street',
+    tagline: 'Architectural LED lobby installation',
     client: 'Chemistry Creative',
     clientShort: 'Chemistry',
     category: 'Lighting',
@@ -166,6 +178,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'The Light Around Us',
+    tagline: 'LED sculpture reading air quality',
     client: 'tvsdesign / Spacelab',
     clientShort: 'tvsdesign',
     category: 'Installation',
@@ -181,6 +194,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'StoryBooth',
+    tagline: 'Phone booth that records stories',
     client: 'Dashboard U.S.',
     clientShort: 'Dashboard',
     category: 'Experiential',
@@ -201,6 +215,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Bleed for the Throne',
+    tagline: 'RFID blood drive at SXSW',
     client: 'HBO',
     category: 'Experiential',
     year: 2019,
@@ -218,6 +233,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Super Bowl Video Park',
+    tagline: 'Content for 15-foot LED screens',
     client: 'NY/NJ Super Bowl Host Committee',
     clientShort: 'Super Bowl',
     category: 'Motion',
@@ -232,6 +248,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Moment',
+    tagline: 'Gesture-reactive LED cubes for Dolby',
     client: 'Dolby',
     category: 'Immersive Installation',
     year: 2016,
@@ -245,6 +262,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: '9to5.tv',
+    tagline: 'Livestreamed month-long digital art festival',
     client: 'Festival',
     clientShort: '9to5.tv',
     category: 'Event',
@@ -260,6 +278,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Scatter and Rise',
+    tagline: 'Movement-reactive LED public artwork',
     client: 'Goat Farm Arts',
     clientShort: 'Goat Farm',
     category: 'Public Art',
@@ -275,6 +294,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Gesture-Gesture',
+    tagline: 'Interactive archive of hand gestures',
     client: 'Gallery 72',
     category: 'Tech Experiment',
     year: 2014,
@@ -295,6 +315,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Orbitals',
+    tagline: 'Generative installation on orbital motion',
     client: 'Personal',
     clientShort: 'Orbitals',
     category: 'Tech Experiment',
@@ -312,6 +333,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Snowblind',
+    tagline: 'Lighting for a Red Bull installation',
     client: 'Personal',
     clientShort: 'Snowblind',
     category: 'Public Art',
@@ -326,6 +348,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'Pour Perfect',
+    tagline: 'Guided pour-over coffee timer',
     client: 'Personal',
     clientShort: 'Pour Perfect',
     category: 'Tool',
