@@ -123,17 +123,17 @@ export const LANDING_PROJECTS: LandingProject[] = [
     services: ['Creative direction', 'Experience design', 'Design consulting'],
   },
   {
-    title: 'Cox Pillars',
+    title: 'Cox Conserves',
     client: 'Cox Communications',
     clientShort: 'Cox',
     category: 'Experiential',
-    year: 2024,
+    year: 2026,
     image: '/landing/opt/cox.png',
-    slug: 'cox-pillars',
+    slug: 'cox-conserves',
     affinity: { web: 0.24, installation: 0.42, lighting: 0.24, design: 0.1 },
     description:
-      'A kiosk pledge system — commitments made on screen become light across freestanding pillars.',
-    services: ['Experience design', 'Custom software', 'Lighting design', 'Fabrication'],
+      "Five touchscreen pledge kiosks and a nationwide web rollout for Cox's sustainability initiative.",
+    services: ['Prototyping', 'UX/UI', 'Custom software', 'Kiosk deployment'],
     colStart: 9, colSpan: 3, rowStart: 19, rowSpan: 7,
   },
   {
