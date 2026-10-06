@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   motion,
   useMotionValue,
@@ -43,9 +44,9 @@ const ITEMS: Item[] = [
   { id: 'work', label: 'work', kind: 'scroll' },
   // { id: 'services', label: 'services', kind: 'route', href: '/about#services' }, // hidden for now
   // { id: 'ideas', label: 'notes', kind: 'scroll' }, // hidden for now
-  // Contact has a page of its own, so it navigates rather than scrolls — on
-  // the landing and on every inner page alike.
-  { id: 'contact', label: 'contact', kind: 'route', href: '/contact' },
+  // Contact opens /about at its form — the pitch and details sit beside it
+  // there. On /about itself the click smooth-scrolls instead (see `routeClick`).
+  { id: 'contact', label: 'contact', kind: 'route', href: '/about#contact' },
 ]
 
 // Order = 2x2 grid reading order: Instagram, LinkedIn on top; Email, GitHub below.
@@ -302,6 +303,7 @@ export function LandingSidebar({
   pinned?: boolean
 }) {
   const lenis = useLenis()
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
 
   // Fallback so the hooks run unconditionally even when no reveal is passed
@@ -345,6 +347,18 @@ export function LandingSidebar({
     const offset = centerOffset(el)
     if (lenis) lenis.scrollTo(el, { offset, force: true })
     else el.scrollIntoView({ behavior: 'smooth', block: offset < 0 ? 'center' : 'start' })
+  }
+
+  // A route item whose href is an anchor on the page we're already on: glide
+  // there with Lenis rather than letting the router jump to the hash.
+  const routeClick = (href: string) => (e: React.MouseEvent) => {
+    const [path, hash] = href.split('#')
+    if (!hash || path !== pathname) return
+    const el = document.getElementById(hash)
+    if (!el) return
+    e.preventDefault()
+    if (lenis) lenis.scrollTo(el, { force: true })
+    else el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   // Sliding highlight pill (desktop dock): we measure the active item's box and
@@ -497,7 +511,13 @@ export function LandingSidebar({
       )
     } else if (item.kind === 'route') {
       label = (
-        <Link href={item.href} style={labelStyle} aria-label={a11yLabel} {...track}>
+        <Link
+          href={item.href}
+          style={labelStyle}
+          aria-label={a11yLabel}
+          onClick={routeClick(item.href)}
+          {...track}
+        >
           {content}
         </Link>
       )
@@ -584,7 +604,10 @@ export function LandingSidebar({
           style={labelStyle}
           onMouseEnter={onEnter}
           onMouseLeave={onLeave}
-          onClick={() => setOpen(false)}
+          onClick={(e) => {
+            routeClick(item.href)(e)
+            setOpen(false)
+          }}
         >
           {item.label}
         </Link>
