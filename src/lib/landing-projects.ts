@@ -72,7 +72,7 @@ export interface LandingProject {
 
 export const LANDING_PROJECTS: LandingProject[] = [
   {
-    title: 'LOOP',
+    title: 'Loop',
     client: 'Goat Farm',
     category: 'Lighting Design',
     year: 2026,
@@ -84,7 +84,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     services: ['Lighting design', 'Control system', 'Show programming'],
   },
   {
-    title: 'The Coffee Five',
+    title: 'Coffee Five Project',
     client: 'Juan Medina',
     category: 'Brand and Software',
     year: 2025,
@@ -97,7 +97,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     services: ['Brand identity', 'Packaging design', 'Software development'],
   },
   {
-    title: 'ELA + Synergy Tradeshow',
+    title: 'RSVP Platform',
     client: 'ELA',
     category: 'Interactive Web',
     year: 2026,
@@ -110,7 +110,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     services: ['WebGL', 'Custom software', 'Email system', 'Event admin'],
   },
   {
-    title: 'Hope Hydration',
+    title: 'HOPE Hydration',
     client: 'Hope Hydration',
     category: 'Design Consulting',
     year: 2026,
@@ -137,7 +137,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     colStart: 9, colSpan: 3, rowStart: 19, rowSpan: 7,
   },
   {
-    title: 'Living Walls + AT&T',
+    title: 'AT&T Living Mural',
     client: 'Mercedes-Benz Stadium',
     clientShort: 'Mercedes-Benz',
     category: 'Experiential',
@@ -151,7 +151,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
     colStart: 6, colSpan: 5, rowStart: 28, rowSpan: 13,
   },
   {
-    title: '65 Suffolk St, NY',
+    title: '65 Suffolk Street',
     client: 'Chemistry Creative',
     clientShort: 'Chemistry',
     category: 'Lighting',

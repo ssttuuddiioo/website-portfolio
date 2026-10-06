@@ -14,11 +14,11 @@ const EASE = [0.22, 1, 0.36, 1] as const
  * filters these out so nothing repeats.
  */
 export const FEATURED_GRID_TITLES = [
-  'LOOP',
+  'Loop',
   'StoryBooth',
-  'Hope Hydration',
+  'HOPE Hydration',
   'The Light Around Us',
-  'Living Walls + AT&T',
+  'AT&T Living Mural',
   'Moment',
 ] as const
 
