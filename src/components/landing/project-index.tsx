@@ -41,7 +41,7 @@ function IndexEntry({
         />
       </span>
       <span className="pgi-cap font-display">
-        {project.clientShort ?? project.client}
+        {project.title}
       </span>
     </>
   )
@@ -165,7 +165,7 @@ const GRID_CSS = `
 `
 
 /**
- * Every project as a frame and a client name, on one ruled sheet. It stands in
+ * Every project as a frame and its title, on one ruled sheet. It stands in
  * for the image trail on the landing page when the dock's grid mark is on —
  * same page, same lockup and nav, everything below it untouched.
  */
