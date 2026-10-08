@@ -7,10 +7,9 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { ServicesAccordion } from './services-accordion'
-import { ContactForm } from './contact-form'
 import { LogoMarquee } from './logo-marquee'
 import { FaqSection } from './faq-section'
-import { INK, BG } from './landing-theme'
+import { INK, BG, BLUE } from './landing-theme'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 const GUTTER = 'var(--gutter, 1.5rem)'
@@ -123,8 +122,8 @@ function FramedImage({
 /**
  * Standalone /about page. A normal top-to-bottom scroll (no wordmark
  * scroll-jacking): studio intro, a deeper "practice" write-up with imagery, a
- * scrolling client-logo marquee, the services accordion, an FAQ, and the
- * contact form + footer. Reached from the homepage about moment's "Learn More".
+ * scrolling client-logo marquee, the services accordion, the contact form,
+ * an FAQ, and the footer. Reached from the homepage about moment's "Learn More".
  */
 export function AboutExperience() {
   return (
@@ -310,38 +309,11 @@ export function AboutExperience() {
           <ServicesAccordion />
         </section>
 
-        {/* ---- FAQ ---------------------------------------------------------- */}
+        {/* ---- Contact ------------------------------------------------------ */}
         <section
-          style={{
-            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
-          }}
-        >
-          <Reveal style={{ marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
-            <div style={{ maxWidth: '820px', margin: '0 auto', textAlign: 'center' }}>
-              <Eyebrow>Questions</Eyebrow>
-              <h2
-                className="font-display"
-                style={{
-                  fontWeight: 700,
-                  fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-                  lineHeight: 1.05,
-                  letterSpacing: '-0.03em',
-                  color: INK,
-                  margin: '1rem 0 0',
-                }}
-              >
-                Frequently asked
-              </h2>
-            </div>
-          </Reveal>
-          <FaqSection />
-        </section>
-
-        {/* ---- Contact + footer -------------------------------------------- */}
-        <footer
           id="contact"
           style={{
-            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER} clamp(3rem, 8vh, 6rem)`,
+            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
           }}
         >
           <Reveal>
@@ -385,14 +357,54 @@ export function AboutExperience() {
                 </p>
               </div>
 
-              {/* Right — the form. */}
-              <div>
-                <ContactForm />
+              {/* Right — the way to the contact page, which carries the full
+                  enquiry form. The section keeps its #contact anchor so older
+                  /about#contact links still land here. */}
+              <div className="flex md:justify-end md:self-end">
+                <Link
+                  href="/contact"
+                  className="font-display"
+                  style={{
+                    fontWeight: 600,
+                    fontSize: 'clamp(1.15rem, 2.2vw, 1.6rem)',
+                    letterSpacing: '-0.01em',
+                    color: BLUE,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Start a project <span aria-hidden>→</span>
+                </Link>
               </div>
             </div>
           </Reveal>
+        </section>
 
-        </footer>
+        {/* ---- FAQ ---------------------------------------------------------- */}
+        <section
+          style={{
+            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
+          }}
+        >
+          <Reveal style={{ marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+            <div style={{ maxWidth: '820px', margin: '0 auto', textAlign: 'center' }}>
+              <Eyebrow>Questions</Eyebrow>
+              <h2
+                className="font-display"
+                style={{
+                  fontWeight: 700,
+                  fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+                  lineHeight: 1.05,
+                  letterSpacing: '-0.03em',
+                  color: INK,
+                  margin: '1rem 0 0',
+                }}
+              >
+                Frequently asked
+              </h2>
+            </div>
+          </Reveal>
+          <FaqSection />
+        </section>
 
         <SiteFooter />
       </main>

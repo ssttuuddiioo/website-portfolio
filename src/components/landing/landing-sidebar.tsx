@@ -44,18 +44,20 @@ const ITEMS: Item[] = [
   { id: 'work', label: 'work', kind: 'scroll' },
   // { id: 'services', label: 'services', kind: 'route', href: '/about#services' }, // hidden for now
   // { id: 'ideas', label: 'notes', kind: 'scroll' }, // hidden for now
-  // Contact opens /about at its form — the pitch and details sit beside it
-  // there. On /about itself the click smooth-scrolls instead (see `routeClick`).
-  { id: 'contact', label: 'contact', kind: 'route', href: '/about#contact' },
+  // Contact is its own page: the full enquiry form beside the direct details.
+  // A page with a contact panel of its own opens that instead (see
+  // `onToggleContact`).
+  { id: 'contact', label: 'contact', kind: 'route', href: '/contact' },
 ]
 
 // Order = 2x2 grid reading order: Instagram, LinkedIn on top; Email, GitHub below.
 // The Email item routes to /contact in the same tab rather than opening a new one.
-const SOCIALS = [
+// Exported for /contact, which lists the same links as words.
+export const SOCIALS = [
   { label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
   { label: 'LinkedIn', href: 'https://linkedin.com', icon: 'linkedin' },
   { label: 'Email', href: '/contact', icon: 'mail', contact: true },
-  { label: 'GitHub', href: 'https://github.com', icon: 'github' },
+  { label: 'GitHub', href: 'https://github.com/ssttuuddiioo', icon: 'github' },
 ]
 
 /**
@@ -277,6 +279,8 @@ export function LandingSidebar({
   indexOpen = false,
   onToggleIndex,
   pinned = true,
+  contactOpen = false,
+  onToggleContact,
 }: {
   active: string
   inPage?: boolean
@@ -301,6 +305,11 @@ export function LandingSidebar({
    * outliving the row it sits in.
    */
   pinned?: boolean
+  /** True while the page's own contact panel is open. */
+  contactOpen?: boolean
+  // A page with a contact panel of its own (the project page) opens it in place
+  // rather than sending the reader off to /about. Without it, contact routes.
+  onToggleContact?: () => void
 }) {
   const lenis = useLenis()
   const pathname = usePathname()
@@ -508,6 +517,19 @@ export function LandingSidebar({
         >
           {content}
         </Link>
+      )
+    } else if (item.id === 'contact' && onToggleContact) {
+      label = (
+        <button
+          type="button"
+          style={labelStyle}
+          aria-expanded={contactOpen}
+          aria-controls="project-contact"
+          onClick={onToggleContact}
+          {...track}
+        >
+          {content}
+        </button>
       )
     } else if (item.kind === 'route') {
       label = (

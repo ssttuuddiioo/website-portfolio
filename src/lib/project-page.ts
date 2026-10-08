@@ -5,7 +5,11 @@ import {
 } from './placeholder-projects'
 import { LANDING_PROJECTS, type LandingProject } from './landing-projects'
 import { client, isSanityConfigured } from './sanity/client'
-import { PROJECT_PAGE_QUERY, PROJECT_PAGE_SLUGS_QUERY } from './sanity/queries'
+import {
+  PROJECT_PAGE_QUERY,
+  PROJECT_PAGES_QUERY,
+  PROJECT_PAGE_SLUGS_QUERY,
+} from './sanity/queries'
 import type { SanityProjectPage } from './sanity/types'
 
 /**
@@ -61,13 +65,14 @@ function fromLanding(
     // carries, which is exactly what the page's "Role" cell wants.
     role: project.services ?? [],
     collaborators: project.collaborators ?? [],
-    heroImage: project.image,
+    heroImage: project.pageHero ?? project.image,
     about: project.description ?? '',
     // The hero is the entry's own frame; anything further the entry lists
     // becomes the rest of the media grid. Most projects have only the one, and
     // the page shows it full-width rather than padding the grid out.
     mainMedia: '',
     supportingImages: project.images ?? [],
+    pairFirst: project.pairFirst,
     sections: [],
     similarProjects: neighbours(index),
     website: project.website,
@@ -100,10 +105,11 @@ function fromSanity(doc: SanityProjectPage): PlaceholderProject {
       name: c.name,
       role: [c.role, c.organization].filter(Boolean).join(' · '),
     })),
-    heroImage: doc.heroImage ?? landing?.image ?? '',
+    heroImage: doc.heroImage ?? landing?.pageHero ?? landing?.image ?? '',
     about: doc.subtitle ?? landing?.description ?? '',
     mainMedia: '',
     supportingImages: landing?.images ?? [],
+    pairFirst: landing?.pairFirst,
     sections: [],
     similarProjects: neighbours(index),
     website: doc.projectUrl ?? landing?.website,
@@ -143,6 +149,27 @@ export const getProjectPage = cache(
     return fromLanding(LANDING_PROJECTS[index], index)
   },
 )
+
+/**
+ * The page for every project in the landing index, keyed by slug — what the
+ * homepage shows below the fold for whichever project the trail rests on. Same
+ * precedence as getProjectPage, but one Sanity round trip for the lot.
+ */
+export async function getLandingProjectPages(): Promise<
+  Record<string, PlaceholderProject>
+> {
+  const docs = (await fetchSanity<SanityProjectPage[]>(PROJECT_PAGES_QUERY)) ?? []
+  const bySlug = new Map(docs.map((d) => [d.slug, d]))
+  const pages: Record<string, PlaceholderProject> = {}
+  LANDING_PROJECTS.forEach((p, i) => {
+    if (!p.slug) return
+    const doc = bySlug.get(p.slug)
+    pages[p.slug] = doc
+      ? fromSanity(doc)
+      : (PLACEHOLDER_PROJECTS[p.slug] ?? fromLanding(p, i))
+  })
+  return pages
+}
 
 /** Every slug that resolves to a page — drives generateStaticParams. */
 export async function getProjectSlugs(): Promise<string[]> {

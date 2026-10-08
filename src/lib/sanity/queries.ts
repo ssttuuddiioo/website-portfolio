@@ -97,9 +97,8 @@ export const PROJECT_DETAIL_QUERY = `
   }
 `
 
-/** The /work/[slug] case-study page. Published documents only. */
-export const PROJECT_PAGE_QUERY = `
-  *[_type == "project" && slug.current == $slug && hidden != true && !(_id in path("drafts.**"))][0] {
+/** What a /work/[slug] page reads from a project document. */
+const PROJECT_PAGE_FIELDS = `{
     title,
     "slug": slug.current,
     subtitle,
@@ -118,7 +117,19 @@ export const PROJECT_PAGE_QUERY = `
     thanks,
     projectUrl,
     "heroImage": heroImage.asset->url
-  }
+  }`
+
+/** The /work/[slug] case-study page. Published documents only. */
+export const PROJECT_PAGE_QUERY = `
+  *[_type == "project" && slug.current == $slug && hidden != true && !(_id in path("drafts.**"))][0] ${PROJECT_PAGE_FIELDS}
+`
+
+/**
+ * Every case-study page at once, for the homepage, which shows whichever
+ * project the trail rests on below the fold.
+ */
+export const PROJECT_PAGES_QUERY = `
+  *[_type == "project" && hidden != true && !(_id in path("drafts.**"))] ${PROJECT_PAGE_FIELDS}
 `
 
 export const PROJECT_PAGE_SLUGS_QUERY = `

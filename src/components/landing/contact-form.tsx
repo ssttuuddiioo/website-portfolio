@@ -32,7 +32,12 @@ const errStyle: React.CSSProperties = {
   marginTop: '0.4rem',
 }
 
-export function ContactForm() {
+/**
+ * `project` is set when the form opens from a project page: it rides along as
+ * a hidden field (and in the subject line) so the inbox shows which piece of
+ * work the enquiry came from.
+ */
+export function ContactForm({ project }: { project?: string } = {}) {
   const [state, handleSubmit] = useForm('xnjkavky')
 
   if (state.succeeded) {
@@ -58,6 +63,17 @@ export function ContactForm() {
         textAlign: 'left',
       }}
     >
+      {project && (
+        <>
+          <input type="hidden" name="project" value={project} />
+          <input
+            type="hidden"
+            name="_subject"
+            value={`Project enquiry: ${project}`}
+          />
+        </>
+      )}
+
       <div>
         <label htmlFor="cf-name" style={labelStyle}>
           Name

@@ -48,6 +48,17 @@ export interface LandingProject {
    * the rest, and a project with a single frame shows it full-width.
    */
   images?: string[]
+  /**
+   * The project page's hero, when it should differ from `image` — which the
+   * homepage trail, the index and the similar-projects tiles keep showing.
+   */
+  pageHero?: string
+  /**
+   * Lead the page's masonry with its pair of halves instead of ending on it —
+   * for a project whose first two `images` are screenshots, which would crop
+   * badly in the opening wide-and-tall row.
+   */
+  pairFirst?: boolean
   /** 1–2 sentences for the selected-work list on the homepage. */
   description?: string
   /**
@@ -82,12 +93,36 @@ export const LANDING_PROJECTS: LandingProject[] = [
     client: 'Goat Farm',
     category: 'Lighting Design',
     year: 2026,
-    image: '/landing/opt/loop.avif',
+    image: '/landing/opt/loop1.avif',
+    images: [
+      '/landing/opt/loop2.avif',
+      '/landing/opt/loop3.avif',
+      '/landing/opt/loop4.avif',
+    ],
     slug: 'loop',
     affinity: { web: 0.05, installation: 0.24, lighting: 0.61, design: 0.1 },
     description:
       "Lighting design and control system for LOOP, a new Atlanta venue from Goat Farm in Georgia Tech's Creative Quarter.",
     services: ['Lighting design', 'Control system', 'Show programming'],
+  },
+  {
+    title: 'Immersive Cube',
+    tagline: 'Interactive projection cube',
+    client: 'ELA + Synergy',
+    clientShort: 'ELA',
+    category: 'Immersive Installation',
+    year: 2026,
+    image: '/landing/opt/cube.avif',
+    images: [
+      '/landing/opt/cube-2.avif',
+      '/landing/opt/cube-3.avif',
+      '/landing/opt/cube-4.avif',
+    ],
+    slug: 'immersive-cube',
+    affinity: { web: 0.08, installation: 0.6, lighting: 0.22, design: 0.1 },
+    description:
+      'A 9×9×9-foot projection cube that responds to the people moving through it.',
+    services: ['Concept development', 'Interactive design', 'Content production', 'Install'],
   },
   {
     title: 'Coffee Five Project',
@@ -96,6 +131,16 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Brand and Software',
     year: 2025,
     image: '/landing/opt/coffeefive.avif',
+    pageHero: '/landing/opt/coffee1.avif',
+    images: [
+      '/landing/opt/coff0.avif',
+      '/landing/opt/coffee6.avif',
+      '/landing/opt/coffee3.avif',
+      '/landing/opt/coffee2.avif',
+      '/landing/opt/coffee4.avif',
+      '/landing/opt/coffe5.avif',
+    ],
+    pairFirst: true,
     slug: 'the-coffee-five',
     affinity: { web: 0.4, installation: 0.1, lighting: 0.05, design: 0.45 },
     website: 'https://www.thecoffeefive.com/en',

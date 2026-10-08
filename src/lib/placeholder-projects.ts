@@ -22,6 +22,8 @@ export interface PlaceholderProject {
   mainMedia: string
   /** Exactly three supporting images shown in a row below the main media. */
   supportingImages: string[]
+  /** Open the masonry on its pair of halves (see LandingProject.pairFirst). */
+  pairFirst?: boolean
   sections: Array<{
     type: 'two-column' | 'full-bleed-image' | 'image-grid' | 'tech-credits'
     label?: string

@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect, useLayoutEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
 const useIsoLayoutEffect =
@@ -10,7 +11,12 @@ import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { AgencyAbout } from './agency-about'
 import { MobileProjectScroller } from './mobile-project-scroller'
-import { ProjectIndexGrid } from './project-index'
+// The index is a WebGL field (an infinite canvas), so three.js loads only once
+// the grid mark is pressed rather than with every visit to the homepage.
+const ProjectCanvas = dynamic(
+  () => import('./project-canvas').then((m) => m.ProjectCanvas),
+  { ssr: false },
+)
 // import { IdeasSection } from './ideas-section' // notes section hidden for now
 import { wordStyle, BG } from './landing-theme'
 import {
@@ -21,19 +27,40 @@ import { LANDING_PROJECTS } from '@/lib/landing-projects'
 import { fieldPosition } from '@/lib/project-tags'
 import { useLenis } from '@/lib/lenis-provider'
 import { centerOffset } from './use-scroll-to-section'
+import { ProjectSheet } from './project-experience'
+import type { PlaceholderProject } from '@/lib/placeholder-projects'
 
 // The hero trail flips through the same work the corner index lists, naming
 // the frame that comes to rest and inviting a click through to it. Every entry
 // in the index has a page at /work/[slug] — hand-authored where a case study
 // exists, generated from the index entry otherwise (see lib/project-page) — so
 // there is one prompt and one destination.
+// The work the trail comes to rest on, in order: the first stop is Loop, the
+// second HOPE, and so on, starting over after the last. Every project still
+// plays mid-sweep — whichever frame the pointer stops over gets buried by the
+// one in turn.
+const TRAIL_STOPS = [
+  'loop',
+  'hope-hydration',
+  'immersive-cube',
+  'storybooth',
+  '65-suffolk-st', // JGN Architecture
+  'cox-conserves',
+]
+// Below the fold the first four stops stack up as sheets: the project the trail
+// rests on leads, and the rest of the four follow under it in stop order.
+const STACKED_STOPS = TRAIL_STOPS.slice(0, 4)
+const TRAIL_REST_ORDER = TRAIL_STOPS.map((slug) =>
+  LANDING_PROJECTS.findIndex((p) => p.slug === slug),
+).filter((i) => i !== -1)
+
 // Module-level so the array identity is stable across renders (the trail
 // preloads on it).
 const HERO_TRAIL = LANDING_PROJECTS.map((p) => ({
   src: p.image,
   title: p.title,
   meta: p.tagline ?? p.category,
-  cta: 'Click to learn more',
+  cta: 'Scroll to see project',
   // Where the project sits between the four poles — see lib/project-tags. This
   // is what lets the field be steered: carry the pointer toward Web and the
   // web-leaning work is what comes up.
@@ -85,7 +112,12 @@ const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const
  * in the top-left corner. They stay fixed there as a persistent signature; the rest of
  * the page (about, work) scrolls normally beneath them.
  */
-export function AgencyExperience() {
+export function AgencyExperience({
+  projectPages,
+}: {
+  /** Every index project's page, keyed by slug (see getLandingProjectPages). */
+  projectPages: Record<string, PlaceholderProject>
+}) {
   const reduce = useReducedMotion()
   const router = useRouter()
   const topWordRef = useRef<HTMLHeadingElement>(null)
@@ -194,6 +226,17 @@ export function AgencyExperience() {
   // True once the trail has named its first frame. Until then the caption's slot
   // at the fold belongs to the studio statement.
   const [trailNamed, setTrailNamed] = useState(false)
+  // The project shown below the fold: whichever one the trail last came to rest
+  // on, opening on Loop, the trail's first stop.
+  const [shownSlug, setShownSlug] = useState('loop')
+  const stackedPages = [
+    shownSlug,
+    ...STACKED_STOPS.filter((s) => s !== shownSlug),
+  ]
+    .slice(0, STACKED_STOPS.length)
+    .map((slug) => projectPages[slug])
+    .filter(Boolean)
+  const sheetRef = useRef<HTMLDivElement>(null)
   const lenis = useLenis()
   // While a nav-click scroll is in flight we lock the spy and drive the
   // highlight optimistically, so the pill snaps to the clicked section instead
@@ -276,6 +319,21 @@ export function AgencyExperience() {
   // it. Every index entry has one, so this never has to fall back — a project
   // with a live site of its own links out from its page rather than instead of
   // it.
+  // The trail settled on a frame: that project takes the space below the fold.
+  // Only while the reader is still up on the first screen, though — once the
+  // sheet has come up past the middle of the viewport they are reading it, and
+  // a frame the field spawns under a pointer the scroll carried along must not
+  // swap the page out from under them.
+  const showTrailProject = (_item: TrailItem, index: number) => {
+    const slug = LANDING_PROJECTS[index]?.slug
+    if (!slug || !projectPages[slug]) return
+    const sheet = sheetRef.current
+    if (sheet && sheet.getBoundingClientRect().top < window.innerHeight * 0.5) {
+      return
+    }
+    setShownSlug(slug)
+  }
+
   const openTrailProject = (_item: TrailItem, index: number) => {
     const project = LANDING_PROJECTS[index]
     if (!project?.slug) return
@@ -480,6 +538,8 @@ export function AgencyExperience() {
                   onSelect={showIndex ? undefined : openTrailProject}
                   captionAnchor="statement"
                   onCaptionShown={() => setTrailNamed(true)}
+                  restOrder={TRAIL_REST_ORDER}
+                  onRest={showTrailProject}
                 />
               </motion.div>
             )}
@@ -499,8 +559,7 @@ export function AgencyExperience() {
           {/* Hero — the first screen. Running the trail it is an open field with
               no copy of its own: it takes the rest of the screen and the trail's
               caption names the resting frame down at the fold. Running the index
-              it holds the grid instead, which is taller than a screen, so the
-              section grows and everything below simply moves down with it. */}
+              it holds the project tube instead, filling the same screen. */}
           <section
             id="home"
             style={{
@@ -527,7 +586,7 @@ export function AgencyExperience() {
               Brooklyn, New York
             </h1>
 
-            {showIndex && <ProjectIndexGrid />}
+            {showIndex && <ProjectCanvas />}
           </section>
 
           {/* Studio statement — the fold's default line, standing in the exact
@@ -552,10 +611,35 @@ export function AgencyExperience() {
           </div>
           </div>
 
-          {/* Nothing stands between the first screen and the footer. The work
-              is the index behind the dock's grid mark, and services and contact
-              have pages of their own — so the scroll is the fold, then the
-              band that closes it. */}
+          {/* Below the fold, a stack of project pages — the same sheet
+              /work/[slug] renders, read without leaving the landing. The one
+              the trail last rested on leads (opening on Loop), and the rest of
+              the first four stops follow under it, the rail switching sides
+              from one sheet to the next. Then the footer band closes the page
+              as before. Not while the index is up: the grid is the list of
+              work, so it runs straight on to the footer. Keyed by the leading
+              slug so a new stack fades in rather than reshuffling in place. */}
+          {!showIndex && stackedPages.length > 0 && (
+            <div ref={sheetRef}>
+              <motion.div
+                key={shownSlug}
+                initial={{ opacity: reduce ? 1 : 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: reduce ? 0 : 0.45, ease: EASE_IN_OUT }}
+              >
+                {stackedPages.map((page, i) => (
+                  <ProjectSheet
+                    key={page.slug}
+                    project={page}
+                    embedded
+                    flip={i % 2 === 1}
+                    showSimilar={i === stackedPages.length - 1}
+                    onMoreWork={() => setIndex(true)}
+                  />
+                ))}
+              </motion.div>
+            </div>
+          )}
 
           {/* Notes — hidden for now. Restore by uncommenting this block, the
               IdeasSection import, the 'ideas' entries in SPY_IDS /

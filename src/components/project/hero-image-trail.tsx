@@ -17,6 +17,15 @@ const FRAME_LINGER = 250
 // prompt fades up under the resting frame. A full second, so it only ever
 // appears for a pointer that has actually stopped.
 const REST_DELAY = 1000
+// Quiet after the last spawn before a frame out of turn gets buried by the one
+// whose turn it is (see restOrder). Short, so the caption barely registers the
+// frame it replaces, and well inside REST_DELAY, so the prompt only ever
+// surfaces under the frame in turn.
+const SETTLE_DELAY = 180
+// Quiet after the last spawn before the page is told which frame the trail
+// settled on. Just past SETTLE_DELAY, so whatever replaces a stop out of turn
+// has already landed and the page hears about the frame that stays.
+const SETTLED_DELAY = SETTLE_DELAY + 120
 // Air between the bottom of the resting frame and its prompt.
 const CTA_GAP = 14
 
@@ -128,6 +137,20 @@ interface HeroImageTrailProps {
    * in the caption's slot until then (on the landing, the studio statement).
    */
   onCaptionShown?: () => void
+  /**
+   * Indices into `images` the trail comes to rest on, in turn. A pointer that
+   * stops on anything else gets one more frame, dropped where it stopped, from
+   * the next entry here — so the first stop lands on the first entry, the
+   * second on the second, and past the last it starts over. Every stop spends
+   * its entry, so no two stops in a row land on the same one. Pass a stable
+   * array (module-level).
+   */
+  restOrder?: number[]
+  /**
+   * Fired once the pointer has stopped and the trail has settled on a frame —
+   * never mid-sweep. The homepage uses it to show that project below the fold.
+   */
+  onRest?: (item: TrailItem, index: number) => void
 }
 
 // The caption hangs off the nav dock, so it copies the dock's own right inset
@@ -148,6 +171,8 @@ export function HeroImageTrail({
   onSelect,
   captionAnchor = 'corner',
   onCaptionShown,
+  restOrder,
+  onRest,
 }: HeroImageTrailProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const poolRefs = useRef<(HTMLImageElement | null)[]>([])
@@ -171,6 +196,14 @@ export function HeroImageTrail({
   const metaRef = useRef<HTMLSpanElement>(null)
   const ctaRef = useRef<HTMLSpanElement>(null)
   const restTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Pending swap of a frame out of turn for the one in turn (see SETTLE_DELAY).
+  const settleTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // How many stops there have been, so which restOrder entry is in turn.
+  const restStep = useRef(0)
+  // Whether frames have played since the last stop, so a stop is a new one.
+  const sweeping = useRef(false)
+  // Pending onRest for the frame on top (see SETTLED_DELAY).
+  const settledTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Whether a click on the field would open something right now. Drives the
   // cursor, so it has to drop as soon as the pointer leaves the field.
   const armed = useRef(false)
@@ -184,6 +217,9 @@ export function HeroImageTrail({
   const tagPoint = useRef({ x: 0.5, y: 0.5 })
   // The entry spawned last, so the picker never plays the same frame twice.
   const lastPicked = useRef(-1)
+  // Entries played since the run last started over — the trail works through
+  // every project once before any of them comes back.
+  const played = useRef(new Set<number>())
   // Held in a ref so an inline handler from the page doesn't re-bind listeners.
   const onSelectRef = useRef(onSelect)
   useEffect(() => {
@@ -193,6 +229,10 @@ export function HeroImageTrail({
   useEffect(() => {
     onCaptionShownRef.current = onCaptionShown
   }, [onCaptionShown])
+  const onRestRef = useRef(onRest)
+  useEffect(() => {
+    onRestRef.current = onRest
+  }, [onRest])
   // Whether the caption has ever carried a title. The slot it lands in belongs
   // to the page until then, so the page is told exactly once.
   const captionShown = useRef(false)
@@ -296,41 +336,63 @@ export function HeroImageTrail({
    * tag field, then sampled — so near a pole that pole's work comes up most of
    * the time and the rest only occasionally, and in open ground the mix is
    * broad. Sampling rather than simply taking the nearest keeps the trail from
-   * locking onto one frame while the pointer hovers in one place; excluding the
-   * last pick keeps it from repeating back to back.
+   * locking onto one frame while the pointer hovers in one place.
+   *
+   * Either way the draw is only from entries not yet played this run, so every
+   * project comes up once before any comes back; once all have, the run starts
+   * over. The entry whose turn it is to be rested on (see restOrder) is held
+   * back for that stop, so it never plays mid-sweep and then again under the
+   * stopped pointer.
    */
   const pickIndex = useCallback(() => {
-    if (!steerable) return imageIndex.current++ % items.length
+    const due = restOrder?.length
+      ? restOrder[restStep.current % restOrder.length]
+      : -1
+    const open = (i: number) =>
+      i !== due && i !== lastPicked.current && !played.current.has(i)
+    if (!items.some((_, i) => open(i))) played.current.clear()
 
-    const { x, y } = tagPoint.current
-    // How far the pull reaches, in field units. Tuned against the current
-    // spread: at 0.2, standing on a pole plays its own work ~70-90% of the
-    // time, while open ground still reaches all 18 entries. Widening it blurs
-    // the poles together; much below this and the middle of the field stops
-    // showing some projects at all.
-    const SIGMA = 0.2
-    const weights = items.map((it, i) => {
-      if (!it.pos || i === lastPicked.current) return 0
-      const dx = it.pos.x - x
-      const dy = it.pos.y - y
-      return Math.exp(-(dx * dx + dy * dy) / (SIGMA * SIGMA))
-    })
-    const total = weights.reduce((a, b) => a + b, 0)
-    if (total <= 0) return imageIndex.current++ % items.length
-
-    let r = Math.random() * total
-    for (let i = 0; i < weights.length; i++) {
-      r -= weights[i]
-      if (r <= 0) {
-        lastPicked.current = i
-        return i
+    let pick = -1
+    if (steerable) {
+      const { x, y } = tagPoint.current
+      // How far the pull reaches, in field units. Tuned against the current
+      // spread: at 0.2, standing on a pole plays its own work ~70-90% of the
+      // time, while open ground still reaches all 18 entries. Widening it
+      // blurs the poles together; much below this and the middle of the field
+      // stops showing some projects at all.
+      const SIGMA = 0.2
+      const weights = items.map((it, i) => {
+        if (!it.pos || !open(i)) return 0
+        const dx = it.pos.x - x
+        const dy = it.pos.y - y
+        return Math.exp(-(dx * dx + dy * dy) / (SIGMA * SIGMA))
+      })
+      const total = weights.reduce((a, b) => a + b, 0)
+      let r = Math.random() * total
+      for (let i = 0; total > 0 && i < weights.length; i++) {
+        r -= weights[i]
+        if (weights[i] > 0 && r <= 0) {
+          pick = i
+          break
+        }
       }
     }
-    return weights.length - 1
-  }, [items, steerable])
+    // The plain cycle — and the fallback when sampling finds nothing — steps
+    // past anything already played.
+    for (let n = 0; pick === -1 && n < items.length; n++) {
+      const i = imageIndex.current++ % items.length
+      if (open(i)) pick = i
+    }
+    // Only a trail of one or two entries gets here with nothing open.
+    if (pick === -1) pick = imageIndex.current++ % items.length
+
+    played.current.add(pick)
+    lastPicked.current = pick
+    return pick
+  }, [items, steerable, restOrder])
 
   const spawnImage = useCallback(
-    (x: number, y: number) => {
+    (x: number, y: number, forced?: number) => {
       const idx = currentIndex.current % POOL_SIZE
       const el = poolRefs.current[idx]
       if (!el) return
@@ -361,8 +423,12 @@ export function HeroImageTrail({
       }
 
       // Pick next image — nearest the pointer's pole when steerable, else the
-      // plain cycle.
-      const itemIdx = pickIndex()
+      // plain cycle — unless the stop has already named it.
+      const itemIdx = forced ?? pickIndex()
+      if (forced !== undefined) {
+        lastPicked.current = forced
+        played.current.add(forced)
+      }
       const item = items[itemIdx]
 
       // Slight random rotation for organic feel
@@ -420,6 +486,14 @@ export function HeroImageTrail({
 
       if (item.cta && onSelectRef.current) setArmed(true)
 
+      // Every spawn restarts the wait, so only the frame the trail settles on
+      // is reported.
+      if (settledTimeout.current) clearTimeout(settledTimeout.current)
+      settledTimeout.current = setTimeout(() => {
+        settledTimeout.current = null
+        onRestRef.current?.(item, itemIdx)
+      }, SETTLED_DELAY)
+
       currentIndex.current++
     },
     [items, setArmed, pickIndex]
@@ -464,6 +538,33 @@ export function HeroImageTrail({
       if (dist > SPAWN_DISTANCE) {
         lastSpawn.current = { x, y }
         spawnImage(x, y)
+        sweeping.current = true
+      }
+
+      // A stop is the pointer holding still, not just a gap between frames:
+      // every move restarts the wait, so a slow stretch of a sweep never
+      // counts as one. And only a pointer that has played frames since the
+      // last stop has made a new one — a nudge after stopping doesn't move the
+      // order on.
+      if (restOrder?.length && sweeping.current) {
+        if (settleTimeout.current) clearTimeout(settleTimeout.current)
+        // Nothing has settled while the pointer still moves, so the onRest
+        // report waits for the stop too (the swap below re-arms it).
+        if (settledTimeout.current) clearTimeout(settledTimeout.current)
+        settleTimeout.current = setTimeout(() => {
+          settleTimeout.current = null
+          sweeping.current = false
+          // Every stop lands on the entry in turn and spends it, so the next
+          // stop always brings the next one — never the same one twice.
+          const due = restOrder[restStep.current % restOrder.length]
+          restStep.current++
+          const rest = resting.current
+          if (rest?.index === due) {
+            onRestRef.current?.(rest.item, due)
+            return
+          }
+          spawnImage(lastSpawn.current.x, lastSpawn.current.y, due)
+        }, SETTLE_DELAY)
       }
     }
 
@@ -502,16 +603,19 @@ export function HeroImageTrail({
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('click', onClick)
+      if (settleTimeout.current) clearTimeout(settleTimeout.current)
     }
-  }, [spawnImage, setArmed, steerable, placeDot])
+  }, [spawnImage, setArmed, steerable, restOrder, placeDot])
 
   // Cleanup timeouts on unmount
   useEffect(() => {
     const t = timeouts.current
     const rest = restTimeout
+    const settled = settledTimeout
     return () => {
       t.forEach((timeout) => clearTimeout(timeout))
       if (rest.current) clearTimeout(rest.current)
+      if (settled.current) clearTimeout(settled.current)
       document.body.style.cursor = ''
     }
   }, [])
