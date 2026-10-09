@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
   images: {
+    // Next's defaults plus 10, 16 and 24: the homepage index's hover mosaic
+    // draws each frame at those widths (see PIX_STEPS in project-index), and
+    // the optimizer only serves widths on this list.
+    imageSizes: [10, 16, 24, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: 'https',

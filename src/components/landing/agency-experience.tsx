@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect, useLayoutEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import dynamic from 'next/dynamic'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
 const useIsoLayoutEffect =
@@ -11,12 +10,7 @@ import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { AgencyAbout } from './agency-about'
 import { MobileProjectScroller } from './mobile-project-scroller'
-// The index is a WebGL field (an infinite canvas), so three.js loads only once
-// the grid mark is pressed rather than with every visit to the homepage.
-const ProjectCanvas = dynamic(
-  () => import('./project-canvas').then((m) => m.ProjectCanvas),
-  { ssr: false },
-)
+import { ProjectIndexGrid } from './project-index'
 // import { IdeasSection } from './ideas-section' // notes section hidden for now
 import { wordStyle, BG } from './landing-theme'
 import {
@@ -559,7 +553,8 @@ export function AgencyExperience({
           {/* Hero — the first screen. Running the trail it is an open field with
               no copy of its own: it takes the rest of the screen and the trail's
               caption names the resting frame down at the fold. Running the index
-              it holds the project tube instead, filling the same screen. */}
+              it holds the masonry of every project instead, which runs on past
+              the fold. */}
           <section
             id="home"
             style={{
@@ -586,7 +581,7 @@ export function AgencyExperience({
               Brooklyn, New York
             </h1>
 
-            {showIndex && <ProjectCanvas />}
+            {showIndex && <ProjectIndexGrid />}
           </section>
 
           {/* Studio statement — the fold's default line, standing in the exact
