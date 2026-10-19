@@ -75,7 +75,7 @@ export function SeeAllWork({
 
     // DVD-screensaver palette — the pill flips to a new one on every wall hit.
     const PALETTE = [
-      '#2447FF', // blue
+      '#0120FF', // blue
       '#FF2E88', // magenta
       '#16E0FF', // cyan
       '#FFD400', // yellow

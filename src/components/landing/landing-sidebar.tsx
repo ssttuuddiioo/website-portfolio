@@ -67,8 +67,8 @@ export const SOCIALS = [
  * brighter hairline draws the cell's edge, which is the part that actually
  * says "this is a button" before you click it.
  */
-const BLUE_GHOST = 'rgba(31, 68, 255, 0.40)'
-const BLUE_GHOST_EDGE = 'rgba(107, 131, 255, 0.55)'
+const BLUE_GHOST = 'rgba(1, 32, 255, 0.40)'
+const BLUE_GHOST_EDGE = 'rgba(87, 107, 255, 0.55)'
 
 /** A measured dock cell: its left offset and width inside the row. */
 type Box = { x: number; width: number }

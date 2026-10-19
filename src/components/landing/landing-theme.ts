@@ -14,7 +14,7 @@ export const SURFACE = '#141414'
  * matter which way the page palette runs.
  */
 export const PAPER = '#F0F0F9'
-export const BLUE = '#1F44FF'
+export const BLUE = '#0120FF'
 
 /** Ink at partial strength. Hairlines, secondary copy, placeholder plates. */
 export const ink = (alpha: number) => `rgba(232, 228, 223, ${alpha})`
@@ -44,10 +44,10 @@ export const wordStyle: CSSProperties = {
 }
 
 /**
- * International Klein Blue. The footer ground: one saturated block that closes
- * every page and reads as a hard stop against the near-black body.
+ * The footer ground, in the studio blue: one saturated block that closes every
+ * page and reads as a hard stop against the near-black body.
  */
-export const IKB = '#002FA7'
+export const IKB = BLUE
 
 /** PAPER at partial strength. Secondary type and hairlines on the IKB block. */
 export const paper = (alpha: number) => `rgba(240, 240, 249, ${alpha})`

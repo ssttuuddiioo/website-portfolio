@@ -73,7 +73,7 @@ const ALIGN: Array<'left' | 'center' | 'right'> = [
 // Subtle height variation via vertical padding.
 const PADS_Y = [1.0, 1.25, 0.9, 1.15, 1.05, 1.3, 0.95]
 // One blue for every bar — overlaps mix to black/darker/lighter, no green.
-const BLUE = '#081FF5'
+const BLUE = '#0120FF'
 // Each bar's overlap behaves differently (exclusion / difference / etc.).
 const BLENDS = [
   'difference',

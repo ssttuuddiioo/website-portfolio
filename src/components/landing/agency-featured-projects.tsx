@@ -344,7 +344,7 @@ export function AgencyFeaturedProjects() {
           border-color: transparent;
         }
         .proj-pill-soft:hover {
-          background: rgba(31,68,255,0.08);
+          background: rgba(1,32,255,0.08);
           border-color: transparent;
         }
 
