@@ -128,7 +128,8 @@ function portableText(value: string | undefined) {
  * order is fixed. With three, the last is a location if it names a place one of
  * the projects is in (Atlanta, New York…) and an organization otherwise — so
  * "Zoo as Zoo — Artist — Atlanta" and "Matthew Gray — Interiors lead — JGN
- * Architecture" both land where they belong.
+ * Architecture" both land where they belong. A part that is a link
+ * ("— https://…") is pulled out first and becomes the credit's URL.
  */
 function collaborators(value: string | undefined, places: Set<string>) {
   return (value ?? '')
@@ -136,13 +137,16 @@ function collaborators(value: string | undefined, places: Set<string>) {
     .map((l) => l.trim())
     .filter(Boolean)
     .map((line, i) => {
-      const [name, role, a, b] = line.split(/\s+—\s+/)
+      const parts = line.split(/\s+—\s+/)
+      const url = parts.find((p) => /^https?:\/\//.test(p))
+      const [name, role, a, b] = parts.filter((p) => p !== url)
       const third = a && !b && places.has(a) ? { location: a } : { organization: a }
       return {
         _key: `c${i}`,
         name,
         role,
         ...(b ? { organization: a, location: b } : a ? third : {}),
+        ...(url ? { url } : {}),
       }
     })
 }

@@ -107,7 +107,7 @@ export interface SanityProjectPage {
   outcome?: string
   stack?: string[]
   materials?: string
-  collaborators?: { name: string; role?: string; organization?: string }[]
+  collaborators?: { name: string; role?: string; organization?: string; url?: string }[]
   credit?: string
   thanks?: string
   projectUrl?: string

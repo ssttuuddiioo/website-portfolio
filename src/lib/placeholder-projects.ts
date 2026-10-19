@@ -15,7 +15,7 @@ export interface PlaceholderProject {
   /** Studio discipline shown in the top line (e.g. "Experiential"). */
   discipline: string
   role: string[]
-  collaborators: { name: string; role: string }[]
+  collaborators: { name: string; role: string; url?: string }[]
   heroImage: string
   about: string
   /** Large lead media beneath the text blocks. Image or video URL. */

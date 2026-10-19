@@ -112,7 +112,7 @@ const PROJECT_PAGE_FIELDS = `{
     outcome,
     stack,
     materials,
-    collaborators[]{name, role, organization},
+    collaborators[]{name, role, organization, url},
     credit,
     thanks,
     projectUrl,

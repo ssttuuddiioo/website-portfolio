@@ -7,8 +7,8 @@ CLIENT URL:
 LOCATION: Miami, FL
 FEATURED: no
 
-DISCIPLINES: Hardware / Product, Experiential Design, Custom Software
-SCOPE: Experiential and industrial design consulting, display sourcing, sensor development, DOOH and dashboard UX
+DISCIPLINES: Hardware / Product, Experiential Design
+SCOPE: Experiential and industrial design consulting, sensor development
 
 SUBTITLE:
 Ongoing creative and hardware partnership behind award-winning touchless water stations
@@ -18,17 +18,18 @@ HOPE Hydration builds smart, touchless water stations that dispense free filtere
 
 Studio Studio has been a creative partner since 2021. We started as consultants on design and experiential work, from early event stations to permanent installations, and we're helping shape what comes next.
 
-Over time the work moved into hardware. We sourced displays for the stations and partnered with sensor engineer Evan Kahn on custom smart sensors that feed richer data into HOPE's analytics. With a UX/UI designer, we shaped the ad-supported digital out-of-home screens and the internal dashboards building and management teams use to monitor each unit.
+Over time the work moved into hardware. We partnered with sensor engineer Evan Kahn on custom smart sensors that feed richer data into HOPE's analytics.
 
 What began as consulting is now production work, and we're glad to keep building with them.
 
 OUTCOME:
-HOPE's HydroStations won a CES 2023 Smart City Innovation Award. The engagement has run continuously since 2021 and has moved from consulting into production.
+HOPE's HydroStations have picked up industry recognition along the way, including a CES Innovation Award, and the partnership is still going.
 
 COLLABORATORS:
-Evan Kahn — Sensor engineering
+Evan Kahn — Sensor engineering — https://eka.hn/
+Armon Naeini — UX/UI — https://entroplay.world/
 
-STACK: Custom smart sensors, sourced displays, DOOH screen software, internal monitoring dashboards
+STACK: Custom smart sensors
 MATERIALS:
 CREDIT:
 THANKS:

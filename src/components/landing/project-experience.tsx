@@ -503,7 +503,18 @@ export function ProjectSheet({
                         {collabs.map((c) => (
                           <li key={c.name} className="proj-credit">
                             <span className="proj-value font-display">
-                              {c.name}
+                              {c.url ? (
+                                <a
+                                  href={c.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="proj-link"
+                                >
+                                  {c.name}
+                                </a>
+                              ) : (
+                                c.name
+                              )}
                             </span>
                             <span className="proj-creditrole font-mono">
                               {c.role}

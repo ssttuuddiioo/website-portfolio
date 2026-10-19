@@ -13,9 +13,9 @@ SUBTITLE:
 A 9×9×9-foot projection cube that responds to the people moving through it
 
 BODY:
-ELA + Synergy formed in 2024 when Synergy Electrical Sales merged with Electric Lighting Agencies of New York, creating one of the largest agencies in the New York metro, New Jersey, eastern Pennsylvania, and Delaware. Twice a year they host a trade show for the lighting and design community, and they've brought us in twice.
+ELA + Synergy is one of the largest lighting rep agencies in New York. Twice a year they host a trade show for the community.
 
-For the first, Flo Lechin wanted an artwork that gave attendees somewhere to step away from the show floor upstairs and reset. Making light for a room full of lighting professionals set a high bar.
+Flo Lechin wanted an artwork that gave attendees somewhere to step away from the show floor upstairs and reset. Making light for a room full of lighting professionals set a high bar.
 
 The original ask was a video piece. We pitched making it interactive with a single sensor, so the room would respond to the people in it. The result is a 9×9×9-foot cube with projection on three walls, filled with scenes drawn from nature: water, birds, rivers, and tides, shifting as visitors move through.
 

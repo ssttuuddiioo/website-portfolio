@@ -104,6 +104,7 @@ function fromSanity(doc: SanityProjectPage): PlaceholderProject {
     collaborators: (doc.collaborators ?? []).map((c) => ({
       name: c.name,
       role: [c.role, c.organization].filter(Boolean).join(' · '),
+      url: c.url,
     })),
     heroImage: doc.heroImage ?? landing?.pageHero ?? landing?.image ?? '',
     about: doc.subtitle ?? landing?.description ?? '',

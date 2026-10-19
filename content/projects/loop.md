@@ -25,7 +25,7 @@ OUTCOME:
 Opened June 6, 2026, and has hosted exhibitions continuously since. Staff run the building's lighting day to day without us.
 
 COLLABORATORS:
-Lowres — Lighting engineering, driver sourcing and programming — New York
+Lowres — Lights & pixel mapping — New York
 Eddie Farr — Power
 Spec Group — Electrical install
 
