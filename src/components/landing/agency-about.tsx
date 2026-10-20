@@ -1,26 +1,25 @@
 'use client'
 
 import { motion, useReducedMotion, type Variants } from 'framer-motion'
-import { INK } from './landing-theme'
+import { INK, ink } from './landing-theme'
 
 const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const
 
 /**
- * The studio statement, as three fixed lines. Sits at the bottom of the first
- * screen, so it reads as the line you land on rather than something to scroll
- * for.
+ * The studio statement: who the studio is and what it does, side by side across
+ * a hairline at the bottom of the first screen, so it reads as the line you land
+ * on rather than something to scroll for.
  *
- * The copy is set line by line rather than as a paragraph that reflows: each
- * line is its own nowrap block, so the statement is always three lines and
- * "Brooklyn, NY" can never break across two of them. Because the lines can't
- * wrap, the type is capped against the container's width as well as the
- * viewport's (see the font-size below) — otherwise a narrow window would push
- * the longest line straight past the gutter instead of reflowing it.
+ * Both halves are set line by line rather than as paragraphs that reflow: each
+ * line is its own nowrap block, so they always break where they were written to.
+ * On a container too narrow to hold the pair, they stack and the second half is
+ * allowed to wrap.
  */
-const STATEMENT = [
-  'Studio Studio is a',
-  'creative technology',
-  'practice in Brooklyn, NY',
+const STATEMENT = ['Studio Studio is an art', 'and technology studio.']
+
+const SUPPORT = [
+  'Experiential direction, lighting design, and',
+  'custom software, made in Brooklyn, New York.',
 ]
 
 export function AgencyAbout() {
@@ -38,6 +37,23 @@ export function AgencyAbout() {
       transition: { duration: reduce ? 0 : 0.8, ease: EASE_IN_OUT },
     },
   }
+
+  const text = {
+    fontWeight: 400,
+    fontSize: '1em',
+    lineHeight: 1.3,
+    color: INK,
+    margin: 0,
+  } as const
+
+  const lines = (copy: string[]) =>
+    copy.map((line, i) => (
+      <span key={line} className="about-line">
+        {line}
+        {/* Keeps the read-aloud sentence from running its lines together. */}
+        {i < copy.length - 1 ? ' ' : null}
+      </span>
+    ))
 
   return (
     <motion.div
@@ -60,42 +76,58 @@ export function AgencyAbout() {
           width: 100%;
           padding-left: calc(var(--edge) + env(safe-area-inset-left));
           padding-right: calc(var(--edge) + env(safe-area-inset-right));
-          /* Makes this block the statement's sizing basis: 100cqw below is the
-             width the three lines have to fit inside. */
           container-type: inline-size;
+        }
+        /* The pair runs about 36em wide side by side, so the size is held to
+           what fits the container on one row; on a wide screen the clamp wins. */
+        .about-row {
+          display: flex;
+          align-items: center;
+          gap: 1.1em;
+          font-size: min(clamp(2rem, 3vw, 3rem), 2.7cqw);
         }
         /* One line, one block, and never a wrap. */
         .about-line {
           display: block;
           white-space: nowrap;
         }
+        /* The hairline runs a little past both halves, top and bottom. */
+        .about-rule {
+          align-self: stretch;
+          flex: none;
+          width: 1px;
+          margin: -0.6em 0;
+          background: ${ink(0.7)};
+        }
+        @container (max-width: 900px) {
+          .about-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.9em;
+            font-size: min(2rem, 7.5cqw);
+          }
+          .about-rule {
+            align-self: auto;
+            width: 3rem;
+            height: 1px;
+            margin: 0;
+          }
+          .about-support .about-line {
+            display: inline;
+            white-space: normal;
+          }
+        }
       `}</style>
 
-      <motion.h2
-        variants={item}
-        className="about-statement font-display"
-        style={{
-          fontWeight: 700,
-          /* The viewport-scaled size the trail's caption also uses, held down
-             by the container: the longest line runs 12.2em in Futura, so at
-             7.8cqw it always lands inside the block with room to spare — and
-             above ~900px of container the clamp wins and the statement matches
-             the caption that stands in for it exactly. */
-          fontSize: 'min(clamp(2.1rem, 5vw, 4.4rem), 7.8cqw)',
-          lineHeight: 0.98,
-          letterSpacing: '-0.04em',
-          color: INK,
-          margin: 0,
-        }}
-      >
-        {STATEMENT.map((line, i) => (
-          <span key={line} className="about-line">
-            {line}
-            {/* Keeps the read-aloud sentence from running its lines together. */}
-            {i < STATEMENT.length - 1 ? ' ' : null}
-          </span>
-        ))}
-      </motion.h2>
+      <div className="about-row font-display">
+        <motion.h2 variants={item} style={text}>
+          {lines(STATEMENT)}
+        </motion.h2>
+        <motion.span variants={item} className="about-rule" aria-hidden />
+        <motion.p variants={item} className="about-support" style={text}>
+          {lines(SUPPORT)}
+        </motion.p>
+      </div>
     </motion.div>
   )
 }

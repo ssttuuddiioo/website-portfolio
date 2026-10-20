@@ -72,7 +72,7 @@ export interface LandingProject {
    * Everyone else who made it, shown as the "Credits" register on the
    * project page. Only entries with people to name carry this.
    */
-  collaborators?: { name: string; role: string }[]
+  collaborators?: { name: string; role: string; url?: string }[]
   /** External project/live site, shown as a secondary pill. */
   website?: string
   /**
@@ -223,18 +223,31 @@ export const LANDING_PROJECTS: LandingProject[] = [
   },
   {
     title: 'The Light Around Us',
-    tagline: 'LED sculpture reading air quality',
+    tagline: 'LED sculpture that breathes with the room',
     client: 'tvsdesign / Spacelab',
     clientShort: 'tvsdesign',
     category: 'Installation',
     year: 2020,
     slug: 'the-light-around-us',
     affinity: { web: 0.13, installation: 0.42, lighting: 0.38, design: 0.07 },
-    image: '/landing/opt/light-around-us.avif',
-    images: ['/landing/opt/light-around-us2.avif'],
+    image: '/landing/opt/light-around-us-cover.avif',
+    images: [
+      '/landing/opt/light-around-us4.webp',
+      '/landing/opt/light-around-us.avif',
+      '/landing/opt/light-around-us2.avif',
+      '/landing/opt/light-around-us3.webp',
+      '/landing/opt/light-around-us-build.avif',
+      '/landing/opt/light-around-us5.webp',
+      '/landing/opt/light-around-us-render.avif',
+    ],
     description:
-      'A data-driven sculpture that turns live air quality readings into shifting pattern and color. Commissioned by tvsdesign for Spacelab.',
-    services: ['Custom software', 'Lighting design', 'Interactive'],
+      'A 10,800-LED sculpture for SPACELAB that turns live temperature, humidity, and sound into light and color. Commissioned by Dashboard and tvsdesign.',
+    services: ['Sculpture design', 'Lighting design', 'Generative software'],
+    collaborators: [
+      { name: 'Dashboard', role: 'Concept and curation' },
+      { name: 'tvsdesign', role: 'Collaborator and sponsor' },
+      { name: 'Arc Design', role: 'Fabrication' },
+    ],
     colStart: 2, colSpan: 3, rowStart: 25, rowSpan: 6,
   },
   {
@@ -254,8 +267,14 @@ export const LANDING_PROJECTS: LandingProject[] = [
     ],
     website: 'https://storybooth.us',
     description:
-      "A public phone booth in Montgomery, Alabama that records residents' stories and publishes them at storybooth.us. Creative direction, experiential design, UX/UI.",
-    services: ['Custom software', 'Fabrication', 'Web design and development'],
+      'A "living history" phone booth on the ground floor of Kress on Dexter in Montgomery, Alabama, a restored art deco department store on the avenue where the Selma to Montgomery march ended. Visitors step in, pick up the receiver, and tell a story. Every story carries equal weight and joins a free public archive at storybooth.us. Since opening in 2018 it has recorded over 300 stories and been featured in The New York Times. Later updates added a visualization for every story and an online hotline, so anyone anywhere can record.',
+    services: ['Creative technology', 'Experiential design', 'Web design'],
+    collaborators: [
+      { name: 'Dashboard', role: 'Production partner and curation' },
+      { name: 'Montgomery Builds', role: 'Host and developer, Kress on Dexter' },
+      { name: 'Eric Rabinowitz', role: 'Software engineering', url: 'https://ericrabinowitz.com/' },
+      { name: 'Nathaniel Wojtalik', role: 'Collaborator', url: 'https://cultivationobjects.com/' },
+    ],
     colStart: 2, colSpan: 4, rowStart: 61, rowSpan: 9,
   },
   {

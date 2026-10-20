@@ -18,8 +18,8 @@ import type { SanityProjectPage } from './sanity/types'
  * those pages borrow their frames from the matching landing entry (same slug)
  * until a hero image is uploaded in Studio.
  *
- * Every entry in the landing index is reachable at /work/[slug]. Three of them
- * — dolby-moment, the-light-around-us, scatter-and-rise — are hand-authored
+ * Every entry in the landing index is reachable at /work/[slug]. Two of them
+ * — dolby-moment, scatter-and-rise — are hand-authored
  * case studies in PLACEHOLDER_PROJECTS. The rest are generated here from what
  * the landing index already holds: the hero frame, the description the
  * homepage work list shows, the services line, and the live site where there

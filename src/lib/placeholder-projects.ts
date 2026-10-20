@@ -135,56 +135,6 @@ export const PLACEHOLDER_PROJECTS: Record<string, PlaceholderProject> = {
       },
     ],
   },
-  'the-light-around-us': {
-    slug: 'the-light-around-us',
-    client: 'tvsdesign / Spacelab',
-    title: 'The Light Around Us',
-    shortCode: 'LA',
-    year: 2020,
-    category: 'Installation',
-    discipline: 'Experiential',
-    role: ['Creative Direction', 'Software Development', 'Lighting Design'],
-    collaborators: [
-      { name: 'Spacelab', role: 'Commission' },
-      { name: 'tvsdesign', role: 'Architecture' },
-    ],
-    heroImage: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=2400&q=80',
-    about:
-      'A data-driven LED sculpture commissioned for a corporate lobby. Real-time environmental data — weather, air quality, and time of day — drives an evolving generative light composition across a suspended array of custom LED modules.',
-    mainMedia: 'https://images.unsplash.com/photo-1504297050568-910d24c426d3?w=2400&q=80',
-    supportingImages: [
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&q=80',
-      'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1200&q=80',
-    ],
-    sections: [
-      {
-        type: 'two-column',
-        leftLabel: 'Concept',
-        leftText:
-          'The sculpture translates invisible environmental forces into visible light. Weather patterns become color palettes. Air quality shifts opacity and movement speed. The time of day governs the overall rhythm — calm mornings, energetic afternoons, warm evenings.',
-        rightLabel: 'Production',
-        rightText:
-          'Custom node.js backend ingests weather and air quality APIs, translating data into DMX values pushed to ENTTEC controllers over sACN. The LED array uses pixel-mapped RGBW fixtures mounted in a custom aluminum housing designed in collaboration with tvsdesign.',
-      },
-      {
-        type: 'full-bleed-image',
-        image: 'https://images.unsplash.com/photo-1504297050568-910d24c426d3?w=2400&q=80',
-      },
-    ],
-    similarProjects: [
-      {
-        title: 'Dolby Moment',
-        slug: 'dolby-moment',
-        image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80',
-      },
-      {
-        title: 'Scatter and Rise',
-        slug: 'scatter-and-rise',
-        image: 'https://images.unsplash.com/photo-1504297050568-910d24c426d3?w=800&q=80',
-      },
-    ],
-  },
   'scatter-and-rise': {
     slug: 'scatter-and-rise',
     client: 'Goat Farm Arts Center',
