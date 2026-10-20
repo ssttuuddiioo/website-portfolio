@@ -107,17 +107,18 @@
      and hairlines only: nothing in this system is a pill. */
   --sheet-inset: var(--edge);
   --rule-w: 1px;
-  --dock-h: clamp(62px, 6.8vh, 94px);
+  --dock-h: clamp(78px, 8.5vh, 118px);
   /* The project page's information rail, in two forms of the same measure.
      --rail-w is read inside the sheet, where a percentage is already of the
      sheet's interior. --rail-w-vp is read by the fixed nav dock, whose
-     percentages are of the whole viewport, so it also gives back 32.5% of the
+     percentages are of the whole viewport, so it also gives back 37% of the
      32px the sheet spends on --sheet-inset and --rule-w down each side
-     (0.325 x 32 = 10.4px). Same number, so the dock's left edge and the rail's
-     hairline are one vertical rule. Written as literals because the CSS build
+     (0.37 x 32 = 11.84px). Same number, so the dock's left edge and the
+     rail's hairline are one vertical rule. Wide enough that the dock's five
+     cells can be equal with "contact" still fitting one. Written as literals because the CSS build
      drops a custom property that multiplies through a var(). */
-  --rail-w: clamp(23.75rem, 32.5%, 35rem);
-  --rail-w-vp: clamp(23.75rem, calc(32.5% - 10.4px), 35rem);
+  --rail-w: clamp(26rem, 37%, 40rem);
+  --rail-w-vp: clamp(26rem, calc(37% - 11.84px), 40rem);
 }
 
 /* ---- Light Mode ---- */

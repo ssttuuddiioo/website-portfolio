@@ -437,7 +437,9 @@ export function LandingSidebar({
       // The words step back so the two marks can hold the head of the dock:
       // they name places you can already see, the marks switch what you're
       // looking at.
-      fontSize: '0.8rem',
+      // Twice the old 0.8rem, held to the dock's width (it's a size container)
+      // so "contact" still fits a fifth of the dock at its narrowest.
+      fontSize: 'min(1.6rem, calc((20cqw - 1rem) / 4))',
       letterSpacing: '0.01em',
       // Lit for both states: white over the solid pill, white over the ghost.
       color: isLit ? '#fff' : INK,
@@ -458,7 +460,7 @@ export function LandingSidebar({
       // first screen, and the space is what separates them from the words. The
       // words tighten to pay for it, so nothing overflows at the dock's
       // narrowest.
-      padding: isMark ? '0 1.8rem' : '0 0.5rem',
+      padding: isMark ? '0 1rem' : '0 0.5rem',
       boxSizing: 'border-box',
       cursor: 'pointer',
       whiteSpace: 'nowrap',
@@ -481,10 +483,10 @@ export function LandingSidebar({
     let content: React.ReactNode = item.label
     let a11yLabel: string | undefined
     if (isHome) {
-      content = <TrailIcon size={18} />
+      content = <TrailIcon size={36} />
       a11yLabel = 'home'
     } else if (isIndex) {
-      content = indexOpen ? <CloseIcon /> : <GridIcon />
+      content = indexOpen ? <CloseIcon size={32} /> : <GridIcon size={34} />
       a11yLabel = indexOpen
         ? 'Back to the image trail'
         : 'Show the project index'
@@ -579,9 +581,10 @@ export function LandingSidebar({
           position: 'relative',
           zIndex: 1,
           height: '100%',
-          // Words split the dock's fixed width between them; the marks take
-          // only what their glyph and padding need.
-          flex: isMark ? '0 0 auto' : '1 1 0',
+          // Five equal cells: every mark and word gets the same box as
+          // "work". The dock is sized (via --rail-w-vp) so "contact", the
+          // longest word, still fits its fifth.
+          flex: '1 1 0',
           minWidth: 0,
           padding: 0,
           borderRadius: 0,
@@ -716,6 +719,8 @@ export function LandingSidebar({
           // the bottom of the body.
           width: 'calc(var(--rail-w-vp) + 1px)',
           zIndex: 90,
+          // The labels size against the dock's width (see renderDockItem).
+          containerType: 'inline-size',
           background: SURFACE,
           // Square. The grid has no round corners anywhere else.
           borderRadius: 0,
@@ -912,6 +917,8 @@ export function LandingSidebar({
             ) !important;
             height: auto !important;
             border: 1px solid ${ink(0.12)} !important;
+            /* A size container can't shrink to its contents. */
+            container-type: normal !important;
           }
           .nav-dock ul { gap: 0 !important; }
           .nav-dock li {
@@ -920,8 +927,13 @@ export function LandingSidebar({
             padding: 0 !important;
           }
           .nav-dock a, .nav-dock button {
-            font-size: 0.72rem !important;
+            font-size: 1.08rem !important;
             padding: 0.6rem 0.45rem !important;
+          }
+          /* The doubled marks would push the dock past a phone's width. */
+          .nav-dock svg {
+            width: 24px;
+            height: 24px;
           }
         }
       `}</style>
