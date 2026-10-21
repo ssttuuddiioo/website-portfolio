@@ -228,34 +228,15 @@ export function AboutExperience() {
                 </p>
               </Reveal>
             </div>
-            {/* The rail splits: the facts in a cell of their own, then Pablo
-                in the booth filling the rest of the row, edge to edge. */}
-            <div className="ab-railstack">
-              <div className="ab-cell ab-facts">
-                <dl>
-                  <div>
-                    <dt className="ab-eyebrow font-mono">Name</dt>
-                    <dd className="font-display">Pablo Gnecco</dd>
-                  </div>
-                  <div>
-                    <dt className="ab-eyebrow font-mono">Studio</dt>
-                    <dd className="font-display">Brooklyn, New York</dd>
-                  </div>
-                  <div>
-                    <dt className="ab-eyebrow font-mono">Since</dt>
-                    <dd className="font-display">2015, NEW INC</dd>
-                  </div>
-                </dl>
-              </div>
-              <div className="ab-railphoto">
-                <Image
-                  src="/landing/opt/sb-pablo.avif"
-                  alt="Pablo Gnecco in StoryBooth"
-                  fill
-                  sizes="(min-width: 900px) 37vw, 100vw"
-                  style={{ objectFit: 'cover', objectPosition: '45% 60%' }}
-                />
-              </div>
+            {/* The rail is Pablo in the booth, the full height of the row. */}
+            <div className="ab-railphoto">
+              <Image
+                src="/landing/opt/sb-pablo.avif"
+                alt="Pablo Gnecco in StoryBooth"
+                fill
+                sizes="(min-width: 900px) 37vw, 100vw"
+                style={{ objectFit: 'cover', objectPosition: '45% 60%' }}
+              />
             </div>
           </section>
 
@@ -435,20 +416,12 @@ export function AboutExperience() {
         @media (min-width: 1200px) {
           .ab-cols { columns: 2; column-gap: clamp(2rem, 3vw, 3rem); }
         }
-        /* The facts sit together at the top of the rail, level with the
-           Founder label opposite. */
-        .ab-facts dl { margin: 0; display: grid; gap: 1.1rem; }
-        .ab-railstack {
-          display: grid;
-          grid-template-rows: auto minmax(18rem, 1fr);
-          gap: 1px;
-        }
         .ab-railphoto {
           position: relative;
+          min-height: 22rem;
           background: ${BG};
           overflow: hidden;
         }
-        .ab-facts dd { margin: 0.3rem 0 0; font-size: var(--ab-m); }
 
         /* Section bars */
         .ab-bar {
