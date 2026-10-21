@@ -1,4 +1,4 @@
-TITLE: Immersive Cube
+TITLE: Cube
 SLUG: immersive-cube
 YEAR: 2026
 CLIENT: ELA + Synergy

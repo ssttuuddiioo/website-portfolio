@@ -29,6 +29,11 @@ export interface LandingProject {
    * the homepage trail's caption.
    */
   tagline?: string
+  /**
+   * One sentence: what the project is and who it was for. The line under the
+   * title on the mobile landing.
+   */
+  summary?: string
   year: number
   image: string
   /** Links to /work/[slug] when a detail page exists. */
@@ -90,6 +95,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Loop',
     tagline: 'Lighting system for an Atlanta venue',
+    summary: 'A lighting design and control system for LOOP, Goat Farm\'s new Atlanta venue.',
     client: 'Goat Farm',
     category: 'Lighting Design',
     year: 2026,
@@ -106,8 +112,9 @@ export const LANDING_PROJECTS: LandingProject[] = [
     services: ['Lighting design', 'Control system', 'Show programming'],
   },
   {
-    title: 'Immersive Cube',
+    title: 'Cube',
     tagline: 'Interactive projection cube',
+    summary: 'A 9-foot projection cube for ELA and Synergy that responds to the people moving through it.',
     client: 'ELA + Synergy',
     clientShort: 'ELA',
     category: 'Immersive Installation',
@@ -125,46 +132,9 @@ export const LANDING_PROJECTS: LandingProject[] = [
     services: ['Concept development', 'Interactive design', 'Content production', 'Install'],
   },
   {
-    title: 'Coffee Five Project',
-    tagline: 'Coffee brand, packaging, and software',
-    client: 'Juan Medina',
-    category: 'Brand and Software',
-    year: 2025,
-    image: '/landing/opt/coffeefive.avif',
-    pageHero: '/landing/opt/coffee1.avif',
-    images: [
-      '/landing/opt/coff0.avif',
-      '/landing/opt/coffee6.avif',
-      '/landing/opt/coffee3.avif',
-      '/landing/opt/coffee2.avif',
-      '/landing/opt/coffee4.avif',
-      '/landing/opt/coffe5.avif',
-    ],
-    pairFirst: true,
-    slug: 'the-coffee-five',
-    affinity: { web: 0.4, installation: 0.1, lighting: 0.05, design: 0.45 },
-    website: 'https://www.thecoffeefive.com/en',
-    description:
-      'Seed to cup coffee from Juan Medina. Brand identity, packaging, and the software behind it.',
-    services: ['Brand identity', 'Packaging design', 'Software development'],
-  },
-  {
-    title: 'RSVP Platform',
-    tagline: 'WebGL RSVP for a trade show',
-    client: 'ELA',
-    category: 'Interactive Web',
-    year: 2026,
-    image: '/landing/opt/ela-rsvp.avif',
-    slug: 'ela-synergy-tradeshow',
-    affinity: { web: 0.7, installation: 0.09, lighting: 0.03, design: 0.18 },
-    website: 'https://www.elasynergy-tradeshow.com/',
-    description:
-      'RSVP experience for the ELA and Synergy trade show. WebGL particle field, guest list admin, RSVP tracking.',
-    services: ['WebGL', 'Custom software', 'Email system', 'Event admin'],
-  },
-  {
     title: 'HOPE Hydration',
     tagline: 'Free water stations for events',
+    summary: 'Design consulting for Hope Hydration\'s free water stations at events.',
     client: 'Hope Hydration',
     category: 'Design Consulting',
     year: 2026,
@@ -177,38 +147,9 @@ export const LANDING_PROJECTS: LandingProject[] = [
     services: ['Creative direction', 'Experience design', 'Design consulting'],
   },
   {
-    title: 'Cox Conserves',
-    tagline: 'Sustainability pledge kiosks and web',
-    client: 'Cox Communications',
-    clientShort: 'Cox',
-    category: 'Experiential',
-    year: 2026,
-    image: '/landing/opt/cox.png',
-    slug: 'cox-conserves',
-    affinity: { web: 0.24, installation: 0.42, lighting: 0.24, design: 0.1 },
-    description:
-      "Five touchscreen pledge kiosks and a nationwide web rollout for Cox's sustainability initiative.",
-    services: ['Prototyping', 'UX/UI', 'Custom software', 'Kiosk deployment'],
-    colStart: 9, colSpan: 3, rowStart: 19, rowSpan: 7,
-  },
-  {
-    title: 'AT&T Living Mural',
-    tagline: 'Interactive LED mural for a stadium',
-    client: 'Mercedes-Benz Stadium',
-    clientShort: 'Mercedes-Benz',
-    category: 'Experiential',
-    year: 2024,
-    image: '/landing/opt/livingwalls.avif',
-    slug: 'living-walls-att',
-    affinity: { web: 0.3, installation: 0.38, lighting: 0.24, design: 0.08 },
-    description:
-      'An interactive installation mapping how far people traveled to the stadium — custom LED control system and website.',
-    services: ['Custom software', 'Control system', 'Lighting design', 'Web design and development'],
-    colStart: 6, colSpan: 5, rowStart: 28, rowSpan: 13,
-  },
-  {
     title: '65 Suffolk Street',
     tagline: 'Architectural LED lobby installation',
+    summary: 'An architectural LED lobby installation for JGN Architecture, with Chemistry Creative.',
     client: 'Chemistry Creative',
     clientShort: 'Chemistry',
     category: 'Lighting',
@@ -224,6 +165,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'The Light Around Us',
     tagline: 'LED sculpture that breathes with the room',
+    summary: 'A 10,800-LED sculpture for SPACELAB that turns the room\'s temperature, humidity, and sound into light.',
     client: 'tvsdesign / Spacelab',
     clientShort: 'tvsdesign',
     category: 'Installation',
@@ -253,6 +195,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'StoryBooth',
     tagline: 'Phone booth that records stories',
+    summary: 'A phone booth in Montgomery, Alabama, that records visitors\' stories for a public archive, for Dashboard.',
     client: 'Dashboard U.S.',
     clientShort: 'Dashboard',
     category: 'Experiential',
@@ -278,8 +221,105 @@ export const LANDING_PROJECTS: LandingProject[] = [
     colStart: 2, colSpan: 4, rowStart: 61, rowSpan: 9,
   },
   {
+    title: 'The Future of Noise Cancellation',
+    tagline: 'Sound-reactive lightbox for a Sony launch',
+    summary: 'A sound-reactive lightbox that launched Sony\'s WH-1000XM4 headphones to press and creators at home.',
+    client: 'Sony Electronics',
+    clientShort: 'Sony',
+    category: 'Product Launch',
+    year: 2020,
+    image: '/landing/opt/sony-noise-lights.webp',
+    slug: 'sony-future-of-noise-cancellation',
+    affinity: { web: 0.05, installation: 0.3, lighting: 0.45, design: 0.2 },
+    images: ['/landing/opt/sony-noise-box.webp'],
+    description:
+      'A press preview for Sony\'s WH-1000XM4 noise-canceling headphones, planned as a live event and rebuilt as a kit for the home when COVID hit. Sam Cannon and Noah Rabinowitz led the idea and strategy, Jenn Whitney led the design, Chris Schuett produced, Kyle Chayka wrote the essays, and John J. Custer made the illustrations. Our part was the technology: the lightbox listens to the room and turns changes in noise into calm light. Over 60 percent of recipients published about it.',
+    services: ['Technologist'],
+    collaborators: [
+      { name: 'Sam Cannon', role: 'Creative director' },
+      { name: 'Noah Rabinowitz', role: 'Strategy and concept', url: 'https://noahrabinowitz.com/projects/the-future-of-noise-cancellation/' },
+      { name: 'Jenn Whitney', role: 'Creative director, design' },
+      { name: 'Chris Schuett', role: 'Producer' },
+      { name: 'Kyle Chayka', role: 'Author' },
+      { name: 'John J. Custer', role: 'Illustrator' },
+    ],
+  },
+  {
+    title: 'Coffee Five Project',
+    tagline: 'Coffee brand, packaging, and software',
+    summary: 'Brand, packaging, and software for Juan Medina\'s seed-to-cup coffee.',
+    client: 'Juan Medina',
+    category: 'Brand and Software',
+    year: 2025,
+    image: '/landing/opt/coffeefive.avif',
+    pageHero: '/landing/opt/coffee1.avif',
+    images: [
+      '/landing/opt/coff0.avif',
+      '/landing/opt/coffee6.avif',
+      '/landing/opt/coffee3.avif',
+      '/landing/opt/coffee2.avif',
+      '/landing/opt/coffee4.avif',
+      '/landing/opt/coffe5.avif',
+    ],
+    pairFirst: true,
+    slug: 'the-coffee-five',
+    affinity: { web: 0.4, installation: 0.1, lighting: 0.05, design: 0.45 },
+    website: 'https://www.thecoffeefive.com/en',
+    description:
+      'Seed to cup coffee from Juan Medina. Brand identity, packaging, and the software behind it.',
+    services: ['Brand identity', 'Packaging design', 'Software development'],
+  },
+  {
+    title: 'RSVP Platform',
+    tagline: 'WebGL RSVP for a trade show',
+    summary: 'A WebGL RSVP site and guest list tool for the ELA and Synergy trade show.',
+    client: 'ELA',
+    category: 'Interactive Web',
+    year: 2026,
+    image: '/landing/opt/ela-rsvp.avif',
+    slug: 'ela-synergy-tradeshow',
+    affinity: { web: 0.7, installation: 0.09, lighting: 0.03, design: 0.18 },
+    website: 'https://www.elasynergy-tradeshow.com/',
+    description:
+      'RSVP experience for the ELA and Synergy trade show. WebGL particle field, guest list admin, RSVP tracking.',
+    services: ['WebGL', 'Custom software', 'Email system', 'Event admin'],
+  },
+  {
+    title: 'Cox Conserves',
+    tagline: 'Sustainability pledge kiosks and web',
+    summary: 'Touchscreen pledge kiosks and a nationwide website for Cox\'s sustainability initiative.',
+    client: 'Cox Communications',
+    clientShort: 'Cox',
+    category: 'Experiential',
+    year: 2026,
+    image: '/landing/opt/cox.png',
+    slug: 'cox-conserves',
+    affinity: { web: 0.24, installation: 0.42, lighting: 0.24, design: 0.1 },
+    description:
+      "Five touchscreen pledge kiosks and a nationwide web rollout for Cox's sustainability initiative.",
+    services: ['Prototyping', 'UX/UI', 'Custom software', 'Kiosk deployment'],
+    colStart: 9, colSpan: 3, rowStart: 19, rowSpan: 7,
+  },
+  {
+    title: 'AT&T Living Mural',
+    tagline: 'Interactive LED mural for a stadium',
+    summary: 'An interactive LED mural for Mercedes-Benz Stadium, mapping how far fans traveled to get there.',
+    client: 'Mercedes-Benz Stadium',
+    clientShort: 'Mercedes-Benz',
+    category: 'Experiential',
+    year: 2024,
+    image: '/landing/opt/livingwalls.avif',
+    slug: 'living-walls-att',
+    affinity: { web: 0.3, installation: 0.38, lighting: 0.24, design: 0.08 },
+    description:
+      'An interactive installation mapping how far people traveled to the stadium — custom LED control system and website.',
+    services: ['Custom software', 'Control system', 'Lighting design', 'Web design and development'],
+    colStart: 6, colSpan: 5, rowStart: 28, rowSpan: 13,
+  },
+  {
     title: 'Bleed for the Throne',
     tagline: 'RFID blood drive at SXSW',
+    summary: 'An RFID blood drive at SXSW for HBO and the American Red Cross.',
     client: 'HBO',
     category: 'Experiential',
     year: 2019,
@@ -298,6 +338,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Super Bowl Video Park',
     tagline: 'Content for 15-foot LED screens',
+    summary: 'Content for 15-foot LED screens for the 2014 NY/NJ Super Bowl Host Committee.',
     client: 'NY/NJ Super Bowl Host Committee',
     clientShort: 'Super Bowl',
     category: 'Motion',
@@ -313,6 +354,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Moment',
     tagline: 'Gesture-reactive LED cubes for Dolby',
+    summary: 'Gesture-reactive LED cubes for Dolby\'s San Francisco headquarters.',
     client: 'Dolby',
     category: 'Immersive Installation',
     year: 2016,
@@ -327,6 +369,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: '9to5.tv',
     tagline: 'Livestreamed month-long digital art festival',
+    summary: 'A month-long livestreamed digital art festival in Atlanta, founded by Studio Studio.',
     client: 'Festival',
     clientShort: '9to5.tv',
     category: 'Event',
@@ -343,6 +386,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Scatter and Rise',
     tagline: 'Movement-reactive LED public artwork',
+    summary: 'A movement-reactive LED artwork for the Goat Farm Arts Center in Atlanta.',
     client: 'Goat Farm Arts',
     clientShort: 'Goat Farm',
     category: 'Public Art',
@@ -359,6 +403,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Gesture-Gesture',
     tagline: 'Interactive archive of hand gestures',
+    summary: 'An interactive archive of hand gestures, made for FOREWARD at Gallery 72.',
     client: 'Gallery 72',
     category: 'Tech Experiment',
     year: 2014,
@@ -380,6 +425,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Orbitals',
     tagline: 'Generative installation on orbital motion',
+    summary: 'A generative installation on orbital motion, made at Mana Contemporary.',
     client: 'Personal',
     clientShort: 'Orbitals',
     category: 'Tech Experiment',
@@ -398,6 +444,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Snowblind',
     tagline: 'Lighting for a Red Bull installation',
+    summary: 'Lighting design for The Principal, a Red Bull Studio installation at NEW INC.',
     client: 'Personal',
     clientShort: 'Snowblind',
     category: 'Public Art',
@@ -413,6 +460,7 @@ export const LANDING_PROJECTS: LandingProject[] = [
   {
     title: 'Pour Perfect',
     tagline: 'Guided pour-over coffee timer',
+    summary: 'A guided pour-over timer for anyone brewing coffee by hand.',
     client: 'Personal',
     clientShort: 'Pour Perfect',
     category: 'Tool',

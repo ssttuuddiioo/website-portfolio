@@ -52,6 +52,8 @@ export const IMAGE_SIZES: Record<string, [number, number]> = {
   '/landing/opt/sb-pablo.avif': [1500, 1000],
   '/landing/opt/scatter.avif': [1400, 1251],
   '/landing/opt/snow.avif': [1000, 667],
+  '/landing/opt/sony-noise-box.webp': [800, 640],
+  '/landing/opt/sony-noise-lights.webp': [800, 533],
   '/landing/opt/storybooth-1.avif': [1000, 653],
   '/landing/opt/storybooth-2.avif': [1600, 1067],
   '/landing/opt/storybooth-4.avif': [1500, 1000],
