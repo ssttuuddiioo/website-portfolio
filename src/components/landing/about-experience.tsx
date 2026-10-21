@@ -213,11 +213,11 @@ export function AboutExperience() {
               <span className="ab-eyebrow font-mono">Founder</span>
               <Reveal>
                 <p className="ab-small ab-cols font-display">
-                  Pablo Gnecco started the studio in 2015 as an inaugural member
-                  of NEW INC, the New Museum&apos;s incubator. We make
-                  experiences people haven&apos;t stood inside before: rooms
-                  that answer back, objects that listen, screens that stop
-                  feeling like screens. Each project is a chance to try
+                  We started in 2015, when Pablo Gnecco founded the studio as an
+                  inaugural member of NEW INC, the New Museum&apos;s incubator.
+                  Since then we&apos;ve made experiences people haven&apos;t
+                  stood inside before: rooms that answer back, objects that
+                  listen, screens that stop feeling like screens. Each project is a chance to try
                   something new, and we make them with designers, fabricators,
                   and technologists we admire, putting a crew together around
                   each idea. Sometimes we run the whole job; sometimes we join a
