@@ -54,10 +54,10 @@ function Reveal({
 }
 
 /** A full-width bar that opens a section of the sheet: label, title, count. */
-function SectionBar({ label, title, note }: { label: string; title: string; note?: string }) {
+function SectionBar({ label, title, note }: { label?: string; title: string; note?: string }) {
   return (
     <div className="ab-bar">
-      <span className="ab-eyebrow font-mono">{label}</span>
+      {label && <span className="ab-eyebrow font-mono">{label}</span>}
       <h2 className="ab-bartitle font-display">{title}</h2>
       {note && <span className="ab-eyebrow ab-barnote font-mono">{note}</span>}
     </div>
@@ -241,7 +241,6 @@ export function AboutExperience() {
           {/* ---- Agencies, then clients: a ruled grid each, a cell per logo -- */}
           <section className="ab-group">
             <SectionBar
-              label="Agencies and clients"
               title="Who we've made work with"
               note={`${AGENCY_LOGOS.length + CLIENT_LOGOS.length} and counting`}
             />
@@ -253,7 +252,7 @@ export function AboutExperience() {
               id is live navigation: the footer's capability column links to
               /about#services. */}
           <section id="services" className="ab-group">
-            <SectionBar label="What we do" title="Services" note={pad(SERVICES.length)} />
+            <SectionBar title="Services" note={pad(SERVICES.length)} />
             {SERVICES.map((s, i) => (
               <ToggleRow
                 key={s.title}
