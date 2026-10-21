@@ -9,9 +9,9 @@ import { INK } from './landing-theme'
  * back to a styled wordmark so the strip is always complete. Pauses on hover
  * and freezes entirely under prefers-reduced-motion.
  */
-type Logo = { name: string; src?: string; height?: number }
+export type Logo = { name: string; src?: string; height?: number }
 
-const LOGOS: Logo[] = [
+export const LOGOS: Logo[] = [
   { name: 'New Museum' },
   { name: 'Intel', src: '/logos/agency/intel.svg', height: 22 },
   { name: 'Dolby', src: '/logos/agency/dolby.svg', height: 20 },

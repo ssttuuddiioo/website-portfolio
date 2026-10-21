@@ -7,113 +7,48 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { StudioLockup } from './studio-lockup'
-import { ServicesAccordion } from './services-accordion'
-import { LogoMarquee } from './logo-marquee'
-import { FaqSection } from './faq-section'
-import { INK, BG, BLUE } from './landing-theme'
+import { SERVICES } from './services-accordion'
+import { LOGOS } from './logo-marquee'
+import { FAQS } from '@/lib/faqs'
+import { INK, BG, BLUE, RULE } from './landing-theme'
 
 const EASE = [0.22, 1, 0.36, 1] as const
-const GUTTER = 'var(--gutter, 1.5rem)'
 
-/* ---- small shared pieces ------------------------------------------------ */
-
-function Eyebrow({ children }: { children: ReactNode }) {
-  return (
-    <span
-      className="font-mono"
-      style={{
-        display: 'block',
-        fontSize: '0.7rem',
-        letterSpacing: '0.18em',
-        textTransform: 'uppercase',
-        color: 'rgba(232, 228, 223, 0.5)',
-      }}
-    >
-      {children}
-    </span>
-  )
-}
-
-/** Left cell of an about ledger row: mono label, dimmer detail under it. */
-function RowLabel({ title, detail }: { title: string; detail: string }) {
-  return (
-    <div
-      className="font-mono"
-      style={{ display: 'grid', gap: '0.4rem', alignContent: 'start' }}
-    >
-      <Eyebrow>{title}</Eyebrow>
-      <span
-        style={{
-          fontSize: '0.72rem',
-          letterSpacing: '0.04em',
-          color: 'rgba(232, 228, 223, 0.35)',
-        }}
-      >
-        {detail}
-      </span>
-    </div>
-  )
-}
+/** Logo-grid columns. The last row is padded out with blank cells. */
+const CLIENT_COLS = 6
+const CLIENT_FILLERS = (CLIENT_COLS - (LOGOS.length % CLIENT_COLS)) % CLIENT_COLS
+const pad = (n: number) => String(n).padStart(2, '0')
 
 function Reveal({
   children,
   delay = 0,
-  style,
+  className,
 }: {
   children: ReactNode
   delay?: number
-  style?: React.CSSProperties
+  className?: string
 }) {
   const reduce = useReducedMotion()
   return (
     <motion.div
-      initial={{ opacity: 0, y: reduce ? 0 : 26 }}
+      className={className}
+      initial={{ opacity: 0, y: reduce ? 0 : 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{
-        duration: reduce ? 0 : 0.7,
-        ease: EASE,
-        delay: reduce ? 0 : delay,
-      }}
-      style={style}
+      transition={{ duration: reduce ? 0 : 0.7, ease: EASE, delay: reduce ? 0 : delay }}
     >
       {children}
     </motion.div>
   )
 }
 
-function FramedImage({
-  src,
-  alt,
-  ratio,
-  sizes,
-  priority,
-}: {
-  src: string
-  alt: string
-  ratio: number
-  sizes: string
-  priority?: boolean
-}) {
+/** A full-width bar that opens a section of the sheet: label, title, count. */
+function SectionBar({ label, title, note }: { label: string; title: string; note?: string }) {
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        aspectRatio: ratio,
-        overflow: 'hidden',
-        borderRadius: '20px',
-        background: 'rgba(232, 228, 223, 0.04)',
-      }}
-    >
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes={sizes}
-        priority={priority}
-        className="object-cover"
-      />
+    <div className="ab-bar">
+      <span className="ab-eyebrow font-mono">{label}</span>
+      <h2 className="ab-bartitle font-display">{title}</h2>
+      {note && <span className="ab-eyebrow ab-barnote font-mono">{note}</span>}
     </div>
   )
 }
@@ -121,84 +56,41 @@ function FramedImage({
 /* ---- page --------------------------------------------------------------- */
 
 /**
- * Standalone /about page. A normal top-to-bottom scroll (no wordmark
- * scroll-jacking): studio intro, a deeper "practice" write-up with imagery, a
- * scrolling client-logo marquee, the services accordion, the contact form,
- * an FAQ, and the footer. Reached from the homepage about moment's "Learn More".
+ * Standalone /about page, on the same ruled sheet as a project page: a head
+ * row closed by the nav dock, then every section as rows of cells split on
+ * the media | rail line, so the dock's left edge, the photo's edge and every
+ * label column fall on one vertical rule down the page. The studio, the
+ * founder, clients, services, a way to get in touch, and the FAQ, in that
+ * order, then the footer.
  */
 export function AboutExperience() {
   return (
     <>
-      {/* inPage={false} → nav links route back to the homepage's /#sections. */}
       <LandingSidebar active="about" inPage={false} />
 
       <main style={{ position: 'relative', zIndex: 3 }}>
-        {/* Top brand row: the landing's STUDIO lockup, in the same corner it
-            holds on the landing, one --edge in from the top and left. */}
-        <div style={{ padding: 'var(--edge) var(--edge) 0' }}>
-          <StudioLockup />
-        </div>
+        <div className="ab-sheet">
+          {/* ---- Head row ---------------------------------------------- */}
+          <div className="ab-head">
+            <div className="ab-mark">
+              <StudioLockup />
+            </div>
+            <div className="ab-titlebar">
+              <span className="ab-title font-display">About</span>
+              <span className="ab-eyebrow font-mono">Brooklyn, NY · Since 2015</span>
+            </div>
+          </div>
 
-        {/* ---- Intro -------------------------------------------------------- */}
-        {/* A ledger, like the project pages: headline, then ruled rows with a
-            mono label on the left and the copy in one shared column on the
-            right. The photo spans the sheet between the two rows. Mobile:
-            everything stacks, label above copy. */}
-        <style>{`
-          .about-row {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr);
-            row-gap: 1rem;
-            padding-top: 1.25rem;
-            border-top: 1px solid rgba(232, 228, 223, 0.15);
-          }
-          @media (min-width: 900px) {
-            .about-row {
-              grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-              column-gap: clamp(2rem, 4vw, 3rem);
-            }
-          }
-        `}</style>
-        <section
-          style={{
-            padding: `clamp(3rem, 8vw, 6rem) ${GUTTER} clamp(2rem, 5vw, 4rem)`,
-          }}
-        >
-          <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-            <Reveal>
-              <Eyebrow>About</Eyebrow>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h1
-                className="font-display"
-                style={{
-                  fontWeight: 700,
-                  fontSize: 'clamp(2.2rem, 6.5vw, 4.5rem)',
-                  lineHeight: 1.02,
-                  letterSpacing: '-0.03em',
-                  color: INK,
-                  margin: '1.25rem 0 0',
-                  maxWidth: '18ch',
-                }}
-              >
-                An art and technology studio in Brooklyn.
-              </h1>
-            </Reveal>
-
-            <Reveal delay={0.1} style={{ marginTop: 'clamp(2rem, 4vw, 3rem)' }}>
-              <div className="about-row">
-                <RowLabel title="Studio" detail="Brooklyn, NY · Since 2015" />
-                <p
-                  className="font-display"
-                  style={{
-                    margin: 0,
-                    maxWidth: '46ch',
-                    fontWeight: 500,
-                    fontSize: 'clamp(1.1rem, 1.7vw, 1.35rem)',
-                    lineHeight: 1.5,
-                    color: 'rgba(232, 228, 223, 0.85)',
-                  }}
-                >
+          {/* ---- Studio: the statement over the work, the photo in the rail */}
+          <section className="ab-split ab-hero">
+            <div className="ab-cell ab-herotext">
+              <Reveal>
+                <h1 className="ab-headline font-display">
+                  An art and technology studio in Brooklyn.
+                </h1>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p className="ab-lede font-display">
                   Studio Studio makes work for galleries, festivals, retail,
                   brand pop-ups, and public space. We build installations,
                   websites, apps, and sometimes lamps that run other apps for
@@ -206,32 +98,25 @@ export function AboutExperience() {
                   institutions. Same tools, same care, sometimes from concept
                   to making the actual sausage.
                 </p>
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.15} style={{ marginTop: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
-              <FramedImage
+              </Reveal>
+            </div>
+            <div className="ab-photo">
+              <Image
                 src="/landing/opt/light-around-us2.avif"
                 alt="Studio Studio installation work"
-                ratio={16 / 9}
-                sizes="(min-width: 1100px) 1100px, 92vw"
+                fill
+                sizes="(min-width: 900px) 40vw, 100vw"
                 priority
+                style={{ objectFit: 'cover' }}
               />
-            </Reveal>
+            </div>
+          </section>
 
-            <Reveal delay={0.1} style={{ marginTop: 'clamp(2rem, 4vw, 3rem)' }}>
-              <div className="about-row">
-                <RowLabel title="Founder" detail="Pablo Gnecco" />
-                <p
-                  className="font-display"
-                  style={{
-                    margin: 0,
-                    maxWidth: '52ch',
-                    fontSize: 'clamp(0.98rem, 1.3vw, 1.12rem)',
-                    lineHeight: 1.6,
-                    color: 'rgba(232, 228, 223, 0.65)',
-                  }}
-                >
+          {/* ---- Founder: the story in the wide column, the facts in the rail */}
+          <section className="ab-split">
+            <div className="ab-cell">
+              <Reveal>
+                <p className="ab-body font-display">
                   Pablo Gnecco started the studio in 2015 as an inaugural member
                   of NEW INC, the New Museum&apos;s incubator. The idea from day
                   one: the commercial work funds the art, and the art sharpens
@@ -241,155 +126,352 @@ export function AboutExperience() {
                   fabrication shop, or an install crew that&apos;s already on
                   the job.
                 </p>
+              </Reveal>
+            </div>
+            <div className="ab-cell ab-facts">
+              <span className="ab-eyebrow font-mono">Founder</span>
+              <dl>
+                <div>
+                  <dt className="ab-eyebrow font-mono">Name</dt>
+                  <dd className="font-display">Pablo Gnecco</dd>
+                </div>
+                <div>
+                  <dt className="ab-eyebrow font-mono">Studio</dt>
+                  <dd className="font-display">Brooklyn, New York</dd>
+                </div>
+                <div>
+                  <dt className="ab-eyebrow font-mono">Since</dt>
+                  <dd className="font-display">2015, NEW INC</dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+
+          {/* ---- Clients: one ruled grid, a cell per name ------------------- */}
+          <section className="ab-group">
+            <SectionBar
+              label="Clients and partners"
+              title="Who we've made work with"
+              note={`${LOGOS.length} and counting`}
+            />
+            <div className="ab-clients">
+              {LOGOS.map((l) => (
+                <div key={l.name} className="ab-client">
+                  {l.src ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={l.src}
+                      alt={l.name}
+                      style={{ height: `calc(${l.height ?? 22}px * 1.6)` }}
+                    />
+                  ) : (
+                    <span className="font-display">{l.name}</span>
+                  )}
+                </div>
+              ))}
+              {Array.from({ length: CLIENT_FILLERS }, (_, i) => (
+                <div key={`f${i}`} className="ab-client" aria-hidden />
+              ))}
+            </div>
+          </section>
+
+          {/* ---- Services: numbered rows, the description in the rail ------
+              id is live navigation: the footer's capability column links to
+              /about#services. */}
+          <section id="services" className="ab-group">
+            <SectionBar label="What we do" title="Services" note={pad(SERVICES.length)} />
+            {SERVICES.map((s, i) => (
+              <div key={s.title} className="ab-split ab-service">
+                <div className="ab-cell ab-rowhead">
+                  <span className="ab-num font-mono">{pad(i + 1)}</span>
+                  <h3 className="ab-servicetitle font-display">{s.title}</h3>
+                </div>
+                <div className="ab-cell">
+                  <p className="ab-small font-display">{s.body}</p>
+                </div>
               </div>
-            </Reveal>
-          </div>
-        </section>
+            ))}
+          </section>
 
-        {/* ---- Clients and partners (logo marquee) ------------------------- */}
-        <section style={{ padding: `clamp(2.5rem, 6vw, 4.5rem) 0` }}>
-          <Reveal style={{ marginBottom: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
-            <div
-              style={{
-                padding: `0 ${GUTTER}`,
-                textAlign: 'center',
-              }}
-            >
-              <Eyebrow>Clients and partners</Eyebrow>
+          {/* ---- Get in touch: the contact page's pitch, in miniature -------
+              Keeps its #contact anchor so older /about#contact links land. */}
+          <section id="contact" className="ab-split ab-cta">
+            <div className="ab-cell ab-ctapitch">
+              <span className="ab-eyebrow font-mono">Get in touch</span>
+              <h2 className="ab-ctahead font-display">Have a project in mind?</h2>
+              <p className="ab-small font-display">
+                Tell us a little about it and we&apos;ll set up a call.
+              </p>
             </div>
-          </Reveal>
-          <LogoMarquee />
-        </section>
-
-        {/* ---- Services ----------------------------------------------------- */}
-        {/* id is live navigation: the nav dock and the footer's capability
-            column both link to /about#services. */}
-        <section
-          id="services"
-          style={{
-            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
-          }}
-        >
-          <Reveal style={{ marginBottom: 'clamp(2rem, 5vw, 3.5rem)' }}>
-            <div style={{ maxWidth: '748px', margin: '0 auto', textAlign: 'center' }}>
-              <Eyebrow>What we do</Eyebrow>
-              <h2
-                className="font-display"
-                style={{
-                  fontWeight: 700,
-                  fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-                  lineHeight: 1.05,
-                  letterSpacing: '-0.03em',
-                  color: INK,
-                  margin: '1rem 0 0',
-                }}
-              >
-                Services
-              </h2>
+            <div className="ab-cell ab-ctacell">
+              <Link href="/contact" className="ab-ctabtn font-display">
+                <span>Start a project</span>
+                <span aria-hidden>→</span>
+              </Link>
             </div>
-          </Reveal>
-          <ServicesAccordion />
-        </section>
+          </section>
 
-        {/* ---- Contact ------------------------------------------------------ */}
-        <section
-          id="contact"
-          style={{
-            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
-          }}
-        >
-          <Reveal>
-            <div
-              className="grid grid-cols-1 md:grid-cols-2"
-              style={{
-                width: '100%',
-                maxWidth: '1100px',
-                margin: '0 auto',
-                gap: 'clamp(2.5rem, 5vw, 5rem)',
-                alignItems: 'start',
-              }}
-            >
-              {/* Left — pitch + location. */}
-              <div
-                className="flex flex-col font-display"
-                style={{ gap: '1.25rem', color: INK }}
-              >
-                <Eyebrow>Get in touch</Eyebrow>
-                <h2
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 'clamp(1.8rem, 3.4vw, 2.8rem)',
-                    lineHeight: 1.05,
-                    letterSpacing: '-0.03em',
-                    margin: 0,
-                  }}
-                >
-                  Have a project in mind?
-                </h2>
-                <p
-                  style={{
-                    margin: 0,
-                    maxWidth: '36ch',
-                    fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-                    lineHeight: 1.6,
-                    color: 'rgba(232, 228, 223, 0.7)',
-                  }}
-                >
-                  Tell us a little about it and we&apos;ll set up a call.
-                </p>
+          {/* ---- FAQ: the question in the wide column, the answer in the rail */}
+          <section className="ab-group">
+            <SectionBar label="Questions" title="Frequently asked" note={pad(FAQS.length)} />
+            {FAQS.map((f, i) => (
+              <div key={f.q} className="ab-split">
+                <div className="ab-cell ab-rowhead">
+                  <span className="ab-num font-mono">{pad(i + 1)}</span>
+                  <h3 className="ab-question font-display">{f.q}</h3>
+                </div>
+                <div className="ab-cell">
+                  <p className="ab-small font-display">{f.a}</p>
+                </div>
               </div>
-
-              {/* Right — the way to the contact page, which carries the full
-                  enquiry form. The section keeps its #contact anchor so older
-                  /about#contact links still land here. */}
-              <div className="flex md:justify-end md:self-end">
-                <Link
-                  href="/contact"
-                  className="font-display"
-                  style={{
-                    fontWeight: 600,
-                    fontSize: 'clamp(1.15rem, 2.2vw, 1.6rem)',
-                    letterSpacing: '-0.01em',
-                    color: BLUE,
-                    textDecoration: 'none',
-                  }}
-                >
-                  Start a project <span aria-hidden>→</span>
-                </Link>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* ---- FAQ ---------------------------------------------------------- */}
-        <section
-          style={{
-            padding: `clamp(3rem, 7vw, 6rem) ${GUTTER}`,
-          }}
-        >
-          <Reveal style={{ marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
-            <div style={{ maxWidth: '820px', margin: '0 auto', textAlign: 'center' }}>
-              <Eyebrow>Questions</Eyebrow>
-              <h2
-                className="font-display"
-                style={{
-                  fontWeight: 700,
-                  fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-                  lineHeight: 1.05,
-                  letterSpacing: '-0.03em',
-                  color: INK,
-                  margin: '1rem 0 0',
-                }}
-              >
-                Frequently asked
-              </h2>
-            </div>
-          </Reveal>
-          <FaqSection />
-        </section>
+            ))}
+          </section>
+        </div>
 
         <SiteFooter statement={false} />
       </main>
+
+      <style>{`
+        /* The sheet: inset from every edge, painted in the rule colour with
+           every cell in the ground, so each 1px gap is a hairline. */
+        .ab-sheet {
+          --cell-pad: clamp(1rem, 2vw, 1.75rem);
+          margin: calc(var(--sheet-inset) + env(safe-area-inset-top))
+                  var(--sheet-inset) var(--sheet-inset);
+          display: grid;
+          gap: 1px;
+          background: ${RULE};
+          border: 1px solid ${RULE};
+          color: ${INK};
+        }
+        .ab-group { display: grid; gap: 1px; }
+
+        .ab-eyebrow {
+          font-size: clamp(0.6rem, 0.8vw, 0.7rem);
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: rgba(232, 228, 223, 0.5);
+        }
+
+        /* Head row: the lockup in its own cell, then the title strip, which
+           stops at the dock's left edge (--dock-w, published by the dock). */
+        .ab-head {
+          display: grid;
+          grid-template-columns: auto minmax(0, 1fr);
+          gap: 1px;
+        }
+        .ab-mark {
+          background: ${BG};
+          display: flex;
+          align-items: center;
+          min-height: var(--dock-h);
+          padding: 0.75rem var(--cell-pad) 0.75rem calc(var(--cell-pad) + 0.4rem);
+        }
+        .ab-titlebar {
+          background: ${BG};
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0.4rem clamp(1rem, 2.5vw, 2rem);
+          padding: 0.4rem calc(var(--dock-w, 26rem) + var(--cell-pad)) 0.4rem var(--cell-pad);
+        }
+        .ab-title {
+          font-weight: 400;
+          font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+          line-height: 1;
+          letter-spacing: -0.02em;
+        }
+
+        /* Every row splits on the rail line, so the column rule runs unbroken
+           from the dock to the last question. */
+        .ab-split {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) var(--rail-w);
+          gap: 1px;
+        }
+        .ab-cell {
+          background: ${BG};
+          padding: clamp(1.5rem, 2.6vw, 2.25rem) var(--cell-pad);
+        }
+
+        /* Studio. With the head row it fills the first screen: the statement
+           big at the top of its cell, the paragraph at the foot, the photo
+           running the rail's full height beside them. */
+        .ab-hero {
+          min-height: calc(100svh - 2 * var(--sheet-inset) - var(--dock-h) - 3px);
+        }
+        .ab-herotext {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 3rem;
+        }
+        .ab-headline {
+          margin: 0;
+          max-width: 12ch;
+          font-weight: 700;
+          font-size: clamp(3rem, 6.4vw, 7rem);
+          line-height: 0.92;
+          letter-spacing: -0.045em;
+          color: #fff;
+        }
+        .ab-lede {
+          margin: 0;
+          max-width: 40ch;
+          font-size: clamp(1.05rem, 1.45vw, 1.3rem);
+          line-height: 1.5;
+          color: rgba(232, 228, 223, 0.8);
+        }
+        .ab-photo {
+          position: relative;
+          min-height: 22rem;
+          overflow: hidden;
+          background: ${BG};
+        }
+
+        /* Founder */
+        .ab-body {
+          margin: 0;
+          max-width: 34ch;
+          font-size: clamp(1.4rem, 2.2vw, 2rem);
+          line-height: 1.3;
+          letter-spacing: -0.01em;
+          color: ${INK};
+        }
+        .ab-facts {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 2rem;
+        }
+        .ab-facts dl { margin: 0; display: grid; gap: 1rem; }
+        .ab-facts dd { margin: 0.3rem 0 0; font-size: 1.1rem; }
+
+        /* Section bars */
+        .ab-bar {
+          background: ${BG};
+          display: flex;
+          flex-wrap: wrap;
+          align-items: baseline;
+          gap: 0.5rem clamp(1rem, 2.5vw, 2rem);
+          padding: clamp(1.25rem, 2.4vw, 2rem) var(--cell-pad);
+        }
+        .ab-bartitle {
+          margin: 0;
+          font-weight: 400;
+          font-size: clamp(1.6rem, 3vw, 2.6rem);
+          line-height: 1;
+          letter-spacing: -0.03em;
+          color: ${INK};
+        }
+        .ab-barnote { margin-left: auto; }
+
+        /* Clients */
+        .ab-clients {
+          display: grid;
+          grid-template-columns: repeat(${CLIENT_COLS}, minmax(0, 1fr));
+          gap: 1px;
+        }
+        .ab-client {
+          background: ${BG};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: clamp(6rem, 9vw, 8.5rem);
+          padding: 1rem;
+          text-align: center;
+          isolation: isolate;
+        }
+        /* The files come in every colour on every ground. Greyscale, then
+           invert, then lighten against the cell: dark type turns light and any
+           white field behind it drops out, so they all sit on the ground like
+           the set names beside them. */
+        .ab-client img {
+          width: auto;
+          max-width: 78%;
+          object-fit: contain;
+          opacity: 0.6;
+          filter: grayscale(1) invert(1);
+          mix-blend-mode: lighten;
+          transition: opacity 300ms;
+        }
+        .ab-client span {
+          font-weight: 700;
+          font-size: clamp(1rem, 1.4vw, 1.2rem);
+          letter-spacing: -0.01em;
+          opacity: 0.5;
+          transition: opacity 300ms;
+        }
+        .ab-client:hover img,
+        .ab-client:hover span { opacity: 1; }
+
+        /* Services and FAQ rows: a number, then the line, in the wide column;
+           the copy in the rail. */
+        .ab-rowhead {
+          display: grid;
+          grid-template-columns: 3rem minmax(0, 1fr);
+          align-items: baseline;
+        }
+        .ab-num { font-size: 0.75rem; color: rgba(232, 228, 223, 0.4); }
+        .ab-servicetitle {
+          margin: 0;
+          font-weight: 400;
+          font-size: clamp(1.6rem, 3vw, 2.75rem);
+          line-height: 1.05;
+          letter-spacing: -0.03em;
+          transition: color 250ms;
+        }
+        .ab-service:hover .ab-servicetitle { color: ${BLUE}; }
+        .ab-question {
+          margin: 0;
+          max-width: 26ch;
+          font-weight: 400;
+          font-size: clamp(1.25rem, 2vw, 1.75rem);
+          line-height: 1.2;
+          letter-spacing: -0.02em;
+        }
+        .ab-small {
+          margin: 0;
+          font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+          line-height: 1.6;
+          color: rgba(232, 228, 223, 0.7);
+        }
+
+        /* Get in touch */
+        .ab-ctapitch {
+          display: grid;
+          gap: 1rem;
+          padding-top: clamp(2.5rem, 5vw, 4.5rem);
+          padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
+        }
+        .ab-ctahead {
+          margin: 0;
+          max-width: 14ch;
+          font-weight: 400;
+          font-size: clamp(2.4rem, 5vw, 4.75rem);
+          line-height: 0.98;
+          letter-spacing: -0.04em;
+          color: #fff;
+        }
+        .ab-ctacell { display: flex; align-items: flex-end; }
+        .ab-ctabtn {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          height: 3.5rem;
+          padding: 0 1.4rem;
+          border-radius: 999px;
+          background: ${BLUE};
+          color: #fff;
+          font-size: 1.15rem;
+          font-weight: 700;
+          text-decoration: none;
+          transition: transform 200ms;
+        }
+        .ab-ctabtn:hover { transform: translateY(-1px); }
+        .ab-ctabtn:focus-visible { outline: 2px solid ${BLUE}; outline-offset: 3px; }
+      `}</style>
 
       {/* Background tint behind everything (matches the home shell). */}
       <div
