@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { client, isSanityConfigured } from '@/lib/sanity/client'
-import { IDEAS } from '@/lib/ideas'
+import { IDEAS, NOTES_ENABLED } from '@/lib/ideas'
 import { getProjectSlugs } from '@/lib/project-page'
 
 const SITE_URL = 'https://studiostudio.nyc'
@@ -34,18 +34,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: 'monthly', priority: 1.0 },
     { url: `${SITE_URL}/work`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${SITE_URL}/ideas`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
   ]
 
   // Notes. No date on the Idea type yet, so these fall back to build time —
   // add a `date` field to src/lib/ideas.ts and use it here when there is one.
-  const ideaRoutes: MetadataRoute.Sitemap = IDEAS.map((idea) => ({
-    url: `${SITE_URL}/ideas/${idea.slug}`,
-    lastModified: now,
-    changeFrequency: 'yearly',
-    priority: 0.7,
-  }))
+  const ideaRoutes: MetadataRoute.Sitemap = NOTES_ENABLED
+    ? [
+        { url: `${SITE_URL}/ideas`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+        ...IDEAS.map((idea) => ({
+          url: `${SITE_URL}/ideas/${idea.slug}`,
+          lastModified: now,
+          changeFrequency: 'yearly' as const,
+          priority: 0.7,
+        })),
+      ]
+    : []
 
   // Projects are currently reachable at two routes: the landing's /work/[slug]
   // (placeholder data) and the legacy root-level /[slug] (Sanity). Each project

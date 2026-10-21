@@ -1,4 +1,4 @@
-import { IDEAS } from '@/lib/ideas'
+import { IDEAS, NOTES_ENABLED } from '@/lib/ideas'
 import { LANDING_PROJECTS } from '@/lib/landing-projects'
 import { PLACEHOLDER_PROJECTS } from '@/lib/placeholder-projects'
 import { FAQS } from '@/lib/faqs'
@@ -64,12 +64,14 @@ ${section('Pages', [
   `- [Home](${SITE_URL}/): studio overview, selected work, services, and contact.`,
   `- [Work](${SITE_URL}/work): full project index.`,
   `- [About](${SITE_URL}/about): practice, background, recognition, and FAQ.`,
-  `- [Notes](${SITE_URL}/ideas): experiments, stories, and resources from the studio.`,
+  ...(NOTES_ENABLED
+    ? [`- [Notes](${SITE_URL}/ideas): experiments, stories, and resources from the studio.`]
+    : []),
   `- [Contact](${SITE_URL}/contact): new projects, collaborations, and consulting.`,
 ])}
 ${section('Work', projectLinks)}
 ${section('Case studies (full project pages)', caseStudyLinks)}
-${section('Notes', noteLinks)}
+${NOTES_ENABLED ? section('Notes', noteLinks) : ''}
 ${section('Frequently asked', faqLines)}
 ## Contact
 

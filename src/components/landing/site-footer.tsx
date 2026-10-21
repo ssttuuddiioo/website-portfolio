@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { NOTES_ENABLED } from '@/lib/ideas'
 import { SocialRow } from './landing-sidebar'
 import { SubscribeForm } from './subscribe-form'
 import { IKB, PAPER, paper } from './landing-theme'
@@ -17,7 +18,7 @@ const SEE_MORE = [
   { label: 'Home', href: '/' },
   { label: 'Work', href: '/#work' },
   { label: 'About', href: '/about' },
-  { label: 'Ideas', href: '/ideas' },
+  ...(NOTES_ENABLED ? [{ label: 'Ideas', href: '/ideas' }] : []),
   { label: 'Contact', href: '/contact' },
 ]
 

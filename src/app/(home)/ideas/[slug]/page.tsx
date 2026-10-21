@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import { IDEAS, IDEAS_BY_SLUG, nextIdea } from '@/lib/ideas'
+import { notFound, redirect } from 'next/navigation'
+import { IDEAS, IDEAS_BY_SLUG, NOTES_ENABLED, nextIdea } from '@/lib/ideas'
 import { IdeaExperience } from '@/components/landing/idea-experience'
 import { smartTruncate } from '@/lib/seo/metadata'
 import { JsonLd } from '@/lib/seo/json-ld'
@@ -51,6 +51,8 @@ export default async function IdeaPage({
 }: {
   params: Promise<{ slug: string }>
 }) {
+  // Notes are switched off for now (see NOTES_ENABLED); send visitors home.
+  if (!NOTES_ENABLED) redirect('/')
   const { slug } = await params
   const idea = IDEAS_BY_SLUG[slug]
   if (!idea) notFound()

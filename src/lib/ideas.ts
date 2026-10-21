@@ -5,6 +5,13 @@
    detail template (IdeaExperience).
    ============================================ */
 
+/**
+ * Notes (the /ideas pages) are switched off for now: the pages send visitors
+ * home, and the footer, sitemap and llms.txt leave them out. Flip this back to
+ * true to bring the whole section back; nothing else needs to change.
+ */
+export const NOTES_ENABLED = false
+
 export interface Idea {
   slug: string
   title: string

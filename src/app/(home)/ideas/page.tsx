@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { IDEAS } from '@/lib/ideas'
+import { redirect } from 'next/navigation'
+import { IDEAS, NOTES_ENABLED } from '@/lib/ideas'
 import { DEFAULT_OG_IMAGE } from '@/lib/seo/metadata'
 import { IdeasIndex } from '@/components/landing/ideas-index'
 import { JsonLd } from '@/lib/seo/json-ld'
@@ -29,6 +30,8 @@ export const metadata: Metadata = {
 }
 
 export default function IdeasPage() {
+  // Notes are switched off for now (see NOTES_ENABLED); send visitors home.
+  if (!NOTES_ENABLED) redirect('/')
   const jsonLd: JsonLdObject[] = [
     itemListSchema({
       name: 'Notes from Studio Studio',
