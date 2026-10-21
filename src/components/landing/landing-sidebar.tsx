@@ -34,10 +34,8 @@ const ITEMS: Item[] = [
   // screen, which is why the marks sit together rather than the grid being
   // parked in a far corner.
   { id: 'index', label: 'index', kind: 'index' },
-  // About is the footer band: the landing's statement now opens the page at the
-  // fold, and the studio's detail — nav, capabilities, socials — is what the
-  // band carries.
-  { id: 'about', label: 'about', kind: 'scroll', offHref: '/#site-footer' },
+  // About is its own page, from everywhere — the same as contact.
+  { id: 'about', label: 'about', kind: 'route', href: '/about' },
   // Work is the index grid standing in for the image trail on the landing's
   // first screen, not a section. On the landing the page flips it on; from
   // anywhere else the hash tells the landing to open with it up.

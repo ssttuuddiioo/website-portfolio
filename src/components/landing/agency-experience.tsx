@@ -66,11 +66,10 @@ const HERO_TRAIL = LANDING_PROJECTS.map((p) => ({
 // the trail on the first screen — and services/contact live on their own pages.
 const SPY_IDS = ['home', 'site-footer']
 
-// The footer band IS the about destination (the dock's about item scrolls to
-// it), so the spy reports it under that item's name rather than the element's.
-const SPY_ITEM: Record<string, string> = {
-  'site-footer': 'about',
-}
+// Sections the spy should report under a nav item's name rather than the
+// element's. Empty since about became its own page: the footer band no longer
+// stands for any dock item, so nothing lights up while it's in view.
+const SPY_ITEM: Record<string, string> = {}
 
 // The second (mirrored) wordmark swaps to the active section's name (staying
 // rotated 180°); home/about fall back to STUDIO.

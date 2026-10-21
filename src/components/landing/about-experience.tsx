@@ -141,18 +141,28 @@ export function AboutExperience() {
           }}
         >
           <div style={{ width: '100%', maxWidth: '1100px' }}>
+            {/* The studio mark, as on the project and contact pages: black type
+                on white in the file, so inverted and blended with `lighten` to
+                leave white letterforms straight on the ground. */}
             <Link
               href="/"
-              className="font-display"
-              style={{
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                letterSpacing: '0.02em',
-                color: INK,
-                textDecoration: 'none',
-              }}
+              aria-label="Studio Studio — home"
+              style={{ display: 'inline-block', isolation: 'isolate' }}
             >
-              Studio Studio
+              <Image
+                src="/logo.png"
+                alt=""
+                width={1254}
+                height={612}
+                priority
+                style={{
+                  display: 'block',
+                  width: 'clamp(3.5rem, 5vw, 4.75rem)',
+                  height: 'auto',
+                  filter: 'invert(1)',
+                  mixBlendMode: 'lighten',
+                }}
+              />
             </Link>
           </div>
         </div>
