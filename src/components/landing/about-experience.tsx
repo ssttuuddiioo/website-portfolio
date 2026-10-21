@@ -236,6 +236,16 @@ export function AboutExperience() {
            every cell in the ground, so each 1px gap is a hairline. */
         .ab-sheet {
           --cell-pad: clamp(1rem, 2vw, 1.75rem);
+          /* The whole page sets in four sizes and two weights: the statement
+             alone at XL and bold; titles, rows and the founder's story at L;
+             every paragraph, name and button at M; labels in mono. */
+          --ab-xl: clamp(3rem, 6.4vw, 7rem);
+          --ab-l: clamp(1.5rem, 2.4vw, 2.25rem);
+          --ab-l-lh: 1.1;
+          --ab-l-ls: -0.025em;
+          --ab-m: clamp(1rem, 1.15vw, 1.125rem);
+          --ab-m-lh: 1.55;
+          --ab-mono: clamp(0.62rem, 0.8vw, 0.7rem);
           margin: calc(var(--sheet-inset) + env(safe-area-inset-top))
                   var(--sheet-inset) var(--sheet-inset);
           display: grid;
@@ -247,7 +257,7 @@ export function AboutExperience() {
         .ab-group { display: grid; gap: 1px; }
 
         .ab-eyebrow {
-          font-size: clamp(0.6rem, 0.8vw, 0.7rem);
+          font-size: var(--ab-mono);
           letter-spacing: 0.18em;
           text-transform: uppercase;
           color: rgba(232, 228, 223, 0.5);
@@ -277,9 +287,9 @@ export function AboutExperience() {
         }
         .ab-title {
           font-weight: 400;
-          font-size: clamp(1.4rem, 2.6vw, 2.1rem);
-          line-height: 1;
-          letter-spacing: -0.02em;
+          font-size: var(--ab-l);
+          line-height: var(--ab-l-lh);
+          letter-spacing: var(--ab-l-ls);
         }
 
         /* Every row splits on the rail line, so the column rule runs unbroken
@@ -310,7 +320,7 @@ export function AboutExperience() {
           margin: 0;
           max-width: 12ch;
           font-weight: 700;
-          font-size: clamp(3rem, 6.4vw, 7rem);
+          font-size: var(--ab-xl);
           line-height: 0.92;
           letter-spacing: -0.045em;
           color: #fff;
@@ -318,8 +328,8 @@ export function AboutExperience() {
         .ab-lede {
           margin: 0;
           max-width: 40ch;
-          font-size: clamp(1.05rem, 1.45vw, 1.3rem);
-          line-height: 1.5;
+          font-size: var(--ab-m);
+          line-height: var(--ab-m-lh);
           color: rgba(232, 228, 223, 0.8);
         }
         .ab-photo {
@@ -333,9 +343,9 @@ export function AboutExperience() {
         .ab-body {
           margin: 0;
           max-width: 34ch;
-          font-size: clamp(1.4rem, 2.2vw, 2rem);
-          line-height: 1.3;
-          letter-spacing: -0.01em;
+          font-size: var(--ab-l);
+          line-height: 1.25;
+          letter-spacing: var(--ab-l-ls);
           color: ${INK};
         }
         .ab-facts {
@@ -345,7 +355,7 @@ export function AboutExperience() {
           gap: 2rem;
         }
         .ab-facts dl { margin: 0; display: grid; gap: 1rem; }
-        .ab-facts dd { margin: 0.3rem 0 0; font-size: 1.1rem; }
+        .ab-facts dd { margin: 0.3rem 0 0; font-size: var(--ab-m); }
 
         /* Section bars */
         .ab-bar {
@@ -359,9 +369,9 @@ export function AboutExperience() {
         .ab-bartitle {
           margin: 0;
           font-weight: 400;
-          font-size: clamp(1.6rem, 3vw, 2.6rem);
-          line-height: 1;
-          letter-spacing: -0.03em;
+          font-size: var(--ab-l);
+          line-height: var(--ab-l-lh);
+          letter-spacing: var(--ab-l-ls);
           color: ${INK};
         }
         .ab-barnote { margin-left: auto; }
@@ -396,9 +406,9 @@ export function AboutExperience() {
           transition: opacity 300ms;
         }
         .ab-client span {
-          font-weight: 700;
-          font-size: clamp(1rem, 1.4vw, 1.2rem);
-          letter-spacing: -0.01em;
+          font-weight: 400;
+          font-size: var(--ab-m);
+          letter-spacing: 0;
           opacity: 0.5;
           transition: opacity 300ms;
         }
@@ -412,13 +422,13 @@ export function AboutExperience() {
           grid-template-columns: 3rem minmax(0, 1fr);
           align-items: baseline;
         }
-        .ab-num { font-size: 0.75rem; color: rgba(232, 228, 223, 0.4); }
+        .ab-num { font-size: var(--ab-mono); letter-spacing: 0.18em; color: rgba(232, 228, 223, 0.4); }
         .ab-servicetitle {
           margin: 0;
           font-weight: 400;
-          font-size: clamp(1.6rem, 3vw, 2.75rem);
-          line-height: 1.05;
-          letter-spacing: -0.03em;
+          font-size: var(--ab-l);
+          line-height: var(--ab-l-lh);
+          letter-spacing: var(--ab-l-ls);
           transition: color 250ms;
         }
         .ab-service:hover .ab-servicetitle { color: ${BLUE}; }
@@ -426,14 +436,14 @@ export function AboutExperience() {
           margin: 0;
           max-width: 26ch;
           font-weight: 400;
-          font-size: clamp(1.25rem, 2vw, 1.75rem);
-          line-height: 1.2;
-          letter-spacing: -0.02em;
+          font-size: var(--ab-l);
+          line-height: var(--ab-l-lh);
+          letter-spacing: var(--ab-l-ls);
         }
         .ab-small {
           margin: 0;
-          font-size: clamp(0.95rem, 1.1vw, 1.05rem);
-          line-height: 1.6;
+          font-size: var(--ab-m);
+          line-height: var(--ab-m-lh);
           color: rgba(232, 228, 223, 0.7);
         }
 
@@ -448,9 +458,9 @@ export function AboutExperience() {
           margin: 0;
           max-width: 14ch;
           font-weight: 400;
-          font-size: clamp(2.4rem, 5vw, 4.75rem);
-          line-height: 0.98;
-          letter-spacing: -0.04em;
+          font-size: var(--ab-l);
+          line-height: var(--ab-l-lh);
+          letter-spacing: var(--ab-l-ls);
           color: #fff;
         }
         .ab-ctacell { display: flex; align-items: flex-end; }
@@ -464,8 +474,8 @@ export function AboutExperience() {
           border-radius: 999px;
           background: ${BLUE};
           color: #fff;
-          font-size: 1.15rem;
-          font-weight: 700;
+          font-size: var(--ab-m);
+          font-weight: 400;
           text-decoration: none;
           transition: transform 200ms;
         }
