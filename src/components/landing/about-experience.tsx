@@ -161,10 +161,9 @@ export function AboutExperience() {
             <div className="ab-mark">
               <StudioLockup />
             </div>
-            <div className="ab-titlebar">
-              <span className="ab-title font-display">About</span>
-              <span className="ab-eyebrow font-mono">Brooklyn, NY · Since 2015</span>
-            </div>
+            {/* Left empty: the strip keeps the row's rules running out to the
+                dock without restating the page's name. */}
+            <div className="ab-titlebar" />
           </div>
 
           {/* ---- Studio: the statement over the work, the photo in the rail */}
@@ -342,12 +341,6 @@ export function AboutExperience() {
           align-items: center;
           gap: 0.4rem clamp(1rem, 2.5vw, 2rem);
           padding: 0.4rem calc(var(--dock-w, 26rem) + var(--cell-pad)) 0.4rem var(--cell-pad);
-        }
-        .ab-title {
-          font-weight: 400;
-          font-size: var(--ab-l);
-          line-height: var(--ab-l-lh);
-          letter-spacing: var(--ab-l-ls);
         }
 
         /* Every row splits on the rail line, so the column rule runs unbroken
