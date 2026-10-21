@@ -57,9 +57,10 @@ export function ContactExperience() {
   const reduce = useReducedMotion()
   return (
     <>
-      {/* Unpinned, as on a project page: the dock closes the right end of
-          the sheet's head row and scrolls away with it. */}
-      <LandingSidebar active="contact" inPage={false} pinned={false} />
+      {/* Pinned, as on a project page: the dock closes the right end of the
+          sheet's head row and stays in that corner, over the rail, as the
+          page scrolls. */}
+      <LandingSidebar active="contact" inPage={false} />
 
       <main style={{ position: 'relative', zIndex: 3 }}>
         {/* The project page's ruled sheet: a head row of mark, title and dock,

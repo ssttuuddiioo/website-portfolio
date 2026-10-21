@@ -131,15 +131,14 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
 
   return (
     <>
-      {/* Unpinned: on the sheet the dock is the head row's right-hand cell, so
-          it scrolls away with the row rather than following the reader down a
-          page it is no longer part of. The pill moves to contact while the
+      {/* Pinned: the dock starts as the head row's right-hand cell and stays
+          in that corner as the page scrolls, its left edge on the rail's
+          hairline the whole way down. The pill moves to contact while the
           panel is open. */}
       <div className="proj-dock">
         <LandingSidebar
           active={contactOpen ? 'contact' : 'work'}
           inPage={false}
-          pinned={false}
           contactOpen={contactOpen}
           onToggleContact={() => setContactOpen((o) => !o)}
         />

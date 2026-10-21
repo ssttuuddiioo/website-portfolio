@@ -112,13 +112,13 @@
      --rail-w is read inside the sheet, where a percentage is already of the
      sheet's interior. --rail-w-vp is read by the fixed nav dock, whose
      percentages are of the whole viewport, so it also gives back 37% of the
-     32px the sheet spends on --sheet-inset and --rule-w down each side
-     (0.37 x 32 = 11.84px). Same number, so the dock's left edge and the
+     82px the sheet spends on --sheet-inset (40px) and --rule-w (1px) down
+     each side (0.37 x 82 = 30.34px). Recompute this if --edge changes. Same number, so the dock's left edge and the
      rail's hairline are one vertical rule. Wide enough that the dock's five
      cells can be equal with "contact" still fitting one. Written as literals because the CSS build
      drops a custom property that multiplies through a var(). */
   --rail-w: clamp(26rem, 37%, 40rem);
-  --rail-w-vp: clamp(26rem, calc(37% - 11.84px), 40rem);
+  --rail-w-vp: clamp(26rem, calc(37% - 30.34px), 40rem);
 }
 
 /* ---- Light Mode ---- */

@@ -478,16 +478,15 @@ export function AgencyExperience({
             mark: the two marks are the first screen's two views, so they sit
             together rather than at opposite corners of the page.
 
-            Unpinned: it belongs to the first screen — the header band it sits
-            in, the trail it switches — so it scrolls away with that screen
-            rather than riding down over the fold and the footer band. */}
+            Pinned, as on every inner page: it holds the top-right corner
+            through the fold and the footer band, its left edge on the same
+            line as a project page's rail. */}
         <LandingSidebar
           active={navActive}
           inPage
           onNavigate={scrollToSection}
           indexOpen={showIndex}
           onToggleIndex={toggleIndex}
-          pinned={false}
         />
 
         {/* Page content. */}
