@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
+import { StudioLockup } from './studio-lockup'
 import { ServicesAccordion } from './services-accordion'
 import { LogoMarquee } from './logo-marquee'
 import { FaqSection } from './faq-section'
@@ -132,39 +133,10 @@ export function AboutExperience() {
       <LandingSidebar active="about" inPage={false} />
 
       <main style={{ position: 'relative', zIndex: 3 }}>
-        {/* Top brand row — orientation + a way home. */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            padding: `clamp(1.5rem, 4vw, 2.5rem) ${GUTTER} 0`,
-          }}
-        >
-          <div style={{ width: '100%', maxWidth: '1100px' }}>
-            {/* The studio mark, as on the project and contact pages: black type
-                on white in the file, so inverted and blended with `lighten` to
-                leave white letterforms straight on the ground. */}
-            <Link
-              href="/"
-              aria-label="Studio Studio — home"
-              style={{ display: 'inline-block', isolation: 'isolate' }}
-            >
-              <Image
-                src="/logo.png"
-                alt=""
-                width={1254}
-                height={612}
-                priority
-                style={{
-                  display: 'block',
-                  width: 'clamp(3.5rem, 5vw, 4.75rem)',
-                  height: 'auto',
-                  filter: 'invert(1)',
-                  mixBlendMode: 'lighten',
-                }}
-              />
-            </Link>
-          </div>
+        {/* Top brand row: the landing's STUDIO lockup, in the same corner it
+            holds on the landing, one --edge in from the top and left. */}
+        <div style={{ padding: 'var(--edge) var(--edge) 0' }}>
+          <StudioLockup />
         </div>
 
         {/* ---- Intro -------------------------------------------------------- */}
@@ -416,7 +388,7 @@ export function AboutExperience() {
           <FaqSection />
         </section>
 
-        <SiteFooter />
+        <SiteFooter statement={false} />
       </main>
 
       {/* Background tint behind everything (matches the home shell). */}

@@ -74,8 +74,14 @@ export function SiteFooter({
    * cobalt grounds.
    */
   subscribe = true,
+  /**
+   * The About statement that opens the band. The About page passes false: it
+   * has just said all of it, at length.
+   */
+  statement = true,
 }: {
   subscribe?: boolean
+  statement?: boolean
 } = {}) {
   return (
     <div
@@ -181,55 +187,59 @@ export function SiteFooter({
       `}</style>
 
       <div className="site-footer-inner">
-        {/* Label left, the practice in two paragraphs right — the same shape as
-            the subscribe row further down. */}
-        <div className="site-footer-statement">
-          <span
-            className="font-display"
-            style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)', color: PAPER }}
-          >
-            About
-          </span>
-          <div
-            className="font-display"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.5rem',
-              fontSize: 'clamp(1rem, 1.5vw, 1.2rem)',
-              lineHeight: 1.45,
-              color: PAPER,
-            }}
-          >
-            <p style={{ margin: 0 }}>
-              Studio Studio is an art and technology studio founded by Pablo
-              Gnecco. Experiential direction, lighting design, and custom
-              software, made in Brooklyn, New York.
-            </p>
-            <p style={{ margin: 0 }}>
-              We make our own work, take commissions, and build installations
-              and brand experiences with agencies, companies, and cultural
-              institutions.
-              Work for HBO, Netflix, Google, AT&amp;T, Audible, Under Armour,
-              Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central
-              Station, and Cox.
-            </p>
-            <FooterLink href="/about">
-              Learn more{' '}
-              <span className="site-footer-arrow" aria-hidden>
-                →
+        {statement && (
+          <>
+            {/* Label left, the practice in two paragraphs right — the same shape as
+                the subscribe row further down. */}
+            <div className="site-footer-statement">
+              <span
+                className="font-display"
+                style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)', color: PAPER }}
+              >
+                About
               </span>
-            </FooterLink>
-          </div>
-        </div>
+              <div
+                className="font-display"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.5rem',
+                  fontSize: 'clamp(1rem, 1.5vw, 1.2rem)',
+                  lineHeight: 1.45,
+                  color: PAPER,
+                }}
+              >
+                <p style={{ margin: 0 }}>
+                  Studio Studio is an art and technology studio founded by Pablo
+                  Gnecco. Experiential direction, lighting design, and custom
+                  software, made in Brooklyn, New York.
+                </p>
+                <p style={{ margin: 0 }}>
+                  We make our own work, take commissions, and build installations
+                  and brand experiences with agencies, companies, and cultural
+                  institutions.
+                  Work for HBO, Netflix, Google, AT&amp;T, Audible, Under Armour,
+                  Intel, Sony, Dolby, Mercedes-Benz Stadium, Michigan Central
+                  Station, and Cox.
+                </p>
+                <FooterLink href="/about">
+                  Learn more{' '}
+                  <span className="site-footer-arrow" aria-hidden>
+                    →
+                  </span>
+                </FooterLink>
+              </div>
+            </div>
 
-        <hr
-          style={{
-            border: 0,
-            borderTop: `1px solid ${paper(0.28)}`,
-            margin: 'clamp(3rem, 8vw, 6rem) 0 clamp(3rem, 7vw, 5rem)',
-          }}
-        />
+            <hr
+              style={{
+                border: 0,
+                borderTop: `1px solid ${paper(0.28)}`,
+                margin: 'clamp(3rem, 8vw, 6rem) 0 clamp(3rem, 7vw, 5rem)',
+              }}
+            />
+          </>
+        )}
 
         {/* Wordmark left, link columns right. */}
         <div className="site-footer-nav">
