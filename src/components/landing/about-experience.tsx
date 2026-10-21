@@ -206,22 +206,18 @@ export function AboutExperience() {
             <LogoGrid label="End clients" logos={CLIENT_LOGOS} />
           </section>
 
-          {/* ---- Founder: the opening sentence large as a lead, the rest at
-              body size in columns beneath it; the facts in the rail. */}
+          {/* ---- Founder: the story at body size, in columns once there's
+              room; Pablo in the booth in the rail. */}
           <section className="ab-split">
             <div className="ab-cell ab-founder">
               <span className="ab-eyebrow font-mono">Founder</span>
               <Reveal>
-                <p className="ab-body font-display">
-                  Pablo Gnecco started the studio in 2015 as an inaugural member
-                  of NEW INC, the New Museum&apos;s incubator.
-                </p>
-              </Reveal>
-              <Reveal delay={0.08}>
                 <p className="ab-small ab-cols font-display">
-                  We make experiences people haven&apos;t stood inside before:
-                  rooms that answer back, objects that listen, screens that
-                  stop feeling like screens. Each project is a chance to try
+                  Pablo Gnecco started the studio in 2015 as an inaugural member
+                  of NEW INC, the New Museum&apos;s incubator. We make
+                  experiences people haven&apos;t stood inside before: rooms
+                  that answer back, objects that listen, screens that stop
+                  feeling like screens. Each project is a chance to try
                   something new, and we make them with designers, fabricators,
                   and technologists we admire, putting a crew together around
                   each idea. Sometimes we run the whole job; sometimes we join a
@@ -402,14 +398,7 @@ export function AboutExperience() {
         }
 
         /* Founder */
-        .ab-founder { display: grid; gap: clamp(1.25rem, 2vw, 1.75rem); align-content: start; }
-        .ab-body {
-          margin: 0;
-          max-width: 30ch;
-          font-size: var(--ab-l);
-          line-height: 1.25;
-          letter-spacing: var(--ab-l-ls);
-          color: ${INK};
+        .ab-founder { display: grid; gap: clamp(1.25rem, 2vw, 1.75rem); align-content: start; };
         }
         /* Two short columns once there's room, so the body reads as a block
            under the lead rather than a long ragged line. */
