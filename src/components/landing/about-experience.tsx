@@ -219,12 +219,16 @@ export function AboutExperience() {
               </Reveal>
               <Reveal delay={0.08}>
                 <p className="ab-small ab-cols font-display">
-                  The idea from day one: the commercial work funds the art, and
-                  the art sharpens the commercial work. We can run the whole
-                  production with a crew we trust (fabricators, lighting
-                  designers, developers, producers), or slot in next to an
+                  Most of the work is light and software. We design LED
+                  installations and the systems that run them (fixtures, DMX
+                  and sACN, pixel mapping, show programming), and we write the
+                  software that makes a room respond: real-time graphics,
+                  sensors, kiosks, and the apps staff use to run a space after
+                  we leave. We can take a job from drawings to opening night
+                  with fabricators, lighting designers, developers, and
+                  producers we&apos;ve worked with for years, or join an
                   agency&apos;s team, a fabrication shop, or an install crew
-                  that&apos;s already on the job.
+                  partway through.
                 </p>
               </Reveal>
             </div>
@@ -276,7 +280,7 @@ export function AboutExperience() {
 
           {/* ---- FAQ: the question in the wide column, the answer in the rail */}
           <section className="ab-group">
-            <SectionBar label="Questions" title="Frequently asked" note={pad(FAQS.length)} />
+            <SectionBar title="Frequently asked" note={pad(FAQS.length)} />
             {FAQS.map((f, i) => (
               <ToggleRow
                 key={f.q}
