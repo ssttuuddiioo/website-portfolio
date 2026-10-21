@@ -44,9 +44,10 @@ export function MobileAbout() {
         <p className="ma-label font-mono">About</p>
         <h1 className="ma-head">An art and technology studio in Brooklyn.</h1>
         <p className="ma-body">
-          We build installations, websites, apps, and sometimes lamps that run
-          other apps, for our own projects or for brands, agencies, and
-          cultural institutions.
+          We build installations, websites, apps, and the occasional lamp that
+          runs other apps. Some of it is our own work and some is for brands,
+          agencies, and cultural institutions, and we treat it the same either
+          way.
         </p>
       </section>
 

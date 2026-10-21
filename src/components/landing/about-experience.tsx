@@ -176,10 +176,11 @@ export function AboutExperience() {
               </Reveal>
               <Reveal delay={0.1}>
                 <p className="ab-lede font-display">
-                  We build installations, websites, apps, and sometimes lamps
-                  that run other apps for our own projects or for brands,
-                  agencies, and cultural institutions. Same tools, same care,
-                  sometimes from concept to making the actual sausage.
+                  We build installations, websites, apps, and the occasional
+                  lamp that runs other apps. Some of it is our own work and some
+                  is for brands, agencies, and cultural institutions, and we
+                  treat it the same either way. Sometimes we&apos;re there from
+                  the first sketch to the last screw.
                 </p>
               </Reveal>
             </div>
