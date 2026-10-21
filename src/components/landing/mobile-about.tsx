@@ -44,10 +44,9 @@ export function MobileAbout() {
         <p className="ma-label font-mono">About</p>
         <h1 className="ma-head">An art and technology studio in Brooklyn.</h1>
         <p className="ma-body">
-          Studio Studio makes work for galleries, festivals, retail, brand
-          pop-ups, and public space. Installations, websites, apps, and
-          sometimes lamps that run other apps, for our own projects or for
-          brands, agencies, and cultural institutions.
+          We build installations, websites, apps, and sometimes lamps that run
+          other apps, for our own projects or for brands, agencies, and
+          cultural institutions.
         </p>
       </section>
 

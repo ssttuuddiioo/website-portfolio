@@ -177,12 +177,10 @@ export function AboutExperience() {
               </Reveal>
               <Reveal delay={0.1}>
                 <p className="ab-lede font-display">
-                  Studio Studio makes work for galleries, festivals, retail,
-                  brand pop-ups, and public space. We build installations,
-                  websites, apps, and sometimes lamps that run other apps for
-                  our own projects or for brands, agencies, and cultural
-                  institutions. Same tools, same care, sometimes from concept
-                  to making the actual sausage.
+                  We build installations, websites, apps, and sometimes lamps
+                  that run other apps for our own projects or for brands,
+                  agencies, and cultural institutions. Same tools, same care,
+                  sometimes from concept to making the actual sausage.
                 </p>
               </Reveal>
             </div>
