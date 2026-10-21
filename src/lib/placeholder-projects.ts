@@ -20,6 +20,8 @@ export interface PlaceholderProject {
   about: string
   /** Large lead media beneath the text blocks. Image or video URL. */
   mainMedia: string
+  /** A silent looping clip played above the hero frame (see LandingProject). */
+  leadVideo?: { src: string; poster: string }
   /** Exactly three supporting images shown in a row below the main media. */
   supportingImages: string[]
   /** Open the masonry on its pair of halves (see LandingProject.pairFirst). */

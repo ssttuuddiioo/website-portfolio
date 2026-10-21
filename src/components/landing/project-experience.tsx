@@ -376,6 +376,23 @@ export function ProjectSheet({
         <div className="proj-body">
           <div className="proj-media">
             <div className="proj-mediarun">
+              {/* Lead clip — silent and looping, so it can autoplay; the
+                  poster holds its place until the first frame decodes. */}
+              {project.leadVideo && (
+                <div className="proj-video">
+                  <video
+                    src={project.leadVideo.src}
+                    poster={project.leadVideo.poster}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    aria-label={`${project.title} — video`}
+                  />
+                </div>
+              )}
+
               {/* Hero — the frame the project leads with, full width of the
                   media column. */}
               {hero && (
@@ -842,6 +859,13 @@ export function ProjectSheet({
         background: ${BG};
         aspect-ratio: 16 / 10;
         overflow: hidden;
+      }
+      .proj-video { background: ${BG}; aspect-ratio: 16 / 9; overflow: hidden; }
+      .proj-video video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
 
       /* Six columns, so a slot can take 2, 3, 4 or the whole run. */

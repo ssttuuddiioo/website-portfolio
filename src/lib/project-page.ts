@@ -71,6 +71,7 @@ function fromLanding(
     // becomes the rest of the media grid. Most projects have only the one, and
     // the page shows it full-width rather than padding the grid out.
     mainMedia: '',
+    leadVideo: project.video,
     supportingImages: project.images ?? [],
     pairFirst: project.pairFirst,
     sections: [],
@@ -110,6 +111,7 @@ function fromSanity(doc: SanityProjectPage): PlaceholderProject {
     about: doc.subtitle ?? landing?.description ?? '',
     mainMedia: '',
     supportingImages: landing?.images ?? [],
+    leadVideo: landing?.video,
     pairFirst: landing?.pairFirst,
     sections: [],
     similarProjects: neighbours(index),

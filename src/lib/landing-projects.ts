@@ -54,6 +54,13 @@ export interface LandingProject {
    */
   images?: string[]
   /**
+   * A silent, looping clip that leads the project page's media, above the hero
+   * frame. Only the page plays it: everything else that reads a project's
+   * frames (the index, the canvas, share images) still gets stills, and
+   * `poster` stands in while it loads.
+   */
+  video?: { src: string; poster: string }
+  /**
    * The project page's hero, when it should differ from `image` — which the
    * homepage trail, the index and the similar-projects tiles keep showing.
    */
@@ -229,18 +236,22 @@ export const LANDING_PROJECTS: LandingProject[] = [
     category: 'Product Launch',
     year: 2020,
     image: '/landing/opt/sony-noise-lights.webp',
+    video: {
+      src: '/landing/opt/sony-noise-lead.mp4',
+      poster: '/landing/opt/sony-noise-lead.avif',
+    },
     slug: 'sony-future-of-noise-cancellation',
     affinity: { web: 0.05, installation: 0.3, lighting: 0.45, design: 0.2 },
-    images: ['/landing/opt/sony-noise-box.webp'],
+    images: ['/landing/opt/sony-noise.avif', '/landing/opt/sony-noise-box.webp'],
     description:
       'A press preview for Sony\'s WH-1000XM4 noise-canceling headphones, planned as a live event and rebuilt as a kit for the home when COVID hit. Sam Cannon and Noah Rabinowitz led the idea and strategy, Jenn Whitney led the design, Chris Schuett produced, Kyle Chayka wrote the essays, and John J. Custer made the illustrations. Our part was the technology: the lightbox listens to the room and turns changes in noise into calm light. Over 60 percent of recipients published about it.',
     services: ['Technologist'],
     collaborators: [
-      { name: 'Sam Cannon', role: 'Creative director' },
+      { name: 'Sam Cannon', role: 'Creative director', url: 'https://www.sam-cannon.com' },
       { name: 'Noah Rabinowitz', role: 'Strategy and concept', url: 'https://noahrabinowitz.com/projects/the-future-of-noise-cancellation/' },
       { name: 'Jenn Whitney', role: 'Creative director, design' },
       { name: 'Chris Schuett', role: 'Producer' },
-      { name: 'Kyle Chayka', role: 'Author' },
+      { name: 'Kyle Chayka', role: 'Author', url: 'https://www.kylechayka.com' },
       { name: 'John J. Custer', role: 'Illustrator' },
     ],
   },
