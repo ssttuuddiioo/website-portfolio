@@ -12,23 +12,23 @@ import { INK } from './landing-theme'
 export type Logo = { name: string; src?: string; height?: number }
 
 export const LOGOS: Logo[] = [
-  { name: 'New Museum' },
+  { name: 'New Museum', src: '/logos/agency/new-museum.svg', height: 13 },
   { name: 'Intel', src: '/logos/agency/intel.svg', height: 22 },
   { name: 'Dolby', src: '/logos/agency/dolby.svg', height: 20 },
-  { name: 'AT&T' },
+  { name: 'AT&T', src: '/logos/agency/atandt.svg', height: 24 },
   { name: 'HBO', src: '/logos/agency/hbo.svg', height: 24 },
   { name: 'Netflix', src: '/logos/agency/netflix.svg', height: 18 },
-  { name: 'Google' },
+  { name: 'Google', src: '/logos/agency/google.svg', height: 22 },
   { name: 'Hypebeast', src: '/logos/agency/Hypebeast-Logo.png', height: 16 },
   { name: 'Hope Hydration', src: '/logos/agency/hope.png', height: 28 },
-  { name: 'Audible' },
+  { name: 'Audible', src: '/logos/agency/audible.svg', height: 22 },
   { name: 'Civic', src: '/logos/agency/civic.webp', height: 22 },
-  { name: 'Sony' },
+  { name: 'Sony', src: '/logos/agency/sony.svg', height: 22 },
   { name: 'Invisible North', src: '/logos/agency/invisiblenorth.png', height: 24 },
-  { name: 'Under Armour' },
-  { name: 'Cox' },
-  { name: 'Mercedes-Benz' },
-  { name: 'Michigan Central' },
+  { name: 'Under Armour', src: '/logos/agency/underarmour.svg', height: 20 },
+  { name: 'Cox', src: '/logos/agency/cox.svg', height: 18 },
+  { name: 'Mercedes-Benz', src: '/logos/agency/mercedes.svg', height: 24 },
+  { name: 'Michigan Central', src: '/logos/agency/michigan-central.png', height: 10 },
 ]
 
 function LogoItem({ logo }: { logo: Logo }) {

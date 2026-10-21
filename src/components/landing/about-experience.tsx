@@ -8,7 +8,7 @@ import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { StudioLockup } from './studio-lockup'
 import { SERVICES } from './services-accordion'
-import { LOGOS } from './logo-marquee'
+import { CLIENT_LOGOS } from '@/lib/client-logos'
 import { FAQS } from '@/lib/faqs'
 import { INK, BG, BLUE, RULE } from './landing-theme'
 
@@ -16,7 +16,18 @@ const EASE = [0.22, 1, 0.36, 1] as const
 
 /** Logo-grid columns. The last row is padded out with blank cells. */
 const CLIENT_COLS = 6
-const CLIENT_FILLERS = (CLIENT_COLS - (LOGOS.length % CLIENT_COLS)) % CLIENT_COLS
+const CLIENT_FILLERS = (CLIENT_COLS - (CLIENT_LOGOS.length % CLIENT_COLS)) % CLIENT_COLS
+/**
+ * Every mark covers about LOGO_AREA px² at a 1440px viewport: its height is
+ * the square root of that area over its ratio, held between a floor and a
+ * ceiling so a very long wordmark stays legible and a narrow one stays modest.
+ * The height then scales with the viewport, within 0.8x to 1.25x.
+ */
+const LOGO_AREA = 1700
+function logoHeight(ratio: number) {
+  const h = Math.min(44, Math.max(13, Math.sqrt(LOGO_AREA / ratio)))
+  return `clamp(${(h * 0.8).toFixed(1)}px, ${((h / 1440) * 100).toFixed(3)}vw, ${(h * 1.25).toFixed(1)}px)`
+}
 const pad = (n: number) => String(n).padStart(2, '0')
 
 function Reveal({
@@ -160,24 +171,29 @@ export function AboutExperience() {
             </div>
           </section>
 
-          {/* ---- Founder: the story in the wide column, the facts in the rail */}
+          {/* ---- Founder: the opening sentence large as a lead, the rest at
+              body size in columns beneath it; the facts in the rail. */}
           <section className="ab-split">
-            <div className="ab-cell">
+            <div className="ab-cell ab-founder">
+              <span className="ab-eyebrow font-mono">Founder</span>
               <Reveal>
                 <p className="ab-body font-display">
                   Pablo Gnecco started the studio in 2015 as an inaugural member
-                  of NEW INC, the New Museum&apos;s incubator. The idea from day
-                  one: the commercial work funds the art, and the art sharpens
-                  the commercial work. We can run the whole production with a
-                  crew we trust (fabricators, lighting designers, developers,
-                  producers), or slot in next to an agency&apos;s team, a
-                  fabrication shop, or an install crew that&apos;s already on
-                  the job.
+                  of NEW INC, the New Museum&apos;s incubator.
+                </p>
+              </Reveal>
+              <Reveal delay={0.08}>
+                <p className="ab-small ab-cols font-display">
+                  The idea from day one: the commercial work funds the art, and
+                  the art sharpens the commercial work. We can run the whole
+                  production with a crew we trust (fabricators, lighting
+                  designers, developers, producers), or slot in next to an
+                  agency&apos;s team, a fabrication shop, or an install crew
+                  that&apos;s already on the job.
                 </p>
               </Reveal>
             </div>
             <div className="ab-cell ab-facts">
-              <span className="ab-eyebrow font-mono">Founder</span>
               <dl>
                 <div>
                   <dt className="ab-eyebrow font-mono">Name</dt>
@@ -200,21 +216,18 @@ export function AboutExperience() {
             <SectionBar
               label="Clients and partners"
               title="Who we've made work with"
-              note={`${LOGOS.length} and counting`}
+              note={`${CLIENT_LOGOS.length} and counting`}
             />
             <div className="ab-clients">
-              {LOGOS.map((l) => (
+              {CLIENT_LOGOS.map((l) => (
                 <div key={l.name} className="ab-client">
-                  {l.src ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={l.src}
-                      alt={l.name}
-                      style={{ height: `calc(${l.height ?? 22}px * 1.6)` }}
-                    />
-                  ) : (
-                    <span className="font-display">{l.name}</span>
-                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={l.src}
+                    alt={l.name}
+                    className={l.src.endsWith('.svg') ? 'is-vector' : undefined}
+                    style={{ height: logoHeight(l.ratio) }}
+                  />
                 </div>
               ))}
               {Array.from({ length: CLIENT_FILLERS }, (_, i) => (
@@ -384,21 +397,24 @@ export function AboutExperience() {
         }
 
         /* Founder */
+        .ab-founder { display: grid; gap: clamp(1.25rem, 2vw, 1.75rem); align-content: start; }
         .ab-body {
           margin: 0;
-          max-width: 34ch;
+          max-width: 30ch;
           font-size: var(--ab-l);
           line-height: 1.25;
           letter-spacing: var(--ab-l-ls);
           color: ${INK};
         }
-        .ab-facts {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          gap: 2rem;
+        /* Two short columns once there's room, so the body reads as a block
+           under the lead rather than a long ragged line. */
+        .ab-cols { max-width: 62rem; }
+        @media (min-width: 1200px) {
+          .ab-cols { columns: 2; column-gap: clamp(2rem, 3vw, 3rem); }
         }
-        .ab-facts dl { margin: 0; display: grid; gap: 1rem; }
+        /* The facts sit together at the top of the rail, level with the
+           Founder label opposite. */
+        .ab-facts dl { margin: 0; display: grid; gap: 1.1rem; }
         .ab-facts dd { margin: 0.3rem 0 0; font-size: var(--ab-m); }
 
         /* Section bars */
@@ -456,6 +472,9 @@ export function AboutExperience() {
           opacity: 0.5;
           transition: opacity 300ms;
         }
+        /* Vector marks flatten to pure white whatever their colours (Cox's
+           gradient would otherwise come out a dull grey). */
+        .ab-client img.is-vector { filter: brightness(0) invert(1); }
         .ab-client:hover img,
         .ab-client:hover span { opacity: 1; }
 
