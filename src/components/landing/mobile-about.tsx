@@ -65,9 +65,11 @@ export function MobileAbout() {
         <p className="ma-label font-mono">Founder</p>
         <p className="ma-body">
           Studio Studio was founded by Pablo Gnecco in 2015 as an inaugural
-          member of NEW INC, the New Museum&rsquo;s incubator. Since
-          then we&rsquo;ve made experiences people haven&rsquo;t stood inside
-          before, with designers, fabricators, and technologists we admire.
+          member of NEW INC, the New Museum&rsquo;s incubator. We like making
+          things we haven&rsquo;t made before, and we make them with people who
+          know more than we do: designers, fabricators, technologists. Some
+          jobs we run start to finish. On others we join a team that&rsquo;s
+          already on it.
         </p>
       </section>
 

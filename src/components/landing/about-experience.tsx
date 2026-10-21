@@ -214,13 +214,10 @@ export function AboutExperience() {
                 <p className="ab-small ab-cols font-display">
                   Studio Studio was founded by Pablo Gnecco in 2015 as an
                   inaugural member of NEW INC, the New Museum&apos;s incubator.
-                  Since then we&apos;ve made experiences people haven&apos;t
-                  stood inside before: rooms that answer back, objects that
-                  listen, screens that stop feeling like screens. Each project is a chance to try
-                  something new, and we make them with designers, fabricators,
-                  and technologists we admire, putting a crew together around
-                  each idea. Sometimes we run the whole job; sometimes we join a
-                  team that&apos;s already on it.
+                  We like making things we haven&apos;t made before, and we make
+                  them with people who know more than we do: designers,
+                  fabricators, technologists. Some jobs we run start to finish.
+                  On others we join a team that&apos;s already on it.
                 </p>
               </Reveal>
             </div>
