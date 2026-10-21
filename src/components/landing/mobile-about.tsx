@@ -64,8 +64,8 @@ export function MobileAbout() {
       <section className="ma-pad ma-block">
         <p className="ma-label font-mono">Founder</p>
         <p className="ma-body">
-          We started in 2015, when Pablo Gnecco founded the studio as an
-          inaugural member of NEW INC, the New Museum&rsquo;s incubator. Since
+          Studio Studio was founded by Pablo Gnecco in 2015 as an inaugural
+          member of NEW INC, the New Museum&rsquo;s incubator. Since
           then we&rsquo;ve made experiences people haven&rsquo;t stood inside
           before, with designers, fabricators, and technologists we admire.
         </p>

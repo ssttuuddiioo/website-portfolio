@@ -213,7 +213,7 @@ export function AboutExperience() {
               <span className="ab-eyebrow font-mono">Founder</span>
               <Reveal>
                 <p className="ab-small ab-cols font-display">
-                  We started in 2015, when Pablo Gnecco founded the studio as an
+                  Studio Studio was founded by Pablo Gnecco in 2015 as an
                   inaugural member of NEW INC, the New Museum&apos;s incubator.
                   Since then we&apos;ve made experiences people haven&apos;t
                   stood inside before: rooms that answer back, objects that
