@@ -198,6 +198,16 @@ export function AboutExperience() {
             </div>
           </section>
 
+          {/* ---- Agencies, then clients: a ruled grid each, a cell per logo -- */}
+          <section className="ab-group">
+            <SectionBar
+              title="Who we've made work with"
+              note={`${AGENCY_LOGOS.length + CLIENT_LOGOS.length} and counting`}
+            />
+            <LogoGrid label="Agency clients" logos={AGENCY_LOGOS} />
+            <LogoGrid label="End clients" logos={CLIENT_LOGOS} />
+          </section>
+
           {/* ---- Founder: the opening sentence large as a lead, the rest at
               body size in columns beneath it; the facts in the rail. */}
           <section className="ab-split">
@@ -249,16 +259,6 @@ export function AboutExperience() {
                 />
               </div>
             </div>
-          </section>
-
-          {/* ---- Agencies, then clients: a ruled grid each, a cell per logo -- */}
-          <section className="ab-group">
-            <SectionBar
-              title="Who we've made work with"
-              note={`${AGENCY_LOGOS.length + CLIENT_LOGOS.length} and counting`}
-            />
-            <LogoGrid label="Agency clients" logos={AGENCY_LOGOS} />
-            <LogoGrid label="End clients" logos={CLIENT_LOGOS} />
           </section>
 
           {/* ---- Services: numbered rows, the description in the rail ------
