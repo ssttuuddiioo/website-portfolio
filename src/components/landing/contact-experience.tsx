@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
@@ -10,37 +11,8 @@ import { INK, BG, BLUE, RULE } from './landing-theme'
 import { LISTED_CONTACT_DETAILS } from '@/lib/contact-details'
 
 const EASE = [0.22, 1, 0.36, 1] as const
-const GUTTER = 'var(--gutter, 1.5rem)'
 
 /* ---- small shared pieces (mirrors about-experience) --------------------- */
-
-function Eyebrow({
-  children,
-  as: Tag = 'span',
-  id,
-}: {
-  children: ReactNode
-  as?: 'span' | 'h1' | 'h2'
-  id?: string
-}) {
-  return (
-    <Tag
-      id={id}
-      className="font-mono"
-      style={{
-        display: 'block',
-        margin: 0,
-        fontWeight: 'inherit',
-        fontSize: '0.7rem',
-        letterSpacing: '0.18em',
-        textTransform: 'uppercase',
-        color: 'rgba(232, 228, 223, 0.5)',
-      }}
-    >
-      {children}
-    </Tag>
-  )
-}
 
 function Reveal({
   children,
@@ -85,159 +57,212 @@ export function ContactExperience() {
   const reduce = useReducedMotion()
   return (
     <>
-      <LandingSidebar active="contact" inPage={false} />
+      {/* Unpinned, as on a project page: the dock closes the right end of
+          the sheet's head row and scrolls away with it. */}
+      <LandingSidebar active="contact" inPage={false} pinned={false} />
 
       <main style={{ position: 'relative', zIndex: 3 }}>
-        {/* Top brand row — orientation + a way home. */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            padding: `clamp(1.5rem, 4vw, 2.5rem) ${GUTTER} 0`,
-          }}
-        >
-          <div style={{ width: '100%', maxWidth: '1100px' }}>
-            <Link
-              href="/"
-              className="font-display"
-              style={{
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                letterSpacing: '0.02em',
-                color: INK,
-                textDecoration: 'none',
-              }}
-            >
-              Studio Studio
+        {/* The project page's ruled sheet: a head row of mark, title and dock,
+            then the pitch over the media column and the details in the rail,
+            filling the first screen so the footer waits below the fold. */}
+        <div className="contact-sheet">
+          <div className="contact-headrow">
+            <Link href="/" className="contact-mark" aria-label="Studio Studio — home">
+              <Image
+                src="/logo.png"
+                alt=""
+                width={1254}
+                height={612}
+                priority
+                className="contact-marklogo"
+              />
             </Link>
+            <header className="contact-titlebar">
+              <h1 className="contact-title font-display">Contact</h1>
+              <p className="contact-titlemeta font-mono">Brooklyn, New York</p>
+            </header>
+          </div>
+
+          <div className="contact-body">
+            <div className="contact-pitch">
+              <Reveal>
+                <h2 className="contact-head font-display">
+                  Have a project in mind?
+                </h2>
+                <p className="contact-note font-display">
+                  Tell us a little about it and we&apos;ll set up a call.
+                </p>
+              </Reveal>
+            </div>
+
+            <div className="contact-right">
+              <AnimatePresence mode="wait" initial={false}>
+                {quoteOpen ? (
+                  <motion.div
+                    key="form"
+                    initial={{ opacity: 0, y: reduce ? 0 : 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                  >
+                    <button
+                      type="button"
+                      className="contact-back font-mono"
+                      onClick={() => setQuoteOpen(false)}
+                    >
+                      <span aria-hidden>←</span> Back
+                    </button>
+                    <ContactPageForm />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="details"
+                    className="contact-detailspane"
+                    initial={{ opacity: 0, y: reduce ? 0 : 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                  >
+                    <ul className="contact-list">
+                      {LISTED_CONTACT_DETAILS.map((d) => (
+                        <li key={d.label}>
+                          <span className="contact-label font-mono">{d.label}</span>
+                          {d.href ? (
+                            <a
+                              href={d.href}
+                              className="contact-value font-display"
+                              {...(d.external
+                                ? { target: '_blank', rel: 'noreferrer' }
+                                : {})}
+                            >
+                              {d.value}
+                            </a>
+                          ) : (
+                            <span className="contact-value font-display">{d.value}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      type="button"
+                      className="contact-quote font-display"
+                      onClick={() => setQuoteOpen(true)}
+                    >
+                      <span>Get a quote</span>
+                      <span aria-hidden>→</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
-
-        <section
-          style={{
-            padding: `clamp(3rem, 8vw, 6rem) ${GUTTER} clamp(3rem, 7vw, 6rem)`,
-          }}
-        >
-          <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-            {/* One ruled sheet, built like the contact panel on a project page:
-                the pitch and every direct detail on the left, the enquiry form
-                on the right. */}
-            <Reveal>
-              <div className="contact-sheet">
-                <div className="contact-pitch">
-                  <Eyebrow as="h1">Contact</Eyebrow>
-                  <h2 className="contact-head font-display">
-                    Have a project in mind?
-                  </h2>
-                  <p className="contact-note font-display">
-                    Tell us a little about it and we&apos;ll set up a call.
-                  </p>
-                </div>
-                <div className="contact-right">
-                  <AnimatePresence mode="wait" initial={false}>
-                    {quoteOpen ? (
-                      <motion.div
-                        key="form"
-                        initial={{ opacity: 0, y: reduce ? 0 : 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.35, ease: EASE }}
-                      >
-                        <button
-                          type="button"
-                          className="contact-back font-mono"
-                          onClick={() => setQuoteOpen(false)}
-                        >
-                          <span aria-hidden>←</span> Back
-                        </button>
-                        <ContactPageForm />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="details"
-                        initial={{ opacity: 0, y: reduce ? 0 : 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.35, ease: EASE }}
-                      >
-                        <ul className="contact-list">
-                          {LISTED_CONTACT_DETAILS.map((d) => (
-                            <li key={d.label}>
-                              <span className="contact-label font-mono">{d.label}</span>
-                              {d.href ? (
-                                <a
-                                  href={d.href}
-                                  className="contact-value font-display"
-                                  {...(d.external
-                                    ? { target: '_blank', rel: 'noreferrer' }
-                                    : {})}
-                                >
-                                  {d.value}
-                                </a>
-                              ) : (
-                                <span className="contact-value font-display">{d.value}</span>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                        <button
-                          type="button"
-                          className="contact-quote font-display"
-                          onClick={() => setQuoteOpen(true)}
-                        >
-                          <span>Get a quote</span>
-                          <span aria-hidden>→</span>
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </section>
 
         <SiteFooter />
       </main>
 
       <style>{`
-        /* The sheet paints itself in the rule colour and every cell in the
-           ground, so the 1px gaps are the hairlines (as on a project page). */
+        /* The sheet: inset from every edge like a project page's, painted in
+           the rule colour with every cell in the ground, so the 1px gaps are
+           the hairlines. It stands at least a screen tall. */
         .contact-sheet {
+          --cell-pad: clamp(1rem, 2vw, 1.75rem);
+          margin: calc(var(--sheet-inset) + env(safe-area-inset-top))
+                  var(--sheet-inset) var(--sheet-inset);
+          min-height: calc(100svh - 2 * var(--sheet-inset));
           display: grid;
-          grid-template-columns: minmax(0, 1fr);
+          grid-template-rows: auto minmax(0, 1fr);
           gap: 1px;
           background: ${RULE};
           border: 1px solid ${RULE};
         }
+
+        /* Head row: the dock's height, a square mark, then the title strip
+           running up to the dock's left edge (--dock-w, set by the dock). */
+        .contact-headrow {
+          display: grid;
+          grid-template-columns: var(--dock-h) minmax(0, 1fr);
+          gap: 1px;
+        }
+        .contact-mark {
+          background: ${BG};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 22%;
+          isolation: isolate;
+        }
+        .contact-marklogo {
+          width: 100%;
+          height: auto;
+          filter: invert(1);
+          mix-blend-mode: lighten;
+        }
+        .contact-titlebar {
+          background: ${BG};
+          min-height: var(--dock-h);
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0.4rem clamp(1rem, 2.5vw, 2rem);
+          padding: 0.4rem calc(var(--dock-w, 26rem) + var(--cell-pad)) 0.4rem var(--cell-pad);
+        }
+        .contact-title {
+          margin: 0;
+          font-weight: 400;
+          font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+          line-height: 1;
+          letter-spacing: -0.02em;
+          color: ${INK};
+        }
+        .contact-titlemeta {
+          margin: 0;
+          font-size: clamp(0.66rem, 0.9vw, 0.78rem);
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(232, 228, 223, 0.5);
+        }
+
+        /* Body: the pitch in the wide column, the details in the rail, whose
+           hairline lines up with the dock's left edge above it. */
+        .contact-body {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: 1px;
+        }
         @media (min-width: 900px) {
-          .contact-sheet { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); }
+          .contact-body { grid-template-columns: minmax(0, 1fr) var(--rail-w); }
         }
         .contact-pitch,
         .contact-right {
           background: ${BG};
-          padding: clamp(1.5rem, 3vw, 2.5rem);
+          padding: clamp(1.5rem, 3vw, 2.75rem) var(--cell-pad);
         }
+        /* The question sits low in its cell, large, against the empty field. */
         .contact-pitch {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
+          justify-content: flex-end;
         }
         .contact-head {
-          margin: clamp(0.5rem, 2vw, 1.5rem) 0 0;
-          max-width: 14ch;
+          margin: 0;
+          max-width: 11ch;
           font-weight: 400;
-          font-size: clamp(1.9rem, 3.6vw, 3.2rem);
-          line-height: 1.02;
-          letter-spacing: -0.03em;
+          font-size: clamp(2.6rem, 6vw, 5.75rem);
+          line-height: 0.96;
+          letter-spacing: -0.04em;
           color: ${INK};
         }
         .contact-note {
-          margin: 0;
-          font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+          margin: clamp(1rem, 2vw, 1.5rem) 0 0;
+          font-size: clamp(1rem, 1.4vw, 1.2rem);
           line-height: 1.5;
-          color: rgba(232, 228, 223, 0.7);
+          color: rgba(232, 228, 223, 0.65);
         }
+        .contact-right { display: flex; flex-direction: column; }
+        .contact-right > div { flex: 1; display: flex; flex-direction: column; }
+        /* Details at the top of the rail, the button at its foot. */
+        .contact-detailspane { justify-content: space-between; }
 
         /* Details: one per row, label over value, ruled like the mobile list. */
         .contact-list { list-style: none; margin: 0; padding: 0; }
@@ -270,7 +295,7 @@ export function ContactExperience() {
           align-items: center;
           width: 100%;
           height: 3.5rem;
-          margin-top: clamp(1.5rem, 3vw, 2rem);
+          margin-top: clamp(2rem, 4vw, 3rem);
           padding: 0 1.4rem;
           border: 0;
           border-radius: 999px;
