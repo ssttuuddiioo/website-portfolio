@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
@@ -49,6 +49,54 @@ function SectionBar({ label, title, note }: { label: string; title: string; note
       <span className="ab-eyebrow font-mono">{label}</span>
       <h2 className="ab-bartitle font-display">{title}</h2>
       {note && <span className="ab-eyebrow ab-barnote font-mono">{note}</span>}
+    </div>
+  )
+}
+
+/**
+ * A Services or FAQ row, closed by default: number and title in the wide
+ * column, a plus in the rail. Opening it lets the copy down in the rail. The
+ * copy stays in the document while closed (inert, and collapsed to no height)
+ * so the page still carries it for search and for the FAQ structured data.
+ */
+function ToggleRow({
+  index,
+  title,
+  body,
+  titleClass,
+}: {
+  index: number
+  title: string
+  body: string
+  titleClass: string
+}) {
+  const [open, setOpen] = useState(false)
+  const id = useId()
+  const toggle = () => setOpen((o) => !o)
+  return (
+    <div className={`ab-split ab-trow${open ? ' is-open' : ''}`}>
+      <h3 className="ab-th">
+        <button
+          type="button"
+          className="ab-cell ab-rowhead"
+          aria-expanded={open}
+          aria-controls={id}
+          onClick={toggle}
+        >
+          <span className="ab-num font-mono">{pad(index + 1)}</span>
+          <span className={`${titleClass} font-display`}>{title}</span>
+        </button>
+      </h3>
+      {/* The rail cell answers a click too, for the mouse; the button above
+          is the control for keyboards and screen readers. */}
+      <div className="ab-cell ab-tbody" onClick={toggle} aria-hidden={!open}>
+        <span className="ab-plus" aria-hidden />
+        <div className="ab-collapse" id={id} inert={!open}>
+          <div>
+            <p className="ab-small font-display">{body}</p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -181,15 +229,13 @@ export function AboutExperience() {
           <section id="services" className="ab-group">
             <SectionBar label="What we do" title="Services" note={pad(SERVICES.length)} />
             {SERVICES.map((s, i) => (
-              <div key={s.title} className="ab-split ab-service">
-                <div className="ab-cell ab-rowhead">
-                  <span className="ab-num font-mono">{pad(i + 1)}</span>
-                  <h3 className="ab-servicetitle font-display">{s.title}</h3>
-                </div>
-                <div className="ab-cell">
-                  <p className="ab-small font-display">{s.body}</p>
-                </div>
-              </div>
+              <ToggleRow
+                key={s.title}
+                index={i}
+                title={s.title}
+                body={s.body}
+                titleClass="ab-servicetitle"
+              />
             ))}
           </section>
 
@@ -215,15 +261,13 @@ export function AboutExperience() {
           <section className="ab-group">
             <SectionBar label="Questions" title="Frequently asked" note={pad(FAQS.length)} />
             {FAQS.map((f, i) => (
-              <div key={f.q} className="ab-split">
-                <div className="ab-cell ab-rowhead">
-                  <span className="ab-num font-mono">{pad(i + 1)}</span>
-                  <h3 className="ab-question font-display">{f.q}</h3>
-                </div>
-                <div className="ab-cell">
-                  <p className="ab-small font-display">{f.a}</p>
-                </div>
-              </div>
+              <ToggleRow
+                key={f.q}
+                index={i}
+                title={f.q}
+                body={f.a}
+                titleClass="ab-question"
+              />
             ))}
           </section>
         </div>
@@ -431,7 +475,68 @@ export function AboutExperience() {
           letter-spacing: var(--ab-l-ls);
           transition: color 250ms;
         }
-        .ab-service:hover .ab-servicetitle { color: ${BLUE}; }
+        /* Collapsible rows. The heading holds a button the size of its cell. */
+        .ab-th { margin: 0; display: grid; }
+        .ab-th button {
+          all: unset;
+          box-sizing: border-box;
+          /* all: unset clears the cell's ground too; without it the sheet's
+             rule colour shows through the whole cell. */
+          background: ${BG};
+          cursor: pointer;
+          display: grid;
+          grid-template-columns: 3rem minmax(0, 1fr);
+          align-items: baseline;
+          padding: clamp(1.25rem, 2.2vw, 1.75rem) var(--cell-pad);
+        }
+        .ab-th button:focus-visible { outline: 2px solid ${BLUE}; outline-offset: -2px; }
+        .ab-servicetitle,
+        .ab-question { transition: color 250ms; }
+        .ab-trow:hover .ab-servicetitle,
+        .ab-trow:hover .ab-question,
+        .ab-trow.is-open .ab-servicetitle,
+        .ab-trow.is-open .ab-question { color: ${BLUE}; }
+        .ab-tbody {
+          position: relative;
+          cursor: pointer;
+          padding-top: clamp(1.25rem, 2.2vw, 1.75rem);
+          padding-bottom: clamp(1.25rem, 2.2vw, 1.75rem);
+          padding-right: calc(var(--cell-pad) + 2.5rem);
+        }
+        /* Plus, turning to minus when open: the vertical stroke folds away. */
+        .ab-plus {
+          position: absolute;
+          top: calc(clamp(1.25rem, 2.2vw, 1.75rem) + 0.45rem);
+          right: var(--cell-pad);
+          width: 14px;
+          height: 14px;
+        }
+        .ab-plus::before,
+        .ab-plus::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 6px;
+          width: 14px;
+          height: 2px;
+          background: currentColor;
+          transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .ab-plus::after { transform: rotate(90deg); }
+        .ab-trow.is-open .ab-plus::after { transform: rotate(0deg); }
+        .ab-trow:hover .ab-plus,
+        .ab-trow.is-open .ab-plus { color: ${BLUE}; }
+        /* Collapses to nothing and opens to its content's height. */
+        .ab-collapse {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows 450ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .ab-trow.is-open .ab-collapse { grid-template-rows: 1fr; }
+        .ab-collapse > div { overflow: hidden; min-height: 0; }
+        @media (prefers-reduced-motion: reduce) {
+          .ab-collapse, .ab-plus::before, .ab-plus::after { transition: none; }
+        }
         .ab-question {
           margin: 0;
           max-width: 26ch;
