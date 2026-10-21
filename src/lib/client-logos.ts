@@ -1,5 +1,5 @@
 /**
- * The clients and partners on the About page, each with a copy of its logo
+ * The agencies and clients on the About page, each with a copy of its logo
  * cropped to the artwork (public/logos/clients) and that crop's width over
  * height. The page sizes every mark from its ratio so each covers about the
  * same area: a long wordmark runs short and wide, a square mark stands taller,
@@ -12,6 +12,15 @@ export interface ClientLogo {
   ratio: number
 }
 
+/** Agencies the studio works with and for. Listed first on the page. */
+export const AGENCY_LOGOS: ClientLogo[] = [
+  { name: 'Giant Spoon', src: '/logos/clients/giant-spoon.png', ratio: 10.792 },
+  { name: 'Civic', src: '/logos/clients/civic.png', ratio: 1 },
+  { name: 'Invisible North', src: '/logos/clients/invisiblenorth.png', ratio: 1 },
+  { name: 'Debrain', src: '/logos/clients/debrain.png', ratio: 4.529 },
+  { name: 'Chemistry Creative', src: '/logos/clients/chemistry-creative.svg', ratio: 4.175 },
+]
+
 export const CLIENT_LOGOS: ClientLogo[] = [
   { name: 'New Museum', src: '/logos/clients/new-museum.svg', ratio: 7.723 },
   { name: 'Intel', src: '/logos/clients/intel.svg', ratio: 2.5 },
@@ -23,11 +32,11 @@ export const CLIENT_LOGOS: ClientLogo[] = [
   { name: 'Hypebeast', src: '/logos/clients/hypebeast.png', ratio: 7.742 },
   { name: 'Hope Hydration', src: '/logos/clients/hope.png', ratio: 9.205 },
   { name: 'Audible', src: '/logos/clients/audible.svg', ratio: 1.597 },
-  { name: 'Civic', src: '/logos/clients/civic.png', ratio: 1 },
   { name: 'Sony', src: '/logos/clients/sony.svg', ratio: 5.204 },
-  { name: 'Invisible North', src: '/logos/clients/invisiblenorth.png', ratio: 1 },
   { name: 'Under Armour', src: '/logos/clients/underarmour.svg', ratio: 1.675 },
   { name: 'Cox', src: '/logos/clients/cox.svg', ratio: 3.131 },
   { name: 'Mercedes-Benz', src: '/logos/clients/mercedes.svg', ratio: 1 },
   { name: 'Michigan Central', src: '/logos/clients/michigan-central.png', ratio: 13.274 },
+  { name: 'Goat Farm', src: '/logos/clients/goat-farm.png', ratio: 5.925 },
+  { name: 'Living Walls', src: '/logos/clients/living-walls.png', ratio: 5.475 },
 ]

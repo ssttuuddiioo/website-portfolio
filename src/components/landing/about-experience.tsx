@@ -8,7 +8,7 @@ import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { StudioLockup } from './studio-lockup'
 import { SERVICES } from './services-accordion'
-import { CLIENT_LOGOS } from '@/lib/client-logos'
+import { AGENCY_LOGOS, CLIENT_LOGOS, type ClientLogo } from '@/lib/client-logos'
 import { FAQS } from '@/lib/faqs'
 import { INK, BG, BLUE, RULE } from './landing-theme'
 
@@ -16,7 +16,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
 
 /** Logo-grid columns. The last row is padded out with blank cells. */
 const CLIENT_COLS = 6
-const CLIENT_FILLERS = (CLIENT_COLS - (CLIENT_LOGOS.length % CLIENT_COLS)) % CLIENT_COLS
+const fillers = (n: number) => (CLIENT_COLS - (n % CLIENT_COLS)) % CLIENT_COLS
 /**
  * Every mark covers about LOGO_AREA px² at a 1440px viewport: its height is
  * the square root of that area over its ratio, held between a floor and a
@@ -109,6 +109,33 @@ function ToggleRow({
         </div>
       </div>
     </div>
+  )
+}
+
+/** A labelled run of the logo grid, padded out to whole rows. */
+function LogoGrid({ label, logos }: { label: string; logos: ClientLogo[] }) {
+  return (
+    <>
+      <div className="ab-sublabel">
+        <span className="ab-eyebrow font-mono">{label}</span>
+      </div>
+      <div className="ab-clients">
+        {logos.map((l) => (
+          <div key={l.name} className="ab-client">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={l.src}
+              alt={l.name}
+              className={l.src.endsWith('.svg') ? 'is-vector' : undefined}
+              style={{ height: logoHeight(l.ratio) }}
+            />
+          </div>
+        ))}
+        {Array.from({ length: fillers(logos.length) }, (_, i) => (
+          <div key={`f${i}`} className="ab-client" aria-hidden />
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -211,29 +238,15 @@ export function AboutExperience() {
             </div>
           </section>
 
-          {/* ---- Clients: one ruled grid, a cell per name ------------------- */}
+          {/* ---- Agencies, then clients: a ruled grid each, a cell per logo -- */}
           <section className="ab-group">
             <SectionBar
-              label="Clients and partners"
+              label="Agencies and clients"
               title="Who we've made work with"
-              note={`${CLIENT_LOGOS.length} and counting`}
+              note={`${AGENCY_LOGOS.length + CLIENT_LOGOS.length} and counting`}
             />
-            <div className="ab-clients">
-              {CLIENT_LOGOS.map((l) => (
-                <div key={l.name} className="ab-client">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={l.src}
-                    alt={l.name}
-                    className={l.src.endsWith('.svg') ? 'is-vector' : undefined}
-                    style={{ height: logoHeight(l.ratio) }}
-                  />
-                </div>
-              ))}
-              {Array.from({ length: CLIENT_FILLERS }, (_, i) => (
-                <div key={`f${i}`} className="ab-client" aria-hidden />
-              ))}
-            </div>
+            <LogoGrid label="Agencies" logos={AGENCY_LOGOS} />
+            <LogoGrid label="Clients" logos={CLIENT_LOGOS} />
           </section>
 
           {/* ---- Services: numbered rows, the description in the rail ------
@@ -436,7 +449,11 @@ export function AboutExperience() {
         }
         .ab-barnote { margin-left: auto; }
 
-        /* Clients */
+        /* Agencies and clients */
+        .ab-sublabel {
+          background: ${BG};
+          padding: 0.7rem var(--cell-pad);
+        }
         .ab-clients {
           display: grid;
           grid-template-columns: repeat(${CLIENT_COLS}, minmax(0, 1fr));
