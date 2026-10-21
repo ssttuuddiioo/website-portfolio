@@ -219,16 +219,13 @@ export function AboutExperience() {
               </Reveal>
               <Reveal delay={0.08}>
                 <p className="ab-small ab-cols font-display">
-                  Most of the work is light and software. We design LED
-                  installations and the systems that run them (fixtures, DMX
-                  and sACN, pixel mapping, show programming), and we write the
-                  software that makes a room respond: real-time graphics,
-                  sensors, kiosks, and the apps staff use to run a space after
-                  we leave. We can take a job from drawings to opening night
-                  with fabricators, lighting designers, developers, and
-                  producers we&apos;ve worked with for years, or join an
-                  agency&apos;s team, a fabrication shop, or an install crew
-                  partway through.
+                  We make experiences people haven&apos;t stood inside before:
+                  rooms that answer back, objects that listen, screens that
+                  stop feeling like screens. Each project is a chance to try
+                  something new, and we make them with designers, fabricators,
+                  and technologists we admire, putting a crew together around
+                  each idea. Sometimes we run the whole job; sometimes we join a
+                  team that&apos;s already on it.
                 </p>
               </Reveal>
             </div>

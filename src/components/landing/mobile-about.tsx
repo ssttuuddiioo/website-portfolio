@@ -65,9 +65,9 @@ export function MobileAbout() {
         <p className="ma-label font-mono">Founder</p>
         <p className="ma-body">
           Pablo Gnecco started the studio in 2015 as an inaugural member of NEW
-          INC, the New Museum&rsquo;s incubator. Most of the work is light and
-          software: LED installations, the systems that run them, and software
-          that makes a room respond.
+          INC, the New Museum&rsquo;s incubator. We make experiences people
+          haven&rsquo;t stood inside before, with designers, fabricators, and
+          technologists we admire.
         </p>
       </section>
 
