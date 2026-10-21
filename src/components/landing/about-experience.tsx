@@ -245,8 +245,8 @@ export function AboutExperience() {
               title="Who we've made work with"
               note={`${AGENCY_LOGOS.length + CLIENT_LOGOS.length} and counting`}
             />
-            <LogoGrid label="Agencies" logos={AGENCY_LOGOS} />
-            <LogoGrid label="Clients" logos={CLIENT_LOGOS} />
+            <LogoGrid label="Agency clients" logos={AGENCY_LOGOS} />
+            <LogoGrid label="End clients" logos={CLIENT_LOGOS} />
           </section>
 
           {/* ---- Services: numbered rows, the description in the rail ------
