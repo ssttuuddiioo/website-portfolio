@@ -1,16 +1,16 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import Link from 'next/link'
-import { motion, useReducedMotion } from 'framer-motion'
-import { LandingSidebar, SOCIALS } from './landing-sidebar'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { ContactPageForm } from './contact-page-form'
-import { INK, BG, BLUE } from './landing-theme'
+import { INK, BG, BLUE, RULE } from './landing-theme'
+import { LISTED_CONTACT_DETAILS } from '@/lib/contact-details'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 const GUTTER = 'var(--gutter, 1.5rem)'
-const EMAIL = 'hello@studiostudio.nyc'
 
 /* ---- small shared pieces (mirrors about-experience) --------------------- */
 
@@ -20,7 +20,7 @@ function Eyebrow({
   id,
 }: {
   children: ReactNode
-  as?: 'span' | 'h2'
+  as?: 'span' | 'h1' | 'h2'
   id?: string
 }) {
   return (
@@ -75,11 +75,14 @@ function Reveal({
  * Standalone /contact page — where every "contact" on the site now leads,
  * apart from the quick panel on a project page. Built on the same visual
  * language as /about (warm shell, Reveal-on-scroll, the shared footer): the
- * pitch across the top, then the full enquiry form beside the direct details —
+ * enquiry form beside the direct details —
  * one column on a phone, two from md up. inPage={false} → sidebar links route
  * back to the homepage's /#sections.
  */
 export function ContactExperience() {
+  // The page leads with the details; the form waits behind "Get a quote".
+  const [quoteOpen, setQuoteOpen] = useState(false)
+  const reduce = useReducedMotion()
   return (
     <>
       <LandingSidebar active="contact" inPage={false} />
@@ -116,88 +119,79 @@ export function ContactExperience() {
           }}
         >
           <div style={{ width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-            {/* ---- Header ------------------------------------------------- */}
+            {/* One ruled sheet, built like the contact panel on a project page:
+                the pitch and every direct detail on the left, the enquiry form
+                on the right. */}
             <Reveal>
-              <header
-                className="flex flex-col font-display"
-                style={{
-                  gap: '1.25rem',
-                  color: INK,
-                  marginBottom: 'clamp(2.5rem, 5vw, 4rem)',
-                }}
-              >
-                <Eyebrow>Contact</Eyebrow>
-                <h1
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 'clamp(1.8rem, 3.4vw, 2.8rem)',
-                    lineHeight: 1.05,
-                    letterSpacing: '-0.03em',
-                    margin: 0,
-                  }}
-                >
-                  Let&apos;s build something together.
-                </h1>
-                <p
-                  style={{
-                    margin: 0,
-                    maxWidth: '46ch',
-                    fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-                    lineHeight: 1.6,
-                    color: 'rgba(232, 228, 223, 0.7)',
-                  }}
-                >
-                  We design and build installations, interactive experiences,
-                  brand activations, and the software that runs them.
-                </p>
-              </header>
-            </Reveal>
-
-            <Reveal delay={0.08}>
-              <div
-                className="grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]"
-                style={{ gap: 'clamp(2.5rem, 5vw, 5rem)', alignItems: 'start' }}
-              >
-                {/* ---- Form ----------------------------------------------- */}
-                <div>
-                  <ContactPageForm />
+              <div className="contact-sheet">
+                <div className="contact-pitch">
+                  <Eyebrow as="h1">Contact</Eyebrow>
+                  <h2 className="contact-head font-display">
+                    Have a project in mind?
+                  </h2>
+                  <p className="contact-note font-display">
+                    Tell us a little about it and we&apos;ll set up a call.
+                  </p>
                 </div>
-
-                {/* ---- Direct contact ------------------------------------- */}
-                <aside aria-labelledby="direct-contact" className="contact-direct">
-                  <Eyebrow as="h2" id="direct-contact">
-                    Direct
-                  </Eyebrow>
-                  <dl className="contact-dl">
-                    <div>
-                      <dt className="contact-dt font-mono">General</dt>
-                      <dd className="contact-dd font-display">
-                        <a href={`mailto:${EMAIL}`} className="contact-email">
-                          {EMAIL}
-                        </a>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="contact-dt font-mono">Location</dt>
-                      <dd className="contact-dd font-display">Brooklyn, NY</dd>
-                    </div>
-                    <div>
-                      <dt className="contact-dt font-mono">Social</dt>
-                      <dd className="contact-dd font-display">
-                        <ul className="contact-social">
-                          {SOCIALS.filter((s) => !('contact' in s)).map((s) => (
-                            <li key={s.label}>
-                              <a href={s.href} target="_blank" rel="noreferrer">
-                                {s.label}
-                                <span aria-hidden> ↗</span>
-                              </a>
+                <div className="contact-right">
+                  <AnimatePresence mode="wait" initial={false}>
+                    {quoteOpen ? (
+                      <motion.div
+                        key="form"
+                        initial={{ opacity: 0, y: reduce ? 0 : 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.35, ease: EASE }}
+                      >
+                        <button
+                          type="button"
+                          className="contact-back font-mono"
+                          onClick={() => setQuoteOpen(false)}
+                        >
+                          <span aria-hidden>←</span> Back
+                        </button>
+                        <ContactPageForm />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="details"
+                        initial={{ opacity: 0, y: reduce ? 0 : 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.35, ease: EASE }}
+                      >
+                        <ul className="contact-list">
+                          {LISTED_CONTACT_DETAILS.map((d) => (
+                            <li key={d.label}>
+                              <span className="contact-label font-mono">{d.label}</span>
+                              {d.href ? (
+                                <a
+                                  href={d.href}
+                                  className="contact-value font-display"
+                                  {...(d.external
+                                    ? { target: '_blank', rel: 'noreferrer' }
+                                    : {})}
+                                >
+                                  {d.value}
+                                </a>
+                              ) : (
+                                <span className="contact-value font-display">{d.value}</span>
+                              )}
                             </li>
                           ))}
                         </ul>
-                      </dd>
-                    </div>
-                  </dl>
-                </aside>
+                        <button
+                          type="button"
+                          className="contact-quote font-display"
+                          onClick={() => setQuoteOpen(true)}
+                        >
+                          <span>Get a quote</span>
+                          <span aria-hidden>→</span>
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </Reveal>
           </div>
@@ -207,56 +201,105 @@ export function ContactExperience() {
       </main>
 
       <style>{`
-        .contact-direct {
+        /* The sheet paints itself in the rule colour and every cell in the
+           ground, so the 1px gaps are the hairlines (as on a project page). */
+        .contact-sheet {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: 1px;
+          background: ${RULE};
+          border: 1px solid ${RULE};
+        }
+        @media (min-width: 900px) {
+          .contact-sheet { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); }
+        }
+        .contact-pitch,
+        .contact-right {
+          background: ${BG};
+          padding: clamp(1.5rem, 3vw, 2.5rem);
+        }
+        .contact-pitch {
           display: flex;
           flex-direction: column;
-          gap: 1.5rem;
+          gap: 1rem;
         }
-        @media (min-width: 768px) {
-          .contact-direct { position: sticky; top: clamp(6rem, 12vh, 8rem); }
-        }
-        .contact-dl {
-          margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 1.4rem;
-        }
-        .contact-dt {
-          font-size: 0.7rem;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: rgba(232, 228, 223, 0.55);
-          margin-bottom: 0.4rem;
-        }
-        .contact-dd {
-          margin: 0;
-          font-size: 1.05rem;
-          line-height: 1.4;
+        .contact-head {
+          margin: clamp(0.5rem, 2vw, 1.5rem) 0 0;
+          max-width: 14ch;
+          font-weight: 400;
+          font-size: clamp(1.9rem, 3.6vw, 3.2rem);
+          line-height: 1.02;
+          letter-spacing: -0.03em;
           color: ${INK};
         }
-        .contact-email {
-          font-weight: 600;
-          color: ${BLUE};
-          text-decoration: none;
-          overflow-wrap: anywhere;
-        }
-        .contact-email:hover { text-decoration: underline; text-underline-offset: 0.2em; }
-        .contact-social {
-          list-style: none;
+        .contact-note {
           margin: 0;
-          padding: 0;
+          font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+          line-height: 1.5;
+          color: rgba(232, 228, 223, 0.7);
+        }
+
+        /* Details: one per row, label over value, ruled like the mobile list. */
+        .contact-list { list-style: none; margin: 0; padding: 0; }
+        .contact-list li {
           display: flex;
           flex-direction: column;
           gap: 0.35rem;
+          padding: 1rem 0;
+          border-bottom: 1px solid ${RULE};
         }
-        .contact-social a {
+        .contact-list li:first-child { padding-top: 0; }
+        .contact-label {
+          font-size: 0.6rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: rgba(232, 228, 223, 0.5);
+        }
+        .contact-value {
+          font-size: clamp(1.15rem, 1.6vw, 1.4rem);
           color: ${INK};
           text-decoration: none;
+          overflow-wrap: anywhere;
           transition: color 200ms;
         }
-        .contact-social a:hover { color: ${BLUE}; }
-        .contact-email:focus-visible,
-        .contact-social a:focus-visible {
+        a.contact-value:hover { color: ${BLUE}; }
+
+        .contact-quote {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          height: 3.5rem;
+          margin-top: clamp(1.5rem, 3vw, 2rem);
+          padding: 0 1.4rem;
+          border: 0;
+          border-radius: 999px;
+          background: ${BLUE};
+          color: #fff;
+          font-size: 1.15rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: transform 200ms;
+        }
+        .contact-quote:hover { transform: translateY(-1px); }
+        .contact-back {
+          display: inline-flex;
+          gap: 0.5rem;
+          margin: 0 0 1.5rem;
+          padding: 0;
+          border: 0;
+          background: none;
+          cursor: pointer;
+          font-size: 0.6rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: rgba(232, 228, 223, 0.6);
+          transition: color 200ms;
+        }
+        .contact-back:hover { color: ${BLUE}; }
+        .contact-value:focus-visible,
+        .contact-quote:focus-visible,
+        .contact-back:focus-visible {
           outline: 2px solid ${BLUE};
           outline-offset: 3px;
         }

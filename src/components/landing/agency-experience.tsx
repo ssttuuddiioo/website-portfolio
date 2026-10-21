@@ -9,7 +9,7 @@ const useIsoLayoutEffect =
 import { LandingSidebar } from './landing-sidebar'
 import { SiteFooter } from './site-footer'
 import { AgencyAbout } from './agency-about'
-import { MobileProjectScroller } from './mobile-project-scroller'
+import { MobileWorkFeed } from './mobile-work-feed'
 import { ProjectIndexGrid } from './project-index'
 // import { IdeasSection } from './ideas-section' // notes section hidden for now
 import { wordStyle, BG } from './landing-theme'
@@ -750,10 +750,10 @@ export function AgencyExperience({
       </div>
 
       {/* Mobile — its own experience, not this page reflowed. The trail is
-          pointer-driven and silent on touch, so the work is browsed by
-          scrolling a column of it over a frame of the selected row. */}
+          pointer-driven and silent on touch, so the work is a column of
+          full-bleed frames with a floating bar to the index. */}
       <div className="ss-mobile">
-        <MobileProjectScroller />
+        <MobileWorkFeed />
       </div>
 
       <style>{`

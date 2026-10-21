@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { FAQS } from '@/lib/faqs'
 import { DEFAULT_OG_IMAGE } from '@/lib/seo/metadata'
+import { ByViewport } from '@/components/landing/by-viewport'
+import { MobileAbout } from '@/components/landing/mobile-about'
 import { AboutExperience } from '@/components/landing/about-experience'
 import { JsonLd } from '@/lib/seo/json-ld'
 import { breadcrumbSchema, faqSchema, type JsonLdObject } from '@/lib/seo/jsonld'
@@ -44,7 +46,7 @@ export default function AboutPage() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <AboutExperience />
+      <ByViewport desktop={<AboutExperience />} mobile={<MobileAbout />} />
     </>
   )
 }

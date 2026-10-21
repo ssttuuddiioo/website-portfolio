@@ -11,7 +11,6 @@ import { INK, BG, BLUE, PAPER } from './landing-theme'
  */
 const FORM_ID = 'xnjkavky'
 
-const REFERRAL = ['Referral', 'Instagram', 'LinkedIn', 'Search', 'Event', 'Other']
 const TIMELINE = ['ASAP', '1–3 months', '3–6 months', '6+ months', 'Not sure']
 const BUDGET = ['Under $10k', '$10–25k', '$25–50k', '$50–100k', '$100k+', 'Not sure']
 
@@ -36,6 +35,28 @@ function validate(form: HTMLFormElement): Errors {
   else if (!EMAIL.test(email)) errors.email = 'That email doesn’t look right. Check for a typo.'
   if (!value('project')) errors.project = 'Tell us a little about the project.'
   return errors
+}
+
+/**
+ * An optional single-choice question drawn as a blank like the text fields:
+ * same rule, same type size, same height. A native select underneath, so the
+ * keyboard and the phone pickers behave as expected.
+ */
+function Choice({ label, name, options }: { label: string; name: string; options: string[] }) {
+  const id = `cpf-${name}`
+  return (
+    <div className="cpf-field">
+      <label htmlFor={id} className="cpf-label font-mono">
+        {label}
+      </label>
+      <select id={id} name={name} defaultValue="" className="cpf-input cpf-select">
+        <option value="">Choose one</option>
+        {options.map((o) => (
+          <option key={o}>{o}</option>
+        ))}
+      </select>
+    </div>
+  )
 }
 
 /**
@@ -134,7 +155,7 @@ export function ContactPageForm() {
           <div className="cpf-row">
             <div className="cpf-field">
               <label htmlFor="cpf-name" className="cpf-label font-mono">
-                Full name <span aria-hidden>*</span>
+                Name <span aria-hidden>*</span>
               </label>
               <input
                 id="cpf-name"
@@ -148,21 +169,6 @@ export function ContactPageForm() {
               />
               {errorText('name')}
             </div>
-            <div className="cpf-field">
-              <label htmlFor="cpf-org" className="cpf-label font-mono">
-                Organization
-              </label>
-              <input
-                id="cpf-org"
-                name="organization"
-                type="text"
-                autoComplete="organization"
-                className="cpf-input"
-              />
-            </div>
-          </div>
-
-          <div className="cpf-row">
             <div className="cpf-field">
               <label htmlFor="cpf-email" className="cpf-label font-mono">
                 Email <span aria-hidden>*</span>
@@ -180,17 +186,6 @@ export function ContactPageForm() {
               />
               {errorText('email')}
             </div>
-            <div className="cpf-field">
-              <label htmlFor="cpf-referral" className="cpf-label font-mono">
-                How did you hear about us?
-              </label>
-              <select id="cpf-referral" name="referral" defaultValue="" className="cpf-input cpf-select">
-                <option value="">Choose one</option>
-                {REFERRAL.map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-            </div>
           </div>
 
           <div className="cpf-field">
@@ -200,8 +195,9 @@ export function ContactPageForm() {
             <textarea
               id="cpf-project"
               name="project"
-              rows={5}
+              rows={4}
               required
+              placeholder="What are you making, and where will it live?"
               onInput={clear('project')}
               className="cpf-input cpf-textarea"
               {...describe('project')}
@@ -210,44 +206,8 @@ export function ContactPageForm() {
           </div>
 
           <div className="cpf-row">
-            <div className="cpf-field">
-              <label htmlFor="cpf-timeline" className="cpf-label font-mono">
-                Timeline
-              </label>
-              <select id="cpf-timeline" name="timeline" defaultValue="" className="cpf-input cpf-select">
-                <option value="">Choose one</option>
-                {TIMELINE.map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-            <div className="cpf-field">
-              <label htmlFor="cpf-budget" className="cpf-label font-mono">
-                Budget
-              </label>
-              <select id="cpf-budget" name="budget" defaultValue="" className="cpf-input cpf-select">
-                <option value="">Choose one</option>
-                {BUDGET.map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="cpf-field">
-            <label htmlFor="cpf-details" className="cpf-label font-mono">
-              Additional details or link to brief
-            </label>
-            <textarea
-              id="cpf-details"
-              name="details"
-              rows={3}
-              aria-describedby="cpf-details-hint"
-              className="cpf-input cpf-textarea"
-            />
-            <p id="cpf-details-hint" className="cpf-hint font-mono">
-              Paste a link to a brief or deck, or add anything else we should know.
-            </p>
+            <Choice label="Timeline" name="timeline" options={TIMELINE} />
+            <Choice label="Budget" name="budget" options={BUDGET} />
           </div>
 
           <label className="cpf-check font-display">
@@ -273,29 +233,30 @@ export function ContactPageForm() {
 
           <button type="submit" disabled={state.submitting} className="cpf-submit font-mono">
             {state.submitting ? 'Sending…' : 'Send'}
+            <span aria-hidden className="cpf-arrow">→</span>
           </button>
         </form>
       )}
 
       <style>{`
         /* Field look comes from the short contact form (contact-form.tsx):
-           same label, same box, same error colour. What's new is what that
-           form never needed — selects, a checkbox, a visible focus ring and
-           an invalid state. */
+           same label, same underline, same error colour, at a larger size.
+           What's new is what that form never needed: chips, a checkbox, a
+           focus state and an invalid state. */
         .cpf {
           position: relative;
           display: flex;
           flex-direction: column;
-          gap: 1.5rem;
+          gap: 2rem;
           text-align: left;
         }
         .cpf-row {
           display: grid;
           grid-template-columns: minmax(0, 1fr);
-          gap: 1.5rem;
+          gap: 2rem;
         }
         @media (min-width: 640px) {
-          .cpf-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .cpf-row { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2.5rem; }
         }
         .cpf-field { display: flex; flex-direction: column; min-width: 0; }
         .cpf-label {
@@ -304,41 +265,60 @@ export function ContactPageForm() {
           letter-spacing: 0.08em;
           text-transform: uppercase;
           color: rgba(232, 228, 223, 0.55);
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.35rem;
+          padding: 0;
         }
+        .cpf-input::placeholder { color: rgba(232, 228, 223, 0.3); }
+        .cpf-input:hover:not(:focus-visible) { border-bottom-color: rgba(232, 228, 223, 0.5); }
+        /* A rule, not a box: the line under each field is the whole field. */
         .cpf-input {
           width: 100%;
-          background: rgba(255, 255, 255, 0.06);
-          border: 1px solid rgba(232, 228, 223, 0.18);
-          border-radius: 4px;
-          padding: 0.65rem 0.75rem;
+          background: transparent;
+          border: 0;
+          border-bottom: 1px solid rgba(232, 228, 223, 0.25);
+          border-radius: 0;
+          padding: 0.6rem 0 0.7rem;
           font-family: var(--font-display), sans-serif;
-          font-size: 1rem;
+          font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+          letter-spacing: -0.01em;
           color: ${INK};
           outline: none;
           transition: border-color 200ms, box-shadow 200ms;
         }
-        .cpf-input:focus-visible,
         .cpf-check input:focus-visible,
         .cpf-submit:focus-visible {
           outline: 2px solid ${BLUE};
           outline-offset: 2px;
         }
-        .cpf-input:focus-visible { border-color: ${BLUE}; }
-        .cpf-input[aria-invalid='true'] { border-color: #FF9B93; }
-        .cpf-textarea { resize: vertical; min-height: 3.2rem; }
-        /* Native selects keep their keyboard behaviour; only the box is ours.
-           color-scheme dark gives the option list the page's ground. */
+        /* Focus thickens the rule and turns it blue, in place of a ring. */
+        .cpf-input:focus-visible {
+          border-bottom-color: ${BLUE};
+          box-shadow: 0 1px 0 ${BLUE};
+        }
+        .cpf-input[aria-invalid='true'] { border-bottom-color: #FF9B93; }
+        .cpf-input[aria-invalid='true']:focus-visible { box-shadow: 0 1px 0 #FF9B93; }
+        /* Textareas start short and grow with what's typed, so the rule sits
+           close under the text rather than below an empty block. */
+        .cpf-textarea {
+          resize: vertical;
+          min-height: 2.6rem;
+          field-sizing: content;
+          line-height: 1.5;
+        }
+        /* Selects keep their native keyboard behaviour; only the look is ours.
+           color-scheme dark gives the option list the page's ground, and the
+           unchosen state reads as a placeholder. */
         .cpf-select {
           appearance: none;
           -webkit-appearance: none;
           color-scheme: dark;
-          padding-right: 2.25rem;
+          padding-right: 1.75rem;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23E8E4DF' stroke-opacity='.6' stroke-width='1.4'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E");
           background-repeat: no-repeat;
-          background-position: right 0.75rem center;
+          background-position: right 0.25rem center;
           cursor: pointer;
         }
+        .cpf-select:has(option[value='']:checked) { color: rgba(232, 228, 223, 0.3); }
         .cpf-select option { background: ${BG}; color: ${INK}; }
         .cpf-error {
           margin: 0.4rem 0 0;
@@ -375,6 +355,9 @@ export function ContactPageForm() {
         .cpf-failed p { margin: 0; }
         .cpf-failed a { color: inherit; text-decoration: underline; }
         .cpf-submit {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.75rem;
           align-self: flex-start;
           margin-top: 0.25rem;
           padding: 0.85rem 2.25rem;
@@ -390,6 +373,8 @@ export function ContactPageForm() {
         }
         .cpf-submit:hover:not(:disabled) { background: ${BLUE}; color: ${PAPER}; }
         .cpf-submit:disabled { cursor: default; opacity: 0.6; }
+        .cpf-arrow { transition: transform 200ms; }
+        .cpf-submit:hover:not(:disabled) .cpf-arrow { transform: translateX(4px); }
         .cpf-trap {
           position: absolute;
           left: -10000px;

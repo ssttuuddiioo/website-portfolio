@@ -7,8 +7,10 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { PortableText, type PortableTextComponents } from '@portabletext/react'
 import type { PlaceholderProject } from '@/lib/placeholder-projects'
 import { LandingSidebar } from './landing-sidebar'
+import { MobileBar } from './mobile-bar'
 import { SiteFooter } from './site-footer'
 import { ContactForm } from './contact-form'
+import { LISTED_CONTACT_DETAILS } from '@/lib/contact-details'
 import { INK, BG, BLUE } from './landing-theme'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -133,13 +135,20 @@ export function ProjectExperience({ project }: { project: PlaceholderProject }) 
           it scrolls away with the row rather than following the reader down a
           page it is no longer part of. The pill moves to contact while the
           panel is open. */}
-      <LandingSidebar
-        active={contactOpen ? 'contact' : 'work'}
-        inPage={false}
-        pinned={false}
-        contactOpen={contactOpen}
-        onToggleContact={() => setContactOpen((o) => !o)}
-      />
+      <div className="proj-dock">
+        <LandingSidebar
+          active={contactOpen ? 'contact' : 'work'}
+          inPage={false}
+          pinned={false}
+          contactOpen={contactOpen}
+          onToggleContact={() => setContactOpen((o) => !o)}
+        />
+      </div>
+      {/* Phones get the same floating bar as the mobile landing in place of
+          the dock, which is a desktop control at heart. */}
+      <div className="proj-mobile-bar">
+        <MobileBar page="work" />
+      </div>
 
       <main style={{ position: 'relative', zIndex: 3 }}>
         <ProjectSheet
@@ -335,6 +344,27 @@ export function ProjectSheet({
                   <p className="proj-note font-display">
                     Drop us a line and let&apos;s set up a call.
                   </p>
+                  <dl className="proj-contactdetails">
+                    {LISTED_CONTACT_DETAILS.map((d) => (
+                      <div key={d.label}>
+                        <dt className="font-mono">{d.label}</dt>
+                        <dd className="font-display">
+                          {d.href ? (
+                            <a
+                              href={d.href}
+                              {...(d.external
+                                ? { target: '_blank', rel: 'noreferrer' }
+                                : {})}
+                            >
+                              {d.value}
+                            </a>
+                          ) : (
+                            d.value
+                          )}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
                 </div>
                 <div className="proj-contactform">
                   <ContactForm project={project.title} />
@@ -746,6 +776,35 @@ export function ProjectSheet({
         transition: color 200ms;
       }
       .proj-contactclose:hover { color: ${BLUE}; }
+      /* Every other way to reach us, under the pitch: the same details the
+         mobile Contact page lists. Pushed to the foot of the cell so they
+         line up with the bottom of the form. */
+      .proj-contactdetails {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+        gap: 1.25rem 2rem;
+        margin: auto 0 0;
+        padding-top: clamp(1.5rem, 3vw, 2.5rem);
+      }
+      .proj-contactdetails dt {
+        margin-bottom: 0.35rem;
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(232, 228, 223, 0.5);
+      }
+      .proj-contactdetails dd {
+        margin: 0;
+        font-size: 1.05rem;
+        color: ${INK};
+        overflow-wrap: anywhere;
+      }
+      .proj-contactdetails a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 200ms;
+      }
+      .proj-contactdetails a:hover { color: ${BLUE}; }
 
       /* Media left, rail right. The rail is a fixed measure so the text never
          stretches past a comfortable line length on a wide display. */
@@ -1018,12 +1077,18 @@ export function ProjectSheet({
          row, so the title strip takes its normal inset back — and the sheet
          starts a dock's height further down, leaving the dock a clear band
          above it rather than sitting on the title. */
-      @media (max-width: 767px) {
+      /* Phones: the sheet runs edge to edge so the work gets the whole
+         width, and the dock gives way to the floating bar at the foot. */
+      .proj-mobile-bar { display: none; }
+      @media (max-width: 899px) {
+        .proj-dock { display: none; }
+        .proj-mobile-bar { display: block; }
         .proj-titlebar { padding-right: var(--cell-pad); }
         .proj-sheet {
-          margin-top: calc(
-            var(--sheet-inset) + env(safe-area-inset-top) + var(--dock-h)
-          );
+          margin: env(safe-area-inset-top) 0 0;
+          border-left: 0;
+          border-right: 0;
+          border-top: 0;
         }
       }
 

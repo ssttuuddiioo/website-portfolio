@@ -10,19 +10,33 @@ const labelStyle: React.CSSProperties = {
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
   color: 'rgba(232, 228, 223, 0.55)',
-  marginBottom: '0.5rem',
+  marginBottom: '0.25rem',
 }
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(232, 228, 223, 0.18)',
-  borderRadius: 4,
-  padding: '0.65rem 0.75rem',
+  background: 'transparent',
+  border: 0,
+  borderBottom: '1px solid rgba(232, 228, 223, 0.3)',
+  borderRadius: 0,
+  padding: '0.5rem 0',
   fontFamily: 'var(--font-display), sans-serif',
   fontSize: '1rem',
   color: INK,
   outline: 'none',
+  transition: 'border-color 200ms, box-shadow 200ms',
+}
+
+/** Inline styles can't target :focus, so the rule turns blue on focus here. */
+const focusLine = {
+  onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderBottomColor = BLUE
+    e.currentTarget.style.boxShadow = `0 1px 0 ${BLUE}`
+  },
+  onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderBottomColor = ''
+    e.currentTarget.style.boxShadow = ''
+  },
 }
 
 const errStyle: React.CSSProperties = {
@@ -59,7 +73,7 @@ export function ContactForm({ project }: { project?: string } = {}) {
         maxWidth: '480px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '1.5rem',
+        gap: '2rem',
         textAlign: 'left',
       }}
     >
@@ -78,7 +92,7 @@ export function ContactForm({ project }: { project?: string } = {}) {
         <label htmlFor="cf-name" style={labelStyle}>
           Name
         </label>
-        <input id="cf-name" type="text" name="name" required style={inputStyle} />
+        <input id="cf-name" type="text" name="name" required style={inputStyle} {...focusLine} />
       </div>
 
       <div>
@@ -91,6 +105,7 @@ export function ContactForm({ project }: { project?: string } = {}) {
           name="email"
           required
           style={inputStyle}
+          {...focusLine}
         />
         <ValidationError field="email" errors={state.errors} style={errStyle} />
       </div>
@@ -103,8 +118,9 @@ export function ContactForm({ project }: { project?: string } = {}) {
           id="cf-message"
           name="message"
           required
-          rows={4}
-          style={{ ...inputStyle, resize: 'vertical' }}
+          rows={3}
+          style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.5 }}
+          {...focusLine}
         />
         <ValidationError
           field="message"

@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { buildPageMetadata } from '@/lib/seo/metadata'
 import { JsonLd } from '@/lib/seo/json-ld'
 import { breadcrumbSchema } from '@/lib/seo/jsonld'
+import { ByViewport } from '@/components/landing/by-viewport'
+import { MobileContact } from '@/components/landing/mobile-contact'
 import { ContactExperience } from '@/components/landing/contact-experience'
 
 const CONTACT_DESCRIPTION =
@@ -24,7 +26,7 @@ export default function ContactPage() {
           ],
         })}
       />
-      <ContactExperience />
+      <ByViewport desktop={<ContactExperience />} mobile={<MobileContact />} />
     </>
   )
 }
